@@ -56,7 +56,8 @@ if grep -qE '^CONFIG_(GPL|NONFREE)=yes' ffbuild/config.mak; then
   echo "error: configuration enables GPL or nonfree code, expected LGPL" >&2; exit 1
 fi
 
-make -j"$(nproc)" ffmpeg ffprobe >make.log 2>&1
+# On Windows the Makefile targets carry the executable suffix.
+make -j"$(nproc)" ffmpeg.exe ffprobe.exe >make.log 2>&1
 
 # Nothing from the MinGW runtime may be left as a DLL dependency.
 for bin in ffmpeg ffprobe; do
