@@ -114,16 +114,27 @@ pub async fn run_smoke(app: AppHandle) -> CommandResult<SmokeReport> {
     let cut = ffmpeg::cut_cue(&app, &source, CUE_START_MS, CUE_END_MS, &clip).await?;
     let clip_bytes = std::fs::metadata(&clip).map_err(io)?.len();
 
-    // 3. One row in a throwaway database.
+    // 3. One character and one line in a throwaway database with the real schema.
     let conn = store::open(&dir.join("smoke.sqlite"))?;
-    conn.execute_batch(
-        "CREATE TABLE smoke_clip (id INTEGER PRIMARY KEY, audio_filename TEXT NOT NULL UNIQUE, bytes INTEGER NOT NULL)",
+    let file_name = clip.file_name().unwrap().to_string_lossy().into_owned();
+    let now = store::now_ms();
+    conn.execute(
+        "INSERT INTO characters (name, category, source, created_at, updated_at)
+         VALUES ('Smoke', 'anime', 'T1', ?1, ?1)",
+        [now],
     )
     .map_err(store::StoreError::from)?;
-    let file_name = clip.file_name().unwrap().to_string_lossy().into_owned();
+    let character_id = conn.last_insert_rowid();
     conn.execute(
-        "INSERT INTO smoke_clip (audio_filename, bytes) VALUES (?1, ?2)",
-        (&file_name, clip_bytes as i64),
+        "INSERT INTO lines (character_id, text, audio_filename, audio_bytes, duration_ms, created_at, updated_at)
+         VALUES (?1, 'smoke', ?2, ?3, ?4, ?5, ?5)",
+        (
+            character_id,
+            &file_name,
+            clip_bytes as i64,
+            (CUE_END_MS - CUE_START_MS) as i64,
+            now,
+        ),
     )
     .map_err(store::StoreError::from)?;
     let row_id = conn.last_insert_rowid();
