@@ -27,3 +27,6 @@ dist-ssr
 src-tauri/binaries/ffmpeg-*
 src-tauri/binaries/ffprobe-*
 coverage
+
+# Working plan and review record: kept locally, never pushed
+PLAN.md

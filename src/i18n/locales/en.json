@@ -1,5 +1,7 @@
 {
-  "app": { "title": "Dialogue Collector" },
+  "app": {
+    "title": "Dialogue Collector"
+  },
   "nav": {
     "home": "Home",
     "scriptBook": "Script Book",
@@ -11,8 +13,12 @@
     "fromSubtitle": "Import from video subtitles",
     "manual": "Import existing audio"
   },
-  "scriptBook": { "title": "Script Book" },
-  "lines": { "title": "Lines" },
+  "scriptBook": {
+    "title": "Script Book"
+  },
+  "lines": {
+    "title": "Lines"
+  },
   "import": {
     "subtitleTitle": "Import from video subtitles",
     "manualTitle": "Import existing audio"
@@ -33,5 +39,15 @@
     },
     "version": "Version"
   },
-  "common": { "notImplemented": "Not implemented yet" }
+  "common": {
+    "notImplemented": "Not implemented yet"
+  },
+  "diagnostics": {
+    "title": "Diagnostics",
+    "run": "Run smoke test",
+    "running": "Running…",
+    "passed": "Passed",
+    "failed": "Failed",
+    "link": "Diagnostics"
+  }
 }

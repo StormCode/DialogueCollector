@@ -12,6 +12,7 @@
 mod commands;
 mod error;
 mod library;
+mod smoke;
 
 // Skeleton modules: their types exist ahead of their callers. Drop each `allow` once the
 // module is wired into a command.
@@ -51,6 +52,10 @@ pub fn run() {
         .setup(|app| {
             use tauri::Manager;
 
+            let smoke = smoke::SmokeMode::from_args();
+            smoke.arm_watchdog();
+            app.manage(smoke);
+
             let files = SettingsFiles::from_os()?;
             let loaded = files.load_or_init()?;
             log::info!(
@@ -69,6 +74,9 @@ pub fn run() {
             commands::app_info,
             commands::get_settings,
             commands::save_settings,
+            smoke::smoke_mode,
+            smoke::run_smoke,
+            smoke::smoke_finish,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

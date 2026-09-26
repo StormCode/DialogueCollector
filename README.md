@@ -2,7 +2,8 @@
 
 A desktop app (macOS + Windows) that builds a personal, character-organized library of
 dialogue audio clips from your own video files. Fully offline. The plan and every decision
-behind it live in [`PLAN.md`](PLAN.md).
+behind it live in `PLAN.md`, which is kept locally and is not part of this repository;
+decision IDs in comments (D1, ENG2, T4, …) refer to it.
 
 ## Stack (PLAN.md D1 → B)
 
@@ -53,15 +54,25 @@ Prerequisites: Node 20+, Rust stable (`rustup`), and on Windows the WebView2 run
 
 ```sh
 npm install
+scripts/ffmpeg/build-macos.sh          # macOS: LGPL ffmpeg sidecar for this Mac's arch
+node scripts/ffmpeg/fetch-windows.mjs  # Windows: pinned LGPL prebuilt
 npm run tauri dev        # app with hot reload
 npm test                 # renderer tests
 npm run typecheck
 cd src-tauri && cargo test
 ```
 
+### Walking-skeleton check (T1)
+
+`npm run tauri build`, then run the packaged binary with `--smoke`
+(`DialogueCollector.app/Contents/MacOS/dialogue-collector --smoke [--smoke-report <file>]`).
+It spawns the bundled ffmpeg, cuts a hardcoded 2 s cue from a generated source, writes one row
+to a throwaway database in the OS temp dir, loads the clip in the renderer through the asset
+protocol, prints `SMOKE OK|FAIL …` and exits 0 / 1 (2 on watchdog timeout). The same check runs
+from 設定 → 目前版本 → 診斷工具. CI: `.github/workflows/package-smoke.yml`.
+
 ## Not wired yet
 
-- ffmpeg sidecar binaries — see `src-tauri/binaries/README.md` (T1, T3)
 - SQLite schema v1 and migrations (T4 / ET1)
 - Updater (T22), CI matrix (T21)
 - Open decisions that block specific modules: **F2** (which side parses subtitles),

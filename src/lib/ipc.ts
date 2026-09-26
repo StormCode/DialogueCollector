@@ -3,12 +3,15 @@
 
 import { invoke } from "@tauri-apps/api/core";
 
-import type { AppInfo, Settings } from "./types";
+import type { AppInfo, Settings, SmokeReport } from "./types";
 
 export const ipc = {
   appInfo: () => invoke<AppInfo>("app_info"),
   getSettings: () => invoke<Settings>("get_settings"),
   saveSettings: (settings: Settings) => invoke<Settings>("save_settings", { settings }),
+  smokeMode: () => invoke<boolean>("smoke_mode"),
+  runSmoke: () => invoke<SmokeReport>("run_smoke"),
+  smokeFinish: (ok: boolean, detail: string) => invoke<void>("smoke_finish", { ok, detail }),
 };
 
 /** True when running inside the Tauri webview (false under plain `vite` or tests). */
