@@ -194,7 +194,7 @@
     <div aria-hidden="true" style="height: 1px; flex-shrink: 0; background: linear-gradient(90deg, transparent 0%, var(--bento-neutral-20, #c5cdd8) 50%, transparent 100%);"></div>
 
     <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0; position: relative; z-index: 30;">
-      <x-import component-from-global-scope="BentoDS27_65ebe9.SearchBar" placeholder="搜尋台詞" value="{{query}}" onChange="{{handleQueryChange}}" onClear="{{handleQueryClear}}" style="width: 400px;"></x-import>
+      <x-import component-from-global-scope="BentoDS27_65ebe9.SearchBar" placeholder="e.g. El Psy Congroo" value="{{query}}" onChange="{{handleQueryChange}}" onClear="{{handleQueryClear}}" style="width: 400px;"></x-import>
       <div style="position: relative; flex-shrink: 0; margin-left: -12px; transform: translateX(-62px);">
         <button type="button" class="ln-sort-btn {{sortBtnClass}}" aria-label="排序" aria-expanded="{{sortOpen}}" onClick="{{toggleSort}}">
           <span class="material-symbol" aria-hidden="true">filter_list</span>

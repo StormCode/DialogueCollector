@@ -100,6 +100,12 @@
             <div style="width: 100%; box-sizing: border-box; padding: 0 0 8px; --bento-border-input-enabled: var(--bento-dv-indigo-40); --bento-border-input-hover: var(--bento-dv-indigo-50); --bento-border-input-focus: var(--bento-dv-indigo-50);">
               <x-import component-from-global-scope="BentoDS27_65ebe9.SearchBar" placeholder="角色 or 作品名稱" value="{{charQuery}}" onChange="{{handleCharQuery}}" onClear="{{clearCharQuery}}" width="100%" style="width: 100%;"></x-import>
             </div>
+            <sc-if value="{{showUnassignOpt}}" hint-placeholder-val="{{true}}">
+              <button type="button" onClick="{{pickUnassigned}}" style="appearance: none; -webkit-appearance: none; display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: none; border-radius: var(--bento-radius-16); background: {{unassignBg}}; cursor: pointer; text-align: left;">
+                <span aria-hidden="true" style="box-sizing: border-box; width: 28px; height: 28px; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bento-neutral-5); color: var(--bento-neutral-40);"><span class="material-symbol" style="font-size: 18px;">person</span></span>
+                <span style="font: var(--bento-weight-regular) 14px/18px var(--font-bento-font-ui); color: var(--bento-content-secondary); white-space: nowrap;">未指派</span>
+              </button>
+            </sc-if>
             <sc-for list="{{characterMenuItems}}" as="item" hint-placeholder-count="5">
               <button type="button" onClick="{{item.pick}}" style="appearance: none; -webkit-appearance: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border: none; border-radius: var(--bento-radius-16); background: {{item.bg}}; cursor: pointer; text-align: left;">
                 <span style="display: flex; align-items: center; gap: 12px; min-width: 0;">
@@ -310,7 +316,10 @@ class Component extends DCLogic {
       charMenuOpen,
       toggleCharacterMenu: this.toggleCharacterMenu,
       handleAddCharacter: this.handleAddCharacter,
-      characterDisplayLabel: selectedCharacterObj ? selectedCharacterObj.name : '請選擇角色',
+      characterDisplayLabel: selectedCharacterObj ? selectedCharacterObj.name : (character === '__none' ? '未指派' : '請選擇角色'),
+      showUnassignOpt: !(this.state.charQuery || '').trim(),
+      pickUnassigned: () => this.selectCharacter('__none'),
+      unassignBg: character === '__none' ? 'var(--bento-bg-interactive-overlay)' : 'transparent',
       characterDisplayColor: selectedCharacterObj ? 'var(--bento-content-primary)' : 'var(--bento-content-secondary)',
       characterChevronName: charMenuOpen ? 'ChevronUp' : 'ChevronDown',
       characterRingColor: charError ? 'var(--bento-border-negative)' : charMenuOpen ? 'var(--bento-dv-indigo-40)' : 'var(--bento-border-input-enabled)',
