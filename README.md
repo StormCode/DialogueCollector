@@ -1,5 +1,7 @@
 # 台詞收藏家 / dialogue-collector
 
+可以用字幕檔提取影片台詞的應用，支援多平台。
+
 A desktop app (macOS + Windows) that builds a personal, character-organized library of
 dialogue audio clips from your own video files. Fully offline. The plan and every decision
 behind it live in `PLAN.md`, which is kept locally and is not part of this repository;
