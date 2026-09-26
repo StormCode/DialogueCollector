@@ -40,6 +40,12 @@ design/                  vendored canvas boards + Bento tokens (reference, re-pu
 
 ## Where things live on disk
 
+The Windows installer (per-user) installs the program to `%LOCALAPPDATA%\Programs\DialogueCollector`.
+It uses a vendored copy of Tauri's NSIS template (`src-tauri/windows/installer.nsi`) changed in
+one line, because Tauri's default per-user location is the default library folder below.
+`node scripts/nsis/check-template.mjs` (run in CI) fails when a Tauri CLI upgrade leaves the copy
+stale; `--write` re-syncs it.
+
 | What | macOS | Windows |
 |---|---|---|
 | `settings.json` + `machine.json` (fixed) | `~/Library/Preferences/DialogueCollector/` | `%APPDATA%\DialogueCollector\` |
@@ -55,7 +61,7 @@ Prerequisites: Node 20+, Rust stable (`rustup`), and on Windows the WebView2 run
 ```sh
 npm install
 scripts/ffmpeg/build-macos.sh          # macOS: LGPL ffmpeg sidecar for this Mac's arch
-node scripts/ffmpeg/fetch-windows.mjs  # Windows: pinned LGPL prebuilt
+scripts/ffmpeg/build-windows.sh        # Windows, in MSYS2 UCRT64: same, statically linked
 npm run tauri dev        # app with hot reload
 npm test                 # renderer tests
 npm run typecheck

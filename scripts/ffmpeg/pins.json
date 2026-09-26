@@ -4,15 +4,11 @@
   "source": {
     "url": "https://ffmpeg.org/releases/ffmpeg-8.1.3.tar.xz",
     "sha256": "7138d28c96d9d3e3af4ee3d8cad72741f8ffb40da90c1112235dea3ecd3178a3",
-    "usedBy": ["aarch64-apple-darwin", "x86_64-apple-darwin"],
-    "note": "No LGPL prebuilt exists for macOS (evermeet, osxexperts, Homebrew are all --enable-gpl), so macOS builds from source with scripts/ffmpeg/build-macos.sh."
-  },
-  "prebuilt": {
-    "x86_64-pc-windows-msvc": {
-      "url": "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2026-09-25-15-37/ffmpeg-n8.1.3-win64-lgpl-8.1.zip",
-      "sha256": "ed669810ca09ccf1f210d80b79445f70da68da4856a3a0f43e0ab9b2217c9777",
-      "archiveDir": "ffmpeg-n8.1.3-win64-lgpl-8.1/bin",
-      "note": "BtbN rotates old autobuild releases. If this URL 404s, mirror the pinned zip to this repo's own release rather than re-pinning to a moving 'latest'."
-    }
+    "usedBy": [
+      "aarch64-apple-darwin",
+      "x86_64-apple-darwin",
+      "x86_64-pc-windows-msvc"
+    ],
+    "note": "Every target builds LGPL from this tarball: macOS with scripts/ffmpeg/build-macos.sh (no LGPL macOS prebuilt exists), Windows with scripts/ffmpeg/build-windows.sh under MSYS2 (BtbN's LGPL prebuilt is ~128 MB per binary)."
   }
 }
