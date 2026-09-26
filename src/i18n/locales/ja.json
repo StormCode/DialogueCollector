@@ -1,0 +1,37 @@
+{
+  "app": { "title": "セリフコレクター" },
+  "nav": {
+    "home": "ホーム",
+    "scriptBook": "台本",
+    "settings": "設定",
+    "collapse": "メニューを閉じる",
+    "expand": "メニューを開く"
+  },
+  "main": {
+    "fromSubtitle": "動画の字幕から取り込む",
+    "manual": "既存の音声を直接取り込む"
+  },
+  "scriptBook": { "title": "台本" },
+  "lines": { "title": "セリフ" },
+  "import": {
+    "subtitleTitle": "動画の字幕から取り込む",
+    "manualTitle": "既存の音声を直接取り込む"
+  },
+  "settings": {
+    "title": "設定",
+    "interface": "インターフェース",
+    "language": "言語",
+    "theme": "テーマ",
+    "themes": {
+      "indigo": "インディゴ",
+      "lightBlue": "ライトブルー",
+      "ruby": "ルビーレッド",
+      "emerald": "エメラルド",
+      "sunset": "サンセットオレンジ",
+      "lipstick": "リップピンク",
+      "midnight": "ミッドナイト"
+    },
+    "version": "現在のバージョン"
+  },
+  "common": { "notImplemented": "未実装" }
+}

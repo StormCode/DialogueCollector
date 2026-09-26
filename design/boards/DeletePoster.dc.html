@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>刪除橫幅海報</title>
+  <script src="./support.js"></script>
+  <link rel="stylesheet" href="ds/bento/tokens.css">
+  <link rel="stylesheet" href="ds/bento/components/bundle.css">
+  <script src="ds/bento/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,0,0&amp;display=block" rel="stylesheet">
+  <style>
+    body { margin: 0; }
+    .material-symbol { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24; }
+
+    .dc-btn { display: inline-flex; align-items: center; text-decoration: none; appearance: none; -webkit-appearance: none; box-sizing: border-box; border-radius: var(--bento-radius-16); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); padding: 12px 20px; cursor: pointer; }
+    .dc-btn-neutral { border: 1.5px solid var(--bento-neutral-60); background: transparent; color: var(--bento-neutral-60); }
+    .dc-btn-neutral:hover { background: var(--bento-bg-secondary); }
+    .dc-btn-danger { border: none; background: var(--bento-negative-40); color: var(--bento-white); }
+    .dc-btn-danger:hover { background: var(--bento-negative-50); }
+    @keyframes modal-drop-in { 0% { opacity: 0; transform: translateY(-32px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes modal-backdrop-in { 0% { opacity: 0; } 100% { opacity: 1; } }
+    .modal-enter { animation: modal-drop-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .modal-backdrop { animation: modal-backdrop-in 300ms ease-out both; }
+    @media (prefers-reduced-motion: reduce) { .modal-enter, .modal-backdrop { animation: none; } }
+  </style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; position: relative; overflow: hidden; background: var(--bento-bg-secondary); display: flex; align-items: center; justify-content: center; font-family: var(--font-bento-font-ui);">
+
+  <div class="modal-backdrop" style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.48);" aria-hidden="true"></div>
+
+  <div class="modal-enter" style="position: relative; z-index: 1;">
+    <x-import component-from-global-scope="BentoDS27_65ebe9.Modal" title="確認" size="small" on-close="{{handleCancel}}">
+      <div style="display: flex; flex-direction: column; gap: 24px; align-items: stretch; width: 360px;">
+
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+          <div style="width: 64px; height: 64px; border-radius: 999px; background: var(--bento-negative-1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <span aria-hidden="true" style="display: inline-flex; color: var(--bento-content-negative);"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Bin" size="32"></x-import></span>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;">
+            <div style="font: var(--bento-weight-semibold) 18px/24px var(--bento-font-heading); color: var(--bento-content-primary);">確定要刪除橫幅海報嗎？</div>
+            <div style="font: var(--bento-weight-regular) 14px/20px var(--bento-font-ui); color: var(--bento-content-secondary);">刪除後，頁面頂部將不再顯示海報，之後仍可重新上傳。</div>
+          </div>
+        </div>
+
+        <x-import component-from-global-scope="BentoDS27_65ebe9.Divider"></x-import>
+
+        <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px;">
+          <a class="dc-btn dc-btn-neutral" href="LinesPoster.dc.html">取消</a>
+          <a class="dc-btn dc-btn-danger" href="Lines.dc.html">刪除</a>
+        </div>
+
+      </div>
+    </x-import>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  handleDelete = () => {
+    // TODO: 確認刪除橫幅海報
+  };
+
+  handleCancel = () => {
+    // TODO: 關閉此 modal
+  };
+
+  renderVals() {
+    return {
+      handleDelete: this.handleDelete,
+      handleCancel: this.handleCancel,
+    };
+  }
+}
+</script>
+</body>
+</html>

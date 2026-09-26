@@ -1,0 +1,198 @@
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Be+Vietnam+Pro:wght@400;600&family=Source+Sans+Pro:wght@600&family=Manrope:wght@400&display=swap");
+
+/* ── styles.css ── */
+/* ── tokens/fonts.css ── */
+/* Bento DS 2.7 — Typefaces
+   Source: "Bento DS 2.7 (Community).fig". Read from /METADATA.md "Fonts (20)" plus the
+   per-component fontFamily values in the frame JSX.
+
+   This is a mixed-vintage community file: different component families were authored at
+   different times against different faces, so there is no single UI font. The Typography
+   page (/Typography) defines the canonical roles; several component families predate it and
+   carry their own face. Both realities are tokenised below rather than normalised away.
+
+   Availability, verified in-browser (document.fonts registration + check):
+     Clash Grotesk ....... local woff2 ........... assets/fonts/ClashGrotesk-Semibold.woff2
+     Lexend .............. Google Fonts .......... loads
+     IBM Plex Sans ....... Google Fonts .......... loads
+     Be Vietnam Pro ...... Google Fonts .......... loads
+     Source Sans Pro ..... Google Fonts .......... loads
+     Manrope ............. Google Fonts .......... loads
+     Brandon Text ........ local woff2 ........... assets/fonts/BrandonText-Medium.woff2
+
+   Clash Grotesk Semibold and Brandon Text Medium were supplied by the file's owner and ship
+   locally — Semibold 600 is the only Clash weight the source uses (Display and Headline at
+   all six sizes). Brandon Text is a commercial HVD Fonts release with no free CDN. The
+   remaining faces still load from Google Fonts, so supply those woff2 files too if you need
+   fully offline rendering. */
+
+
+
+/* Faces that ship with the project rather than from a CDN. */
+/* @font-face Clash Grotesk 600 normal: declared by tokens.json (fonts/ClashGrotesk-Semibold.woff2) */
+/* @font-face Brandon Text 500 normal: declared by tokens.json (fonts/BrandonText-Medium.woff2) */
+
+:root {
+  /* ── Canonical roles, per the /Typography specimen page ────────────────────────────
+     Display  Clash Grotesk 600 64/64   Title  Lexend 600 22/24
+     Headline Clash Grotesk 600 40/40   Body   Lexend 400 16/24
+                                        Label  Lexend 500 16/24                        */
+  --bento-font-display: "Clash Grotesk", system-ui, sans-serif;
+  --bento-font-heading: "Clash Grotesk", system-ui, sans-serif;
+  --bento-font-ui: Lexend, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* ── Faces carried by specific component families ─────────────────────────────────
+     Not the Typography spec, but what the components in this file actually use.
+     Prefer --bento-font-ui for new work; these exist for fidelity when recreating
+     the source components. */
+
+  /* Banner, Checkbox, Datepicker, Disclosure, Feedback, List, Modal, Search Bar,
+     Slider, Stepper, Table, Tooltip, Inline/Area Loader — labels and body text. */
+  --bento-font-component: "Be Vietnam Pro", system-ui, sans-serif;
+
+  /* Navigation Item, Folder Tabs, Underline Tabs — tab and nav labels at 13px/15px. */
+  --bento-font-tabs: "Source Sans Pro", system-ui, sans-serif;
+
+  /* Data-viz Legend items at 12px/16, weight 500. Brandon Text Medium ships locally from
+     assets/fonts/ — it is a commercial HVD Fonts face that no free CDN serves, supplied by the
+     file's owner. This is the only face and weight the source file needs.
+     Note: METADATA.md names the style "Medium" while the reconstructed JSX reports
+     fontWeight 400; the named style is taken as authoritative. */
+  --bento-font-legend: "Brandon Text", Lexend, system-ui, sans-serif;
+
+  /* Highest-count face in the file (773 uses): the older component vintage
+     (Form2, Table2, the "to detach" sets) and the specimen page titles at 45px/58px. */
+  --bento-font-legacy: "IBM Plex Sans", system-ui, sans-serif;
+
+  /* Phosphor icon-sheet category headings at 24px — documentation chrome only. */
+  --bento-font-specimen: Manrope, system-ui, sans-serif;
+}
+
+/* ── styles.css ── */
+
+/* ── tokens/palette.css ── */
+/* Bento DS 2.7 — Key colours & palettes
+   Extracted verbatim from "Bento DS 2.7 (Community).fig" → Colors / Key Colors & Palettes.
+   Every palette runs an 11-step scale: 1, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90.
+   Step 40 is the key colour of each ramp. */
+:root {
+}
+
+/* ── styles.css ── */
+
+/* ── tokens/palette-dataviz.css ── */
+/* Bento DS 2.7 — Data-visualization palettes
+   Nine categorical hues, each an 11-step scale (1 → 90). Key colour = step 40.
+   Source: "Bento DS 2.7 (Community).fig" → Colors / Key Colors & Palettes / Data Visualization. */
+:root {
+}
+
+/* ── styles.css ── */
+
+/* ── tokens/theme.css ── */
+/* Bento DS 2.7 — Default theme (semantic roles)
+   Source: "Bento DS 2.7 (Community).fig" → Colors / Theme. Every role below is named
+   exactly as the file names it, and aliases the palette step the file cites.
+   This is the layer to fork when re-theming: repoint these, leave the palettes alone. */
+:root {
+}
+
+/* Global link colour — Bento links are Interactive 40, underlined. */
+a { color: var(--bento-content-interactive); text-decoration: underline; text-underline-offset: 2px }
+a:hover { color: var(--bento-interactive-hover) }
+
+/* ── styles.css ── */
+
+/* ── tokens/typography.css ── */
+/* Bento DS 2.7 — Type roles
+   Source: "Bento DS 2.7 (Community).fig" → Typography page. Five roles × three sizes.
+   Display + Headline are set in Clash Grotesk Semibold with 100% leading.
+   Title / Body / Label are set in Lexend. Body also has Strong (600) and Link (underlined)
+   variants; Label has a Link variant. Sizes and leadings are verbatim from the file. */
+:root {
+  --bento-display-lg: var(--bento-weight-semibold) 64px/64px var(--bento-font-heading);
+  --bento-display-md: var(--bento-weight-semibold) 52px/52px var(--bento-font-heading);
+  --bento-display-sm: var(--bento-weight-semibold) 44px/44px var(--bento-font-heading);
+
+  --bento-headline-lg: var(--bento-weight-semibold) 40px/40px var(--bento-font-heading);
+  --bento-headline-md: var(--bento-weight-semibold) 36px/36px var(--bento-font-heading);
+  --bento-headline-sm: var(--bento-weight-semibold) 32px/32px var(--bento-font-heading);
+
+  --bento-title-lg: var(--bento-weight-semibold) 22px/24px var(--bento-font-ui);
+  --bento-title-md: var(--bento-weight-semibold) 16px/18px var(--bento-font-ui);
+  --bento-title-sm: var(--bento-weight-semibold) 14px/16px var(--bento-font-ui);
+
+  --bento-body-lg: var(--bento-weight-regular) 16px/24px var(--bento-font-ui);
+  --bento-body-md: var(--bento-weight-regular) 14px/20px var(--bento-font-ui);
+  --bento-body-sm: var(--bento-weight-regular) 12px/18px var(--bento-font-ui);
+
+  --bento-body-lg-strong: var(--bento-weight-semibold) 16px/24px var(--bento-font-ui);
+  --bento-body-md-strong: var(--bento-weight-semibold) 14px/20px var(--bento-font-ui);
+  --bento-body-sm-strong: var(--bento-weight-semibold) 12px/18px var(--bento-font-ui);
+
+  --bento-label-lg: var(--bento-weight-medium) 16px/24px var(--bento-font-ui);
+  --bento-label-md: var(--bento-weight-medium) 14px/20px var(--bento-font-ui);
+  --bento-label-sm: var(--bento-weight-medium) 12px/18px var(--bento-font-ui);
+}
+
+.bento-display-lg { font: var(--bento-display-lg); color: var(--bento-content-primary) }
+.bento-display-md { font: var(--bento-display-md); color: var(--bento-content-primary) }
+.bento-display-sm { font: var(--bento-display-sm); color: var(--bento-content-primary) }
+.bento-headline-lg { font: var(--bento-headline-lg); color: var(--bento-content-primary) }
+.bento-headline-md { font: var(--bento-headline-md); color: var(--bento-content-primary) }
+.bento-headline-sm { font: var(--bento-headline-sm); color: var(--bento-content-primary) }
+.bento-title-lg { font: var(--bento-title-lg); color: var(--bento-content-primary) }
+.bento-title-md { font: var(--bento-title-md); color: var(--bento-content-primary) }
+.bento-title-sm { font: var(--bento-title-sm); color: var(--bento-content-primary) }
+.bento-body-lg { font: var(--bento-body-lg); color: var(--bento-content-primary) }
+.bento-body-md { font: var(--bento-body-md); color: var(--bento-content-primary) }
+.bento-body-sm { font: var(--bento-body-sm); color: var(--bento-content-primary) }
+.bento-body-lg-strong { font: var(--bento-body-lg-strong) }
+.bento-body-md-strong { font: var(--bento-body-md-strong) }
+.bento-body-sm-strong { font: var(--bento-body-sm-strong) }
+.bento-label-lg { font: var(--bento-label-lg) }
+.bento-label-md { font: var(--bento-label-md) }
+.bento-label-sm { font: var(--bento-label-sm) }
+.bento-link { color: var(--bento-content-interactive); text-decoration: underline }
+
+/* ── styles.css ── */
+
+/* ── tokens/spacing.css ── */
+/* Bento DS 2.7 — Spacing + radii
+   Spacing steps are verbatim from the Spacing page: 0, 4, 8, 12, 16, 24, 32, 40, 80, 120, 160.
+   Note the deliberate jump after 40 — 80/120/160 are page-level rhythm, not component padding.
+   Radii are the values the components actually use in the file. */
+:root { /* buttons + inputs at focus */
+}
+
+/* ── styles.css ── */
+
+/* ── tokens/elevation.css ── */
+/* Bento DS 2.7 — Elevations
+   Four levels, per the Elevations page:
+   None    — the default; a component has no elevation.
+   Small   — components that detach slightly from the page (menus, tooltips, dropdowns).
+   Medium  — complex elements directly tied to the page (popovers, date pickers).
+   Large   — components that sit above the page entirely (modals, toasts).
+   The file ships 0/4/8 and 0/16/32 at rgba(0,0,0,0.16); the medium step interpolates
+   that same ramp (0/8/16) — flagged in readme.md as the one inferred value. */
+:root {
+}
+
+/* ── styles.css ── */
+
+
+/* ── tokens/fonts.css ── */
+
+/* ── tokens/palette.css ── */
+
+/* ── tokens/palette-dataviz.css ── */
+
+/* ── tokens/theme.css ── */
+
+/* ── tokens/typography.css ── */
+
+/* ── tokens/spacing.css ── */
+
+/* ── tokens/elevation.css ── */
+

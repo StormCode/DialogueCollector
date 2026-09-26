@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>台詞（有海報）</title>
+  <script src="./support.js"></script>
+  <link rel="stylesheet" href="ds/bento/tokens.css">
+  <link rel="stylesheet" href="ds/bento/components/bundle.css">
+  <script src="ds/bento/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200..400,0..1,0&amp;display=block" rel="stylesheet">
+  <style>
+    @font-face { font-family: 'Chiron GoRound TC'; src: url('/_blob/5153473428b713b5373649761bddc14a') format('woff2'); font-weight: 100 900; font-style: normal; font-display: swap; }
+    body { margin: 0; }
+    .nav-item { appearance: none; -webkit-appearance: none; border: none; background: transparent; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 64px; padding: 8px 4px; border-radius: 8px; cursor: pointer; font-family: var(--font-bento-font-ui); font-weight: 500; font-size: 12px; line-height: 16px; }
+    .material-symbol { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24; }
+    .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+
+    .ln-scroll { scrollbar-width: none; scrollbar-color: transparent transparent; }
+    .ln-scroll::-webkit-scrollbar { width: 8px; }
+    .ln-scroll::-webkit-scrollbar-track { background: transparent; }
+    .ln-scroll::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; }
+    .ln-scroll:hover { scrollbar-width: thin; scrollbar-color: var(--bento-neutral-20, rgba(0,0,0,0.25)) transparent; }
+    .ln-scroll:hover::-webkit-scrollbar-thumb { background: var(--bento-neutral-20, rgba(0,0,0,0.25)); }
+
+    .ln-back { display: inline-flex; align-items: center; gap: 4px; color: var(--bento-content-secondary); text-decoration: none; font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); border-radius: 8px; padding: 4px 8px 4px 2px; }
+    .ln-back:hover { color: var(--bento-dv-indigo-40); background: var(--bento-dv-indigo-5); }
+
+    .ln-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 22px 0 18px; border: none; border-radius: var(--bento-radius-16); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer; white-space: nowrap; transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease; }
+    .ln-btn-primary { background: var(--bento-dv-indigo-40); color: var(--bento-white); }
+    .ln-btn-primary:hover { background: var(--bento-dv-indigo-60); }
+    .ln-btn-primary.is-stop { background: var(--bento-negative-40, #e42131); }
+    .ln-btn-primary.is-stop:hover { background: var(--bento-negative-50, #b81a27); }
+    .ln-btn-outline { background: var(--bento-bg-primary); color: var(--bento-dv-indigo-40); box-shadow: inset 0 0 0 var(--bento-border-width-strong, 2px) var(--bento-dv-indigo-40); }
+    .ln-btn-outline:hover { background: var(--bento-dv-indigo-5); }
+    .ln-btn:disabled { background: var(--bento-action-disabled-bg, rgba(114,129,151,0.3)); color: var(--bento-action-disabled-fg, #4d5a6c); box-shadow: none; cursor: not-allowed; }
+    .ln-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: var(--bento-dv-indigo-10); color: var(--bento-dv-indigo-50); font: var(--bento-weight-semibold) 12px/16px var(--bento-font-ui); }
+    .ln-btn:disabled .ln-count { background: transparent; color: inherit; }
+
+    .ln-on-dark .ln-btn-outline { background: transparent; color: var(--bento-white); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.85); }
+    .ln-on-dark .ln-btn-outline:hover { background: rgba(255,255,255,0.14); }
+    .ln-on-dark .ln-btn:disabled { background: rgba(255,255,255,0.18); color: rgba(255,255,255,0.72); box-shadow: none; }
+    .ln-on-dark .ln-count { background: rgba(255,255,255,0.22); color: var(--bento-white); }
+    .ln-icon-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: var(--bento-radius-16); background: transparent; color: var(--bento-white); cursor: pointer; box-shadow: inset 0 0 0 2px rgba(255,255,255,0.85); }
+    a.ln-icon-btn { text-decoration: none; }
+    .ln-icon-btn:hover { background: rgba(255,255,255,0.14); }
+
+    .ln-file { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; clip: rect(0 0 0 0); }
+    .ln-file:focus-visible + .ln-btn { outline: 2px solid var(--bento-dv-indigo-40); outline-offset: 2px; }
+
+    .ln-poster { position: relative; width: 100%; aspect-ratio: 16 / 9; flex-shrink: 0; border-radius: 24px; overflow: hidden; background: var(--bento-neutral-80, #2e3947); box-shadow: 0 4px 8px rgba(0,0,0,0.16); }
+    .ln-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ln-poster-bar { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 12px; padding: 20px 24px; background: rgba(26, 33, 43, 0.62); }
+
+    .ln-sort-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; flex-shrink: 0; border-radius: var(--bento-radius-16); border: none; box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-border-input-enabled); background: var(--bento-bg-primary); color: var(--bento-content-secondary); cursor: pointer; }
+    .ln-sort-btn:hover { background: var(--bento-bg-secondary); box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-border-input-hover); }
+    .ln-sort-btn.is-active { background: var(--bento-dv-indigo-5); box-shadow: inset 0 0 0 var(--bento-border-width-strong) var(--bento-border-input-focus); color: var(--bento-dv-indigo-40); }
+    .ln-menu { position: absolute; top: calc(100% + 8px); left: 0; z-index: 999; width: 240px; box-sizing: border-box; display: flex; flex-direction: column; gap: 2px; padding: 8px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-10); border-radius: var(--bento-radius-16); box-shadow: 0 8px 16px rgba(0, 0, 0, 0.16); }
+    .ln-menu-item { appearance: none; -webkit-appearance: none; width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: none; border-radius: var(--bento-radius-12); background: transparent; color: var(--bento-content-primary); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); text-align: left; cursor: pointer; }
+    .ln-menu-item:hover { background: var(--bento-bg-secondary); }
+    .ln-menu-item.is-selected { color: var(--bento-dv-indigo-40); background: var(--bento-dv-indigo-5); }
+    .ln-menu-sep { height: 1px; margin: 6px 4px; background: var(--bento-neutral-10); flex-shrink: 0; }
+
+    .ln-list { display: flex; flex-direction: column; gap: 12px; }
+    .ln-card { position: relative; display: flex; align-items: center; gap: 16px; box-sizing: border-box; padding: 16px 20px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-10); border-radius: var(--bento-radius-16); overflow: hidden; transition: background-color 120ms ease, box-shadow 120ms ease, border-color 120ms ease; opacity: 1; transform: translateY(0); animation-name: ln-fade-up; animation-duration: 1100ms; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); animation-fill-mode: forwards; }
+    @keyframes ln-fade-up { 0% { opacity: 0; transform: translateY(48px); } 100% { opacity: 1; transform: translateY(0); } }
+    @media (prefers-reduced-motion: reduce) { .ln-card { animation: none; } }
+    .ln-card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
+    .ln-card.is-active { border-color: var(--bento-dv-indigo-40); background: var(--bento-dv-indigo-5); }
+    .ln-check { display: inline-flex; flex-shrink: 0; opacity: 0; transition: opacity 120ms ease; --bento-bg-interactive: var(--bento-dv-indigo-40); --bento-border-input-enabled: var(--bento-dv-indigo-20); --bento-border-input-hover: var(--bento-dv-indigo-40); }
+    .ln-card:hover .ln-check, .ln-check:focus-within, .ln-list.has-checked .ln-check { opacity: 1; }
+    .ln-play {appearance: none; -webkit-appearance: none; flex-shrink: 0; margin-right: 12px; width: 48px; height: 48px; border-radius: 50%; border: none; display: inline-flex; align-items: center; justify-content: center; background: var(--bento-dv-indigo-40); color: var(--bento-white); cursor: pointer; transition: background-color 120ms ease; }
+    .ln-play:hover { background: var(--bento-dv-indigo-60); }
+    .ln-actions { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; margin-right: 12px; }
+    .ln-act { appearance: none; -webkit-appearance: none; box-sizing: border-box; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 12px; background: transparent; cursor: pointer; text-decoration: none; transition: background-color 120ms ease; }
+    .ln-act .material-symbol { font-size: 24px; font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+    .ln-act-pin { color: var(--bento-dv-orange-40); }
+    .ln-act-pin:hover { background: var(--bento-dv-orange-5); }
+    .ln-act-pin.is-pinned .material-symbol { font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+    .ln-act-edit { color: var(--bento-informative-40); }
+    .ln-act-edit:hover { background: var(--bento-informative-5); }
+    .ln-act-del { color: var(--bento-negative-40); }
+    .ln-act-del:hover { background: var(--bento-negative-1); }
+    .ln-edit-toggle { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; height: 48px; padding: 0 16px; box-sizing: border-box; border-radius: var(--bento-radius-16); background: var(--bento-bg-primary); box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-dv-indigo-20); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); color: var(--bento-neutral-60); --bento-bg-interactive: var(--bento-dv-indigo-40); --bento-border-input-enabled: var(--bento-neutral-60); --bento-border-input-hover: var(--bento-neutral-80); --bento-neutral-70: var(--bento-neutral-60); --bento-content-primary: var(--bento-neutral-60); }
+    .ln-pin-block { display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; }
+    .ln-pin-head { appearance: none; -webkit-appearance: none; align-self: flex-start; border: none; background: transparent; padding: 4px 8px 4px 4px; margin-left: -4px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; font: var(--bento-weight-semibold) 14px/20px var(--bento-font-ui); color: var(--bento-dv-orange-60); }
+    .ln-pin-head .material-symbol { font-size: 20px; font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24; color: var(--bento-dv-orange-40); }
+    .ln-pin-head:hover { background: var(--bento-dv-orange-1); }
+    .ln-pin-head .ln-pin-chevron { font-size: 20px; color: var(--bento-dv-orange-60); font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; transition: transform 160ms ease; }
+    .ln-pin-head.is-collapsed .ln-pin-chevron { transform: rotate(-90deg); }
+    .ln-pin-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: var(--bento-dv-orange-5); color: var(--bento-dv-orange-60); font: var(--bento-weight-semibold) 12px/16px var(--bento-font-ui); }
+    .ln-card-body { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1 1 auto; }
+    .ln-card-text { font: var(--bento-weight-regular) 16px/24px 'Chiron GoRound TC', var(--bento-font-ui); color: var(--bento-neutral-60); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .ln-list.is-compact .ln-card-body { gap: 0; }
+    .ln-card.is-active .ln-card-text { color: var(--bento-dv-indigo-40); }
+    .ln-list.is-compact .ln-card-text { font-size: 22px; line-height: 48px; -webkit-line-clamp: 1; }
+    .ln-list.is-compact .ln-card-meta { display: none; }
+    .ln-view-group { display: inline-flex; flex-shrink: 0; padding: 4px; gap: 4px; box-sizing: border-box; height: 48px; border-radius: var(--bento-radius-16); background: var(--bento-bg-primary); box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-border-input-enabled); }
+    .ln-view-btn { appearance: none; -webkit-appearance: none; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 12px; background: transparent; color: var(--bento-content-secondary); cursor: pointer; transition: background-color 120ms ease, color 120ms ease; }
+    .ln-view-btn:hover { background: var(--bento-bg-secondary); }
+    .ln-view-btn.is-selected { background: var(--bento-dv-indigo-5); color: var(--bento-dv-indigo-40); }
+    .ln-card-meta { display: flex; align-items: center; gap: 12px; font: var(--bento-weight-regular) 13px/18px var(--bento-font-ui); color: var(--bento-content-secondary); }
+    .ln-meta-item { display: inline-flex; align-items: center; gap: 4px; }
+    .ln-progress { position: absolute; left: 0; bottom: 0; height: 3px; background: var(--bento-dv-indigo-40); }
+    .ln-empty { padding: 48px 0; text-align: center; font: var(--bento-weight-regular) 14px/20px var(--bento-font-ui); color: var(--bento-content-secondary); }
+
+    .ln-pagination { display: flex; align-items: center; justify-content: center; gap: 6px; flex-shrink: 0; }
+    .ln-page-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 6px; border-radius: var(--bento-radius-8); border: 1px solid var(--bento-neutral-10); background: var(--bento-bg-primary); color: var(--bento-content-secondary); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer; }
+    .ln-page-btn:hover:not(:disabled) { background: var(--bento-bg-secondary); }
+    .ln-page-btn:disabled { color: var(--bento-action-disabled-fg); cursor: not-allowed; opacity: 0.5; }
+    .ln-page-btn.is-current { background: var(--bento-dv-indigo-40); border-color: var(--bento-dv-indigo-40); color: var(--bento-white); }
+    .ln-page-ellipsis { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; color: var(--bento-neutral-40); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); }
+  </style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; font-family: var(--font-bento-font-ui); position: relative; z-index: 0;">
+
+  <svg viewBox="0 0 1280 800" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
+    <path d="M 1020,0 C 1070,56 1100,175 1100,250 C 1100,415 1010,635 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--bento-dv-indigo-5);"></path>
+  </svg>
+
+  <div style="position: absolute; top: 50%; right: 0; transform: translateY(-50%); z-index: 50; display: flex; flex-direction: column; align-items: stretch; gap: 4px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-5); border-right: none; border-top-left-radius: 16px; border-bottom-left-radius: 16px; box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.16); padding: 8px;">
+    <button type="button" aria-label="{{toggleLabel}}" onClick="{{toggleExpand}}" style="appearance: none; -webkit-appearance: none; position: absolute; top: 50%; left: -20px; transform: translateY(-50%); width: 20px; height: 56px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-5); border-right: none; border-radius: 999px 0 0 999px; box-shadow: -2px 0px 4px rgba(0, 0, 0, 0.12); color: var(--bento-icon-secondary); cursor: pointer;">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="{{chevronName}}" size="16"></x-import>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-content-secondary);">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Home" size="24"></x-import>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>主頁</span></sc-if>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-informative-30); background-color: var(--bento-dv-indigo-5)">
+      <span style="display: inline-flex; color: var(--bento-dv-indigo-30);">
+        <span class="material-symbol" aria-hidden="true">book_2</span>
+      </span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="color: var(--bento-dv-indigo-30)">台詞本</span></sc-if>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-content-secondary);">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="GearWeightRegular" size="24"></x-import>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>設定</span></sc-if>
+    </button>
+  </div>
+
+  <div class="ln-scroll" style="flex: 1 1 0; min-height: 0; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; padding: 40px 104px 48px; display: flex; flex-direction: column; gap: 24px;">
+
+    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 12px; flex-shrink: 0;">
+      <a class="ln-back" href="ScriptBook.dc.html">
+        <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">chevron_left</span>
+        台詞本
+      </a>
+      <h1 style="margin: 0; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">優希的台詞</h1>
+    </div>
+
+    <input id="ln-poster-file" class="ln-file" type="file" accept="image/*" onChange="{{handlePosterFile}}">
+
+    <sc-if value="{{hasPoster}}" hint-placeholder-val="{{false}}">
+      <div class="ln-poster">
+        <sc-if value="{{hasPosterImage}}" hint-placeholder-val="{{false}}">
+          <img src="{{posterUrl}}" alt="橫幅海報">
+        </sc-if>
+        <sc-if value="{{posterIsPreview}}" hint-placeholder-val="{{true}}">
+          <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding-bottom: 88px; box-sizing: border-box; color: rgba(255,255,255,0.72);">
+            <span class="material-symbol" aria-hidden="true" style="font-size: 64px;">image</span>
+            <span style="font: var(--bento-weight-medium) 14px/20px var(--bento-font-ui);">[橫幅海報 16:9]</span>
+          </div>
+        </sc-if>
+        <div class="ln-poster-bar ln-on-dark">
+          <button type="button" class="ln-btn ln-btn-primary ln-btn-play {{playAllClass}}" onClick="{{toggleAll}}">
+            <span class="material-symbol ms-fill" aria-hidden="true">{{playAllIcon}}</span>{{playAllLabel}}</button>
+          <button type="button" class="ln-btn ln-btn-outline" disabled="{{seqDisabled}}" onClick="{{toggleSeq}}">
+            <span class="material-symbol" aria-hidden="true">{{seqIcon}}</span>{{seqLabel}}<span class="ln-count">{{checkedCount}}</span></button>
+          <div style="flex: 1 1 auto;" aria-hidden="true"></div>
+          <label for="ln-poster-file" class="ln-btn ln-btn-outline" style="cursor: pointer;">
+            <span class="material-symbol" aria-hidden="true">upload</span>更新橫幅海報</label>
+          <a class="ln-icon-btn" href="DeletePoster.dc.html" aria-label="刪除橫幅海報" title="刪除橫幅海報">
+            <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Bin" size="24"></x-import>
+          </a>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{noPoster}}" hint-placeholder-val="{{true}}">
+      <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+        <button type="button" class="ln-btn ln-btn-primary ln-btn-play {{playAllClass}}" onClick="{{toggleAll}}">
+          <span class="material-symbol ms-fill" aria-hidden="true">{{playAllIcon}}</span>{{playAllLabel}}</button>
+        <button type="button" class="ln-btn ln-btn-outline" disabled="{{seqDisabled}}" onClick="{{toggleSeq}}">
+          <span class="material-symbol" aria-hidden="true">{{seqIcon}}</span>{{seqLabel}}<span class="ln-count">{{checkedCount}}</span></button>
+        <div style="flex: 1 1 auto;" aria-hidden="true"></div>
+        <label for="ln-poster-file" class="ln-btn ln-btn-outline" style="cursor: pointer;">
+          <span class="material-symbol" aria-hidden="true">upload</span>上傳橫幅海報</label>
+      </div>
+    </sc-if>
+
+    <div aria-hidden="true" style="height: 1px; flex-shrink: 0; background: linear-gradient(90deg, transparent 0%, var(--bento-neutral-20, #c5cdd8) 50%, transparent 100%);"></div>
+
+    <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0; position: relative; z-index: 30;">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.SearchBar" placeholder="搜尋台詞" value="{{query}}" onChange="{{handleQueryChange}}" onClear="{{handleQueryClear}}" style="width: 400px;"></x-import>
+      <div style="position: relative; flex-shrink: 0; margin-left: -12px; transform: translateX(-62px);">
+        <button type="button" class="ln-sort-btn {{sortBtnClass}}" aria-label="排序" aria-expanded="{{sortOpen}}" onClick="{{toggleSort}}">
+          <span class="material-symbol" aria-hidden="true">filter_list</span>
+        </button>
+        <sc-if value="{{sortOpen}}" hint-placeholder-val="{{false}}">
+          <div class="ln-menu">
+            <sc-for list="{{sortOptions}}" as="opt" hint-placeholder-count="2">
+              <button type="button" class="ln-menu-item {{opt.selectedClass}}" onClick="{{opt.pick}}">
+                <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">{{opt.icon}}</span>
+                {{opt.label}}
+              </button>
+            </sc-for>
+            <div class="ln-menu-sep" role="separator"></div>
+            <sc-for list="{{dirOptions}}" as="opt" hint-placeholder-count="2">
+              <button type="button" class="ln-menu-item {{opt.selectedClass}}" onClick="{{opt.pick}}">
+                <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">{{opt.icon}}</span>
+                {{opt.label}}
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+      <div style="flex: 1 1 auto;" aria-hidden="true"></div>
+      <div class="ln-edit-toggle">
+        <x-import component-from-global-scope="BentoDS27_65ebe9.Switch" checked="{{editMode}}" onChange="{{setEditMode}}" label="編輯模式" aria-label="編輯模式"></x-import>
+      </div>
+      <div class="ln-view-group" role="group" aria-label="檢視模式">
+        <button type="button" class="ln-view-btn {{compactBtnClass}}" aria-label="簡短" title="簡短" aria-pressed="{{isCompact}}" onClick="{{setCompact}}">
+          <span class="material-symbol" aria-hidden="true">short_text</span>
+        </button>
+        <button type="button" class="ln-view-btn {{detailBtnClass}}" aria-label="詳細" title="詳細" aria-pressed="{{isDetail}}" onClick="{{setDetail}}">
+          <span class="material-symbol" aria-hidden="true">notes</span>
+        </button>
+      </div>
+      <span style="font: var(--bento-weight-regular) 14px/20px var(--bento-font-ui); color: var(--bento-content-secondary);">共 {{totalCount}} 句 · {{sortSummary}}</span>
+    </div>
+
+    <sc-if value="{{hasPinned}}" hint-placeholder-val="{{false}}">
+      <section class="ln-pin-block" aria-label="已釘選的台詞">
+        <button type="button" class="ln-pin-head {{pinHeadClass}}" aria-expanded="{{pinExpanded}}" onClick="{{togglePinCollapsed}}"><span class="material-symbol" aria-hidden="true">keep</span>已釘選<span class="ln-pin-count">{{pinnedCount}}</span><span class="material-symbol ln-pin-chevron" aria-hidden="true">expand_more</span></button>
+        <sc-if value="{{pinExpanded}}" hint-placeholder-val="{{true}}">
+        <div class="ln-list {{listClass}} {{viewClass}}">
+          <sc-for list="{{pinnedLines}}" as="item" hint-placeholder-count="2">
+          <div class="ln-card {{item.activeClass}}" style="animation-delay: {{item.delay}};">
+            <span class="ln-check"><x-import component-from-global-scope="BentoDS27_65ebe9.Checkbox" checked="{{item.checked}}" onChange="{{item.toggleCheck}}" aria-label="勾選此句"></x-import></span>
+            <sc-if value="{{item.showPlay}}" hint-placeholder-val="{{true}}">
+              <button type="button" class="ln-play" aria-label="{{item.playLabel}}" onClick="{{item.togglePlay}}">
+                <span class="material-symbol ms-fill" aria-hidden="true" style="font-size: 26px;">{{item.playIcon}}</span>
+              </button>
+            </sc-if>
+            <sc-if value="{{item.showActions}}" hint-placeholder-val="{{false}}">
+              <div class="ln-actions">
+                <button type="button" class="ln-act ln-act-pin {{item.pinClass}}" aria-label="{{item.pinLabel}}" title="{{item.pinLabel}}" aria-pressed="{{item.pinned}}" onClick="{{item.togglePin}}"><span class="material-symbol" aria-hidden="true">keep</span></button>
+                <a class="ln-act ln-act-edit" href="EditLine.dc.html" aria-label="編輯" title="編輯"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="PencilWeightRegular" size="22"></x-import></a>
+                <a class="ln-act ln-act-del" href="DeleteLine.dc.html" aria-label="刪除" title="刪除"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Bin" size="24"></x-import></a>
+              </div>
+            </sc-if>
+            <div class="ln-card-body">
+              <div class="ln-card-text" title="{{item.text}}">{{item.text}}</div>
+              <div class="ln-card-meta">
+                <span class="ln-meta-item"><span class="material-symbol" aria-hidden="true" style="font-size: 16px;">schedule</span>{{item.durationLabel}}</span>
+                <span class="ln-meta-item"><span class="material-symbol" aria-hidden="true" style="font-size: 16px;">calendar_today</span>{{item.createdLabel}}</span>
+              </div>
+            </div>
+            <sc-if value="{{item.showProgress}}" hint-placeholder-val="{{false}}">
+              <span class="ln-progress" aria-hidden="true" style="width: {{item.progressPct}};"></span>
+            </sc-if>
+          </div>
+          </sc-for>
+        </div>
+        </sc-if>
+        <div aria-hidden="true" style="height: 1px; flex-shrink: 0; width: 20vw; align-self: center; margin: 12px 0 0; background: var(--bento-dv-indigo-20);"></div>
+      </section>
+    </sc-if>
+
+    <div class="ln-list {{listClass}} {{viewClass}}">
+      <sc-for list="{{lines}}" as="item" hint-placeholder-count="10">
+        <div class="ln-card {{item.activeClass}}" style="animation-delay: {{item.delay}};">
+          <span class="ln-check"><x-import component-from-global-scope="BentoDS27_65ebe9.Checkbox" checked="{{item.checked}}" onChange="{{item.toggleCheck}}" aria-label="勾選此句"></x-import></span>
+          <sc-if value="{{item.showPlay}}" hint-placeholder-val="{{true}}">
+            <button type="button" class="ln-play" aria-label="{{item.playLabel}}" onClick="{{item.togglePlay}}">
+              <span class="material-symbol ms-fill" aria-hidden="true" style="font-size: 26px;">{{item.playIcon}}</span>
+            </button>
+          </sc-if>
+          <sc-if value="{{item.showActions}}" hint-placeholder-val="{{false}}">
+            <div class="ln-actions">
+              <button type="button" class="ln-act ln-act-pin {{item.pinClass}}" aria-label="{{item.pinLabel}}" title="{{item.pinLabel}}" aria-pressed="{{item.pinned}}" onClick="{{item.togglePin}}"><span class="material-symbol" aria-hidden="true">keep</span></button>
+              <a class="ln-act ln-act-edit" href="EditLine.dc.html" aria-label="編輯" title="編輯"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="PencilWeightRegular" size="22"></x-import></a>
+              <a class="ln-act ln-act-del" href="DeleteLine.dc.html" aria-label="刪除" title="刪除"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Bin" size="24"></x-import></a>
+            </div>
+          </sc-if>
+          <div class="ln-card-body">
+            <div class="ln-card-text" title="{{item.text}}">{{item.text}}</div>
+            <div class="ln-card-meta">
+              <span class="ln-meta-item"><span class="material-symbol" aria-hidden="true" style="font-size: 16px;">schedule</span>{{item.durationLabel}}</span>
+              <span class="ln-meta-item"><span class="material-symbol" aria-hidden="true" style="font-size: 16px;">calendar_today</span>{{item.createdLabel}}</span>
+            </div>
+          </div>
+          <sc-if value="{{item.showProgress}}" hint-placeholder-val="{{false}}">
+            <span class="ln-progress" aria-hidden="true" style="width: {{item.progressPct}};"></span>
+          </sc-if>
+        </div>
+      </sc-for>
+      <sc-if value="{{isEmpty}}" hint-placeholder-val="{{false}}">
+        <div class="ln-empty">找不到符合的台詞</div>
+      </sc-if>
+    </div>
+
+    <div class="ln-pagination">
+      <button type="button" class="ln-page-btn" aria-label="第一頁" disabled="{{isFirstPage}}" onClick="{{goFirst}}">
+        <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">first_page</span>
+      </button>
+      <button type="button" class="ln-page-btn" aria-label="上一頁" disabled="{{isFirstPage}}" onClick="{{goPrev}}">
+        <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">chevron_left</span>
+      </button>
+      <sc-for list="{{pageItems}}" as="p" hint-placeholder-count="4">
+        <sc-if value="{{p.isEllipsis}}" hint-placeholder-val="{{false}}">
+          <span class="ln-page-ellipsis">…</span>
+        </sc-if>
+        <sc-if value="{{p.isPage}}" hint-placeholder-val="{{true}}">
+          <button type="button" class="ln-page-btn {{p.currentClass}}" aria-label="第 {{p.label}} 頁" onClick="{{p.go}}">{{p.label}}</button>
+        </sc-if>
+      </sc-for>
+      <button type="button" class="ln-page-btn" aria-label="下一頁" disabled="{{isLastPage}}" onClick="{{goNext}}">
+        <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">chevron_right</span>
+      </button>
+      <button type="button" class="ln-page-btn" aria-label="最後一頁" disabled="{{isLastPage}}" onClick="{{goLast}}">
+        <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">last_page</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"showPosterPreview":{"editor":"boolean","default":false,"tsType":"boolean"},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: true,
+      page: 1,
+      query: '',
+      sortOpen: false,
+      sortKey: 'created',
+      sortDir: 'desc',
+      checked: [],
+      posterUrl: '/_blob/89dfa4b1b2e5805b41509e40c1e581eb',
+      queue: [],
+      qIndex: 0,
+      progress: 0,
+      paused: false,
+      mode: null,
+      editMode: false,
+      pinned: [3, 11],
+    };
+    this.PAGE_SIZE = 10;
+    const texts = [
+      '今天的風好舒服呢。',
+      '等一下，我還沒說完！',
+      '不管發生什麼事，我都會站在你這邊。',
+      '這種程度的困難，根本不算什麼。',
+      '謝謝你，一直以來都陪在我身邊。',
+      '欸？真的假的？',
+      '如果那時候我再勇敢一點就好了……',
+      '走吧，大家都在等我們。',
+      '我才不是因為擔心你才來的喔。',
+      '約好了，明天同一個時間在這裡見。',
+      '這一次，換我來保護你。',
+      '嗯……讓我再想一下。',
+      '就算全世界都說不可能，我也要試試看。',
+      '好久不見，你一點都沒變呢。',
+      '別擔心，交給我吧。',
+      '這就是我的答案。',
+      '笨蛋，你到底在想什麼啊！',
+      '下雨了，一起撐傘回去吧。',
+      '我會一直記得今天的。',
+      '準備好了嗎？要出發囉！',
+      '對不起，是我錯了。',
+      '只要還有明天，就還有希望。',
+      '晚安，做個好夢。',
+    ];
+    const base = new Date(2026, 8, 22, 21, 30).getTime();
+    this.LINES = texts.map((text, i) => {
+      const durationMs = 1800 + ((i * 1733) % 7200) + text.length * 60;
+      return {
+        id: i + 1,
+        text,
+        durationMs: Math.round(durationMs / 100) * 100,
+        createdAt: base - i * (5 * 3600 * 1000 + ((i * 7919) % 3600) * 1000),
+      };
+    });
+    this.timer = null;
+  }
+
+  componentWillUnmount() {
+    this.stopTimer();
+    if (this.state.posterUrl) {
+      try { URL.revokeObjectURL(this.state.posterUrl); } catch (e) {}
+    }
+  }
+
+  toggleExpand = () => this.setState({ expanded: !this.state.expanded });
+
+  // ---------- poster ----------
+  handlePosterFile = (e) => {
+    const file = e && e.target && e.target.files && e.target.files[0];
+    if (!file) return;
+    if (this.state.posterUrl) {
+      try { URL.revokeObjectURL(this.state.posterUrl); } catch (err) {}
+    }
+    this.setState({ posterUrl: URL.createObjectURL(file) });
+    e.target.value = '';
+  };
+
+  removePoster = () => {
+    if (this.state.posterUrl) {
+      try { URL.revokeObjectURL(this.state.posterUrl); } catch (err) {}
+    }
+    this.setState({ posterUrl: null });
+  };
+
+  // ---------- search / sort ----------
+  handleQueryChange = (e) => this.setState({ query: e.target.value, page: 1 });
+  handleQueryClear = () => this.setState({ query: '', page: 1 });
+  toggleSort = () => this.setState({ sortOpen: !this.state.sortOpen });
+
+  pickSort = (key) => this.setState({ sortKey: key, page: 1, sortOpen: false });
+  pickDir = (dir) => this.setState({ sortDir: dir, page: 1, sortOpen: false });
+
+  getVisible = () => {
+    const pinned = this.state.pinned || [];
+    return this.getFiltered().filter((l) => !pinned.includes(l.id));
+  };
+
+  getPinned = () => {
+    const pinned = this.state.pinned || [];
+    return this.getFiltered().filter((l) => pinned.includes(l.id));
+  };
+
+  getOrdered = () => [...this.getPinned(), ...this.getVisible()];
+
+  togglePin = (id) => {
+    const cur = this.state.pinned || [];
+    this.setState({ pinned: cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id] });
+  };
+
+  setEditMode = (on) => {
+    const next = typeof on === 'boolean' ? on : !this.state.editMode;
+    if (next) this.stopAll();
+    this.setState({ editMode: next });
+  };
+
+  getFiltered = () => {
+    const q = (this.state.query || '').trim();
+    const list = q ? this.LINES.filter((l) => l.text.includes(q)) : this.LINES.slice();
+    const key = this.state.sortKey === 'duration' ? 'durationMs' : 'createdAt';
+    const dir = this.state.sortDir === 'asc' ? 1 : -1;
+    list.sort((a, b) => (a[key] - b[key]) * dir);
+    return list;
+  };
+
+  // ---------- checks ----------
+  toggleCheck = (id) => {
+    const cur = this.state.checked || [];
+    this.setState({ checked: cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id] });
+  };
+
+  // ---------- playback (simulated) ----------
+  stopTimer = () => {
+    if (this.timer) { clearInterval(this.timer); this.timer = null; }
+  };
+
+  startTimer = () => {
+    this.stopTimer();
+    this.timer = setInterval(this.tick, 100);
+  };
+
+  tick = () => {
+    const { queue, qIndex, progress, paused } = this.state;
+    if (paused || !queue.length) return;
+    const line = this.LINES.find((l) => l.id === queue[qIndex]);
+    if (!line) { this.stopAll(); return; }
+    const next = progress + 100 / line.durationMs;
+    if (next < 1) { this.setState({ progress: next }); return; }
+    if (qIndex + 1 < queue.length) {
+      this.setState({ qIndex: qIndex + 1, progress: 0 });
+      this.followPage(queue[qIndex + 1]);
+    } else {
+      this.stopAll();
+    }
+  };
+
+  followPage = (id) => {
+    const idx = this.getVisible().findIndex((l) => l.id === id);
+    if (idx >= 0) this.setState({ page: Math.floor(idx / this.PAGE_SIZE) + 1 });
+  };
+
+  startQueue = (ids, mode) => {
+    if (!ids.length) return;
+    this.setState({ queue: ids, qIndex: 0, progress: 0, paused: false, mode });
+    this.followPage(ids[0]);
+    this.startTimer();
+  };
+
+  stopAll = () => {
+    this.stopTimer();
+    this.setState({ queue: [], qIndex: 0, progress: 0, paused: false, mode: null });
+  };
+
+  currentId = () => {
+    const { queue, qIndex } = this.state;
+    return queue.length ? queue[qIndex] : null;
+  };
+
+  togglePlay = (id) => {
+    if (this.currentId() === id) {
+      const paused = !this.state.paused;
+      this.setState({ paused });
+      if (!paused) this.startTimer();
+      return;
+    }
+    this.startQueue([id], 'single');
+  };
+
+  toggleAll = () => {
+    if (this.state.queue.length) { this.stopAll(); return; }
+    this.startQueue(this.getOrdered().map((l) => l.id), 'all');
+  };
+
+  toggleSeq = () => {
+    if (this.state.mode === 'seq') { this.stopAll(); return; }
+    const checked = this.state.checked || [];
+    this.startQueue(this.getOrdered().filter((l) => checked.includes(l.id)).map((l) => l.id), 'seq');
+  };
+
+  // ---------- pagination ----------
+  totalPages = () => Math.max(1, Math.ceil(this.getVisible().length / this.PAGE_SIZE));
+  goToPage = (n) => this.setState({ page: Math.min(Math.max(1, n), this.totalPages()) });
+  goFirst = () => this.goToPage(1);
+  goPrev = () => this.goToPage((this.state.page ?? 1) - 1);
+  goNext = () => this.goToPage((this.state.page ?? 1) + 1);
+  goLast = () => this.goToPage(this.totalPages());
+
+  buildPageItems = (current, total) => {
+    const nums = [1];
+    for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) nums.push(i);
+    if (total > 1) nums.push(total);
+    const items = [];
+    let prev = 0;
+    nums.forEach((n) => {
+      if (n - prev > 1) items.push({ isEllipsis: true, isPage: false, label: '…' });
+      items.push({ isEllipsis: false, isPage: true, label: String(n), currentClass: n === current ? 'is-current' : '', go: () => this.goToPage(n) });
+      prev = n;
+    });
+    return items;
+  };
+
+  fmtDuration = (ms) => {
+    const s = Math.round(ms / 1000);
+    return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  };
+
+  fmtDate = (t) => {
+    const d = new Date(t);
+    const p = (n) => String(n).padStart(2, '0');
+    return d.getFullYear() + '/' + p(d.getMonth() + 1) + '/' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  };
+
+  renderVals() {
+    const expanded = this.state.expanded ?? true;
+    const visible = this.getVisible();
+    const total = this.totalPages();
+    const page = Math.min(Math.max(1, this.state.page ?? 1), total);
+    const start = (page - 1) * this.PAGE_SIZE;
+    const checked = this.state.checked || [];
+    const curId = this.currentId();
+    const paused = !!this.state.paused;
+    const mode = this.state.mode;
+    const isPlayingAny = this.state.queue.length > 0;
+
+    const editMode = !!this.state.editMode;
+    const pinnedIds = this.state.pinned || [];
+    const buildItem = (l, idx) => {
+      const isCur = l.id === curId;
+      const isPlaying = isCur && !paused;
+      const isPinned = pinnedIds.includes(l.id);
+      return {
+        delay: (idx * 100) + 'ms',
+        id: l.id,
+        text: l.text,
+        durationLabel: this.fmtDuration(l.durationMs),
+        createdLabel: this.fmtDate(l.createdAt),
+        checked: checked.includes(l.id),
+        toggleCheck: () => this.toggleCheck(l.id),
+        togglePlay: () => this.togglePlay(l.id),
+        playIcon: isPlaying ? 'pause' : 'play_arrow',
+        playLabel: isPlaying ? '暫停' : '播放',
+        activeClass: isCur ? 'is-active' : '',
+        showProgress: isCur,
+        progressPct: Math.round((isCur ? this.state.progress : 0) * 1000) / 10 + '%',
+        showPlay: !editMode,
+        showActions: editMode,
+        pinned: isPinned,
+        pinClass: isPinned ? 'is-pinned' : '',
+        pinLabel: isPinned ? '取消釘選' : '釘選',
+        togglePin: () => this.togglePin(l.id),
+      };
+    };
+    const lines = visible.slice(start, start + this.PAGE_SIZE).map(buildItem);
+    const pinnedList = this.getPinned();
+    const pinnedLines = pinnedList.map(buildItem);
+
+    const sortKey = this.state.sortKey;
+    const sortDir = this.state.sortDir;
+    const dirText = () => (sortDir === 'desc' ? '遞減' : '遞增');
+    const dirOptions = [
+      { dir: 'asc', label: '遞增', icon: 'arrow_upward' },
+      { dir: 'desc', label: '遞減', icon: 'arrow_downward' },
+    ].map((o) => {
+      const sel = o.dir === sortDir;
+      return {
+        label: o.label,
+        selectedClass: sel ? 'is-selected' : '',
+        icon: sel ? 'check' : o.icon,
+        pick: () => this.pickDir(o.dir),
+      };
+    });
+    const sortOptions = [
+      { key: 'created', label: '按建立時間排序' },
+      { key: 'duration', label: '按時長排序' },
+    ].map((o) => {
+      const sel = o.key === sortKey;
+      return {
+        label: o.label,
+        selectedClass: sel ? 'is-selected' : '',
+        icon: sel ? 'check' : (o.key === 'duration' ? 'timer' : 'calendar_today'),
+        pick: () => this.pickSort(o.key),
+      };
+    });
+
+    const posterUrl = this.state.posterUrl;
+    const preview = !!this.props.showPosterPreview;
+    const hasPoster = !!posterUrl || preview;
+
+    return {
+      expanded,
+      toggleExpand: this.toggleExpand,
+      chevronName: expanded ? 'ChevronRight' : 'ChevronLeft',
+      toggleLabel: expanded ? '收合選單' : '展開選單',
+
+      hasPoster,
+      noPoster: !hasPoster,
+      hasPosterImage: !!posterUrl,
+      posterIsPreview: !posterUrl && preview,
+      posterUrl: posterUrl || '',
+      handlePosterFile: this.handlePosterFile,
+      removePoster: this.removePoster,
+
+      toggleAll: this.toggleAll,
+      playAllLabel: isPlayingAny ? '全部停止' : '全部播放',
+      playAllIcon: isPlayingAny ? 'stop' : 'play_arrow',
+      playAllClass: isPlayingAny ? 'is-stop' : '',
+      toggleSeq: this.toggleSeq,
+      seqLabel: mode === 'seq' ? '停止依序播放' : '依序播放',
+      seqIcon: mode === 'seq' ? 'stop_circle' : 'playlist_play',
+      seqDisabled: mode !== 'seq' && checked.length === 0,
+      checkedCount: checked.length,
+
+      query: this.state.query ?? '',
+      handleQueryChange: this.handleQueryChange,
+      handleQueryClear: this.handleQueryClear,
+      isCompact: (this.state.view ?? 'compact') === 'compact',
+      isDetail: this.state.view === 'detail',
+      compactBtnClass: (this.state.view ?? 'compact') === 'compact' ? 'is-selected' : '',
+      detailBtnClass: this.state.view === 'detail' ? 'is-selected' : '',
+      viewClass: (this.state.view ?? 'compact') === 'compact' ? 'is-compact' : '',
+      setCompact: () => this.setState({ view: 'compact' }),
+      setDetail: () => this.setState({ view: 'detail' }),
+      sortOpen: !!this.state.sortOpen,
+      toggleSort: this.toggleSort,
+      sortBtnClass: this.state.sortOpen ? 'is-active' : '',
+      sortOptions,
+      dirOptions,
+      sortSummary: (sortKey === 'duration' ? '時長 ' : '建立時間 ') + dirText(),
+      totalCount: visible.length + pinnedList.length,
+      hasPinned: pinnedList.length > 0,
+      pinnedCount: pinnedList.length,
+      pinnedLines,
+      pinExpanded: !this.state.pinCollapsed,
+      pinHeadClass: this.state.pinCollapsed ? 'is-collapsed' : '',
+      togglePinCollapsed: () => this.setState({ pinCollapsed: !this.state.pinCollapsed }),
+      editMode,
+      setEditMode: this.setEditMode,
+
+      lines,
+      listClass: checked.length ? 'has-checked' : '',
+      isEmpty: visible.length === 0 && pinnedList.length === 0,
+      pageItems: this.buildPageItems(page, total),
+      isFirstPage: page <= 1,
+      isLastPage: page >= total,
+      goFirst: this.goFirst,
+      goPrev: this.goPrev,
+      goNext: this.goNext,
+      goLast: this.goLast,
+    };
+  }
+}
+</script>
+</body>
+</html>

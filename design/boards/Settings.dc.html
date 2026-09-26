@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>設定</title>
+  <script src="./support.js"></script>
+  <link rel="stylesheet" href="ds/bento/tokens.css">
+  <link rel="stylesheet" href="ds/bento/components/bundle.css">
+  <script src="ds/bento/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@400;500&amp;family=Kosugi+Maru&amp;family=Yomogi&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,0,0&amp;display=block" rel="stylesheet">
+  <style>
+    body { margin: 0; }
+    .nav-item { appearance: none; -webkit-appearance: none; border: none; background: transparent; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 64px; padding: 8px 4px; border-radius: 8px; cursor: pointer; font-family: var(--font-bento-font-ui); font-weight: 500; font-size: 12px; line-height: 16px; }
+    .material-symbol { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24; }
+
+    .st-scroll { scrollbar-width: none; scrollbar-color: transparent transparent; }
+    .st-scroll::-webkit-scrollbar { width: 8px; }
+    .st-scroll::-webkit-scrollbar-track { background: transparent; }
+    .st-scroll::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; }
+    .st-scroll:hover { scrollbar-width: thin; scrollbar-color: var(--bento-neutral-20, rgba(0,0,0,0.25)) transparent; }
+    .st-scroll:hover::-webkit-scrollbar-thumb { background: var(--bento-neutral-20, rgba(0,0,0,0.25)); }
+
+    .toc-item { appearance: none; -webkit-appearance: none; border: none; background: transparent; box-sizing: border-box; width: 100%; min-height: 44px; display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 12px; text-align: left; cursor: pointer; color: var(--bento-content-secondary); font: var(--bento-weight-medium) 15px/20px var(--font-bento-font-ui); transition: background-color 120ms ease, color 120ms ease; }
+    .toc-item:hover { background: var(--bento-neutral-5); color: var(--bento-neutral-70); }
+    .toc-item.is-active { background: var(--accent-5); color: var(--accent-60); }
+    .toc-item .material-symbol { font-size: 22px; }
+
+    .st-section { display: flex; flex-direction: column; gap: 24px; padding: 8px 0 32px; }
+    .st-section + .st-section { border-top: 1px solid var(--bento-neutral-10); padding-top: 32px; }
+    .st-h2 { margin: 0; font: var(--bento-weight-semibold) 22px/28px var(--font-bento-font-ui); color: var(--bento-content-primary); }
+    .st-row { display: grid; grid-template-columns: 200px minmax(0, 1fr); column-gap: 24px; align-items: center; }
+    .st-label { font: var(--bento-weight-medium) 15px/20px var(--font-bento-font-ui); color: var(--bento-content-primary); }
+    .st-sub { display: block; margin-top: 2px; font: var(--bento-weight-regular) 13px/18px var(--font-bento-font-ui); color: var(--bento-content-secondary); }
+
+    .swatch-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 64px; }
+    .swatch { appearance: none; -webkit-appearance: none; border: none; box-sizing: border-box; width: 48px; height: 48px; border-radius: 12px; cursor: pointer; outline: 2px solid transparent; outline-offset: 3px; transition: outline-color 120ms ease, transform 120ms ease; }
+    .swatch:hover { transform: translateY(-2px); }
+    .swatch-name { font: var(--bento-weight-regular) 12px/16px var(--font-bento-font-ui); color: var(--bento-content-secondary); white-space: nowrap; }
+    .swatch-name.is-active { color: var(--bento-content-primary); font-weight: 500; }
+
+    .ro-input { box-sizing: border-box; flex: 1 1 auto; min-width: 0; height: 44px; padding: 12px 16px; border: none; border-radius: var(--bento-radius-16); background: var(--bento-bg-secondary); box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-neutral-20); color: var(--bento-neutral-70); font: var(--bento-weight-regular) 14px/20px var(--font-bento-font-ui); outline: none; text-overflow: ellipsis; }
+
+    .stat-box { flex: 1 1 0; display: flex; flex-direction: column; gap: 4px; padding: 16px 20px; border-radius: var(--bento-radius-16); background: var(--bento-bg-secondary); }
+    .stat-num { font: var(--bento-weight-semibold) 24px/30px var(--font-bento-font-ui); color: var(--bento-content-primary); }
+    .stat-cap { font: var(--bento-weight-regular) 13px/18px var(--font-bento-font-ui); color: var(--bento-content-secondary); }
+
+    .font-preview { margin-top: 12px; padding: 14px 16px; border-radius: var(--bento-radius-12); background: var(--bento-bg-secondary); font-size: 18px; line-height: 28px; color: var(--bento-content-primary); }
+    @keyframes upd-spin { to { transform: rotate(360deg); } }
+    .upd-spin { animation: upd-spin 1s linear infinite; }
+    @media (prefers-reduced-motion: reduce) { .upd-spin { animation: none; } }
+    .ic-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; border-radius: var(--bento-radius-16); font: var(--bento-weight-medium) 14px/18px var(--font-bento-font-ui); padding: 12px 20px; cursor: pointer; }
+    .ic-btn-neutral { border: 1.5px solid var(--bento-neutral-60); background: transparent; color: var(--bento-neutral-60); }
+    .ic-btn-neutral:hover { background: var(--bento-bg-secondary); }
+    .ic-btn-danger { border: none; background: var(--bento-negative-40); color: var(--bento-white); }
+    .ic-btn-danger:hover { background: var(--bento-negative-50); }
+    @keyframes ic-drop-in { 0% { opacity: 0; transform: translateY(-32px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes ic-backdrop-in { 0% { opacity: 0; } 100% { opacity: 1; } }
+    .ic-enter { animation: ic-drop-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .ic-backdrop { animation: ic-backdrop-in 300ms ease-out both; }
+    @media (prefers-reduced-motion: reduce) { .ic-enter, .ic-backdrop { animation: none; } }
+    @keyframes ex-spin { to { transform: rotate(360deg); } }
+    .ex-spin { display: inline-flex; animation: ex-spin 1.4s linear infinite; }
+    @keyframes ex-stripe { from { background-position: 0 0; } to { background-position: 28px 0; } }
+    .ex-bar-fill { background-image: linear-gradient(45deg, rgba(255,255,255,0.22) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.22) 75%, transparent 75%); background-size: 28px 28px; animation: ex-stripe 0.8s linear infinite; transition: width 200ms ease; }
+    @media (prefers-reduced-motion: reduce) { .ex-spin, .ex-bar-fill { animation: none; } }
+  </style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 56px 104px; gap: 28px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0; {{themeVars}}">
+
+  <svg viewBox="0 0 1280 800" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
+    <path d="M 1020,0 C 1070,56 1100,175 1100,250 C 1100,415 1010,635 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--accent-5);"></path>
+  </svg>
+
+  <div style="position: absolute; top: 50%; right: 0; transform: translateY(-50%); z-index: 5; display: flex; flex-direction: column; align-items: stretch; gap: 4px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-5); border-right: none; border-top-left-radius: 16px; border-bottom-left-radius: 16px; box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.16); padding: 8px;">
+    <button type="button" aria-label="{{toggleLabel}}" onClick="{{toggleExpand}}" style="appearance: none; -webkit-appearance: none; position: absolute; top: 50%; left: -20px; transform: translateY(-50%); width: 20px; height: 56px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-5); border-right: none; border-radius: 999px 0 0 999px; box-shadow: -2px 0px 4px rgba(0, 0, 0, 0.12); color: var(--bento-icon-secondary); cursor: pointer;">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="{{chevronName}}" size="16"></x-import>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-content-secondary);">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Home" size="24"></x-import>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>主頁</span></sc-if>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-content-secondary);">
+      <span class="material-symbol" aria-hidden="true">book_2</span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>台詞本</span></sc-if>
+    </button>
+    <button type="button" class="nav-item" aria-current="page" style="color: var(--accent-50); background-color: var(--accent-5)">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="GearWeightRegular" size="24"></x-import>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>設定</span></sc-if>
+    </button>
+  </div>
+
+  <h1 style="margin: 0; flex-shrink: 0; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">設定</h1>
+
+  <div style="flex: 1 1 0; min-height: 0; display: flex; gap: 32px; align-items: stretch;">
+
+    <nav aria-label="設定目錄" style="width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 4px;">
+      <sc-for list="{{toc}}" as="t" hint-placeholder-count="5">
+        <button type="button" class="toc-item {{t.cls}}" aria-current="{{t.current}}" onClick="{{t.go}}">
+          <span class="material-symbol" aria-hidden="true">{{t.icon}}</span>
+          <span>{{t.label}}</span>
+        </button>
+      </sc-for>
+    </nav>
+
+    <div ref="{{setCardRef}}" onScroll="{{handleScroll}}" class="st-scroll" style="flex: 1 1 0; min-width: 0; max-height: 100%; overflow-y: auto; overflow-x: hidden; position: relative; box-sizing: border-box; padding: 32px 40px 16px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-10); border-radius: 24px; box-shadow: var(--bento-elevation-sm);">
+
+      <section class="st-section" data-sec="ui" aria-labelledby="st-h-ui">
+        <h2 class="st-h2" id="st-h-ui">介面</h2>
+        <div class="st-row">
+          <div class="st-label">語系</div>
+          <x-import component-from-global-scope="BentoDS27_65ebe9.SelectField" label="" placeholder="請選擇語系" options="{{langOptions}}" value="{{lang}}" onChange="{{handleLangChange}}" width="{{280}}"></x-import>
+        </div>
+        <div class="st-row" style="align-items: start;">
+          <div class="st-label" style="padding-top: 12px;">主題</div>
+          <div role="radiogroup" aria-label="主題" style="display: flex; flex-wrap: wrap; gap: 12px 8px;">
+            <sc-for list="{{themes}}" as="th" hint-placeholder-count="7">
+              <div class="swatch-wrap">
+                <button type="button" class="swatch" role="radio" aria-checked="{{th.selected}}" aria-label="{{th.name}}" onClick="{{th.pick}}" style="background: {{th.color}}; outline-color: {{th.ring}};"></button>
+                <span class="swatch-name {{th.nameCls}}">{{th.name}}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </section>
+
+      <section class="st-section" data-sec="book" aria-labelledby="st-h-book">
+        <h2 class="st-h2" id="st-h-book">角色簿</h2>
+        <div class="st-row">
+          <div class="st-label">每頁筆數</div>
+          <x-import component-from-global-scope="BentoDS27_65ebe9.Field" kind="number" label="" placeholder="8" value="{{bookPageSize}}" onChange="{{handleBookPageSize}}" unit="筆" width="{{160}}" min="1" max="100"></x-import>
+        </div>
+      </section>
+
+      <section class="st-section" data-sec="lines" aria-labelledby="st-h-lines">
+        <h2 class="st-h2" id="st-h-lines">台詞頁</h2>
+        <div class="st-row">
+          <div class="st-label">每頁筆數</div>
+          <x-import component-from-global-scope="BentoDS27_65ebe9.Field" kind="number" label="" placeholder="10" value="{{linesPageSize}}" onChange="{{handleLinesPageSize}}" unit="筆" width="{{160}}" min="1" max="100"></x-import>
+        </div>
+        <div class="st-row">
+          <div class="st-label">全部播放每句切換秒數<span class="st-sub">播完一句後，間隔幾秒再播下一句</span></div>
+          <x-import component-from-global-scope="BentoDS27_65ebe9.Field" kind="number" label="" placeholder="2" value="{{playGap}}" onChange="{{handlePlayGap}}" unit="秒" width="{{160}}" min="0" max="30" step="0.5"></x-import>
+        </div>
+        <div class="st-row" style="align-items: start;">
+          <div class="st-label" style="padding-top: 12px;">台詞字型</div>
+          <div style="display: flex; flex-direction: column; min-width: 0;">
+            <x-import component-from-global-scope="BentoDS27_65ebe9.SelectField" label="" placeholder="請選擇字型" options="{{fontOptions}}" value="{{font}}" onChange="{{handleFontChange}}" width="{{280}}"></x-import>
+            <div class="font-preview" style="font-family: {{fontFamily}};">この声、ずっと覚えてる。— 這個聲音，我會一直記得。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="st-section" data-sec="files" aria-labelledby="st-h-files">
+        <h2 class="st-h2" id="st-h-files">檔案管理</h2>
+        <div class="st-row">
+          <label class="st-label" for="st-audio-path">台詞音檔的預設存放位置</label>
+          <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+            <input id="st-audio-path" class="ro-input" type="text" readonly value="~/Library/Application Support/DialogueCollector">
+            <x-import component-from-global-scope="BentoDS27_65ebe9.Button" label="瀏覽" kind="outline" hierarchy="primary" onClick="{{handleBrowse}}" style="flex-shrink: 0;"></x-import>
+          </div>
+        </div>
+        <div class="st-row">
+          <div class="st-label">匯出與匯入<span class="st-sub">備份或還原所有角色簿與台詞</span></div>
+          <div style="display: flex; align-items: stretch; gap: 16px; min-width: 0;">
+            <div style="flex: 1 1 0; min-width: 0; display: flex;">
+              <x-import component-from-global-scope="BentoDS27_65ebe9.Button" label="匯出" kind="solid" hierarchy="primary" full-width="{{true}}" onClick="{{handleExport}}" style="width: 100%;"></x-import>
+            </div>
+            <div style="flex: 1 1 0; min-width: 0; display: flex;">
+              <x-import component-from-global-scope="BentoDS27_65ebe9.Button" label="匯入" kind="outline" hierarchy="primary" full-width="{{true}}" onClick="{{handleImport}}" style="width: 100%;"></x-import>
+            </div>
+          </div>
+        </div>
+        <div class="st-row">
+          <div class="st-label">儲存空間</div>
+          <div style="display: flex; gap: 16px;">
+            <div class="stat-box">
+              <span class="stat-num">1,284</span>
+              <span class="stat-cap">台詞音檔總數</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-num">2.36 GB</span>
+              <span class="stat-cap">佔用的硬碟空間</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="st-section" data-sec="version" aria-labelledby="st-h-version">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+          <h2 class="st-h2" id="st-h-version">目前版本</h2>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <sc-if value="{{isLatest}}" hint-placeholder-val="{{false}}">
+              <span role="status" style="display: inline-flex; align-items: center; gap: 6px; font: var(--bento-weight-medium) 14px/18px var(--font-bento-font-ui); color: var(--bento-positive-60);">
+                <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="PositiveCircle" size="18"></x-import>
+                已是最新版本!
+              </span>
+            </sc-if>
+            <sc-if value="{{isUpdating}}" hint-placeholder-val="{{false}}">
+              <span role="status" style="display: inline-flex; align-items: center; gap: 6px; font: var(--bento-weight-medium) 14px/18px var(--font-bento-font-ui); color: var(--accent-60);">
+                <span class="material-symbol upd-spin" aria-hidden="true" style="font-size: 18px;">progress_activity</span>
+                更新中...
+              </span>
+            </sc-if>
+            <x-import component-from-global-scope="BentoDS27_65ebe9.Button" label="檢查更新" kind="outline" hierarchy="primary" size="small" onClick="{{handleCheckUpdate}}"></x-import>
+          </div>
+        </div>
+        <div class="st-row">
+          <div class="st-label">版本</div>
+          <div style="font: var(--bento-weight-medium) 15px/20px var(--font-bento-font-ui); color: var(--bento-content-primary);">v1.0.0</div>
+        </div>
+        <div class="st-row">
+          <div class="st-label">自動更新</div>
+          <x-import component-from-global-scope="BentoDS27_65ebe9.Checkbox" label="有新版本時自動下載並安裝" checked="{{autoUpdate}}" onChange="{{toggleAutoUpdate}}"></x-import>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <sc-if value="{{showExporting}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center;">
+      <div class="ic-backdrop" style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.48);" aria-hidden="true"></div>
+      <div class="ic-enter" style="position: relative; z-index: 1;">
+        <x-import component-from-global-scope="BentoDS27_65ebe9.Modal" title="匯出" size="medium">
+          <div role="status" aria-live="polite" style="display: flex; flex-direction: column; gap: 24px; align-items: stretch; width: 100%; box-sizing: border-box;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+              <div style="width: 72px; height: 72px; box-sizing: border-box; border-radius: 999px; border: 3px solid var(--accent-40); background: var(--accent-5); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <span class="ex-spin" style="color: var(--accent-50);"><span class="material-symbol" aria-hidden="true" style="font-size: 36px;">sync</span></span>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center;">
+                <div style="font: var(--bento-weight-semibold) 18px/24px var(--bento-font-heading); color: var(--bento-content-primary);">匯出中…</div>
+                <div style="font: var(--bento-weight-regular) 14px/20px var(--bento-font-ui); color: var(--bento-content-secondary);">正在打包所有收藏與設定，請勿關閉應用程式</div>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{exportPct}}" aria-label="匯出進度" style="height: 10px; border-radius: 999px; background: var(--bento-neutral-5); overflow: hidden;">
+                <div class="ex-bar-fill" style="height: 100%; border-radius: 999px; background-color: var(--accent-40); width: {{exportPctCss}};"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font: var(--bento-weight-regular) 13px/18px var(--bento-font-ui); color: var(--bento-content-secondary); font-variant-numeric: tabular-nums;">
+                <span>{{exportStepText}}</span>
+                <span style="font-weight: 600; color: var(--bento-content-primary);">{{exportPct}}%</span>
+              </div>
+            </div>
+            <x-import component-from-global-scope="BentoDS27_65ebe9.Divider"></x-import>
+            <div style="display: flex; align-items: center; justify-content: flex-end;">
+              <button type="button" class="ic-btn ic-btn-neutral" onClick="{{cancelExport}}">取消匯出</button>
+            </div>
+          </div>
+        </x-import>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{showImportConfirm}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center;">
+      <div class="ic-backdrop" style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.48);" aria-hidden="true"></div>
+      <div class="ic-enter" style="position: relative; z-index: 1;">
+        <x-import component-from-global-scope="BentoDS27_65ebe9.Modal" title="確認" size="medium" on-close="{{cancelImport}}">
+          <div style="display: flex; flex-direction: column; gap: 24px; align-items: stretch; width: 100%; box-sizing: border-box;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+              <div style="width: 64px; height: 64px; border-radius: 999px; background: var(--bento-negative-1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <span class="material-symbol" aria-hidden="true" style="font-size: 32px; color: var(--bento-content-negative);">settings_backup_restore</span>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;">
+                <div style="font: var(--bento-weight-semibold) 18px/24px var(--bento-font-heading); color: var(--bento-content-primary);">確定要匯入備份嗎？</div>
+                <div style="font: var(--bento-weight-regular) 14px/20px var(--bento-font-ui); color: var(--bento-content-secondary);">匯入後將<strong style="font-weight: 600; color: var(--bento-content-negative);">清空目前所有的收藏與設定</strong>，包含角色簿、台詞、音檔及所有設定，並還原成備份檔的內容。此動作無法復原。</div>
+              </div>
+              <div style="align-self: stretch; display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: var(--bento-radius-12); background: var(--bento-bg-warning); color: var(--bento-warning-70); font: var(--bento-weight-regular) 13px/18px var(--bento-font-ui);">
+                <span class="material-symbol" aria-hidden="true" style="font-size: 18px; flex-shrink: 0;">lightbulb</span>
+                <span>建議先「匯出」目前的收藏與設定，以免資料遺失。</span>
+              </div>
+            </div>
+            <x-import component-from-global-scope="BentoDS27_65ebe9.Divider"></x-import>
+            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px;">
+              <button type="button" class="ic-btn ic-btn-neutral" onClick="{{cancelImport}}">取消</button>
+              <button type="button" class="ic-btn ic-btn-danger" onClick="{{confirmImport}}">確定匯入</button>
+            </div>
+          </div>
+        </x-import>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
+    <div role="status" aria-live="polite" style="position: absolute; top: 32px; left: 50%; transform: translateX(-50%); z-index: 50; display: flex; justify-content: center;">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Toast" tone="{{toastTone}}" text="{{toastText}}" width="{{toastWidth}}" onDismiss="{{dismissToast}}"></x-import>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"toast":{"editor":"enum","options":["none","exportSuccess","exportFailed","importSuccess","importFailed","libraryNotFound","networkDriveDenied"],"default":"none"},"exportTarget":{"editor":"text","default":"~/Downloads"},"updateStatus":{"editor":"enum","options":["none","latest","updating"],"default":"none"},"importConfirm":{"editor":"boolean","default":false},"exporting":{"editor":"boolean","default":false},"exportProgress":{"editor":"range","min":0,"max":100,"step":1,"default":50},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: true,
+      active: 'ui',
+      lang: 'zh-Hant',
+      theme: 'indigo',
+      bookPageSize: '8',
+      linesPageSize: '10',
+      playGap: '2',
+      font: 'chiron',
+      autoUpdate: false,
+    };
+    this.card = null;
+    this.lockUntil = 0;
+    this.SECTIONS = [
+      { id: 'ui', label: '介面', icon: 'palette' },
+      { id: 'book', label: '角色簿', icon: 'book_2' },
+      { id: 'lines', label: '台詞頁', icon: 'chat' },
+      { id: 'files', label: '檔案管理', icon: 'folder_open' },
+      { id: 'version', label: '目前版本', icon: 'info' },
+    ];
+    this.THEMES = [
+      { id: 'indigo', name: '靛藍', ramp: 'dv-indigo' },
+      { id: 'blue', name: '舒適淺藍', ramp: 'dv-blue' },
+      { id: 'red', name: '寶石紅', ramp: 'dv-red' },
+      { id: 'jade', name: '翠綠', ramp: 'dv-jade' },
+      { id: 'orange', name: '夕陽橘', ramp: 'dv-orange' },
+      { id: 'pink', name: '口紅粉', ramp: 'dv-pink' },
+      { id: 'neutral', name: '夜光黑', ramp: 'neutral' },
+    ];
+    this.FONTS = {
+      chiron: "'Chiron GoRound TC', sans-serif",
+      kosugi: "'Kosugi Maru', sans-serif",
+      yomogi: "'Yomogi', cursive",
+    };
+  }
+
+  toggleExpand = () => this.setState({ expanded: !this.state.expanded });
+
+  setCardRef = (el) => { this.card = el; };
+
+  goTo = (id) => {
+    this.lockUntil = Date.now() + 700;
+    this.setState({ active: id });
+    const card = this.card;
+    if (!card) return;
+    const el = card.querySelector('[data-sec="' + id + '"]');
+    if (!el) return;
+    card.scrollTo({ top: Math.max(0, el.offsetTop - 24), behavior: 'smooth' });
+  };
+
+  handleScroll = () => {
+    const card = this.card;
+    if (!card || Date.now() < this.lockUntil) return;
+    let current = this.SECTIONS[0].id;
+    if (card.scrollTop + card.clientHeight >= card.scrollHeight - 2) {
+      current = this.SECTIONS[this.SECTIONS.length - 1].id;
+    } else {
+      this.SECTIONS.forEach((s) => {
+        const el = card.querySelector('[data-sec="' + s.id + '"]');
+        if (el && el.offsetTop - 60 <= card.scrollTop) current = s.id;
+      });
+    }
+    if (current !== this.state.active) this.setState({ active: current });
+  };
+
+  handleLangChange = (lang) => this.setState({ lang });
+  handleFontChange = (font) => this.setState({ font });
+  handleBookPageSize = (e) => this.setState({ bookPageSize: e.target.value });
+  handleLinesPageSize = (e) => this.setState({ linesPageSize: e.target.value });
+  handlePlayGap = (e) => this.setState({ playGap: e.target.value });
+  toggleAutoUpdate = (e) => this.setState({ autoUpdate: e && e.target ? e.target.checked : !this.state.autoUpdate });
+  handleBrowse = () => { /* TODO: 開啟資料夾選擇 */ };
+  showToast = (kind) => {
+    clearTimeout(this.toastTimer);
+    this.setState({ toast: kind });
+    this.toastTimer = setTimeout(() => this.setState({ toast: 'none' }), 4000);
+  };
+  dismissToast = () => {
+    clearTimeout(this.toastTimer);
+    this.setState({ toast: 'none' });
+  };
+  componentWillUnmount() { clearTimeout(this.toastTimer); clearInterval(this.exportTimer); }
+  // 原型示意：匯出/匯入一律以成功結果呈現；失敗狀態見各自的 Toast 畫板
+  // 原型示意：點擊匯出 → 顯示匯出中進度 → 完成後跳出成功 Toast
+  handleExport = () => {
+    clearInterval(this.exportTimer);
+    this.setState({ exporting: true, exportProgress: 0 });
+    this.exportTimer = setInterval(() => {
+      const next = Math.min(100, (this.state.exportProgress ?? 0) + 4);
+      if (next >= 100) {
+        clearInterval(this.exportTimer);
+        this.setState({ exporting: false, exportProgress: 100 });
+        this.showToast('exportSuccess');
+      } else {
+        this.setState({ exportProgress: next });
+      }
+    }, 120);
+  };
+  cancelExport = () => {
+    clearInterval(this.exportTimer);
+    this.setState({ exporting: false, exportProgress: 0 });
+  };
+  // 原型示意：實際流程為選擇備份檔 → 確認 modal → 匯入
+  handleImport = () => this.setState({ importConfirm: true });
+  cancelImport = () => this.setState({ importConfirm: false });
+  confirmImport = () => {
+    this.setState({ importConfirm: false });
+    this.showToast('importSuccess');
+  };
+  // 原型示意：點擊後切換「已是最新版本!」與「更新中...」兩種結果
+  handleCheckUpdate = () => {
+    const cur = this.state.updateStatus ?? this.props.updateStatus ?? 'none';
+    this.setState({ updateStatus: cur === 'latest' ? 'updating' : 'latest' });
+  };
+
+  renderVals() {
+    const expanded = this.state.expanded ?? true;
+    const active = this.state.active || 'ui';
+    const themeId = this.state.theme || 'indigo';
+    const theme = this.THEMES.find((t) => t.id === themeId) || this.THEMES[0];
+    const v = (r, n) => 'var(--bento-' + r + '-' + n + ')';
+    const r = theme.ramp;
+    const themeVars = [
+      '--accent-5: ' + v(r, 5),
+      '--accent-40: ' + (r === 'neutral' ? v(r, 80) : v(r, 40)),
+      '--accent-50: ' + (r === 'neutral' ? v(r, 80) : v(r, 50)),
+      '--accent-60: ' + (r === 'neutral' ? v(r, 90) : v(r, 60)),
+      '--bento-bg-interactive: ' + (r === 'neutral' ? v(r, 80) : v(r, 50)),
+      '--bento-border-input-focus: ' + (r === 'neutral' ? v(r, 80) : v(r, 50)),
+      '--bento-action-outline-primary-outline: ' + (r === 'neutral' ? v(r, 80) : v(r, 50)),
+      '--bento-action-outline-primary-outline-hover: ' + (r === 'neutral' ? v(r, 90) : v(r, 60)),
+      '--bento-action-transparent-primary-fg: ' + (r === 'neutral' ? v(r, 80) : v(r, 50)),
+      '--bento-action-transparent-primary-fg-hover: ' + (r === 'neutral' ? v(r, 90) : v(r, 60)),
+      '--bento-action-transparent-primary-bg-hover: ' + v(r, 5),
+      '--bento-action-solid-primary-bg: ' + (r === 'neutral' ? v(r, 80) : v(r, 50)),
+      '--bento-action-solid-primary-bg-hover: ' + (r === 'neutral' ? v(r, 90) : v(r, 60)),
+    ].join('; ') + ';';
+
+    const toastKey = this.state.toast ?? this.props.toast ?? 'none';
+    const target = this.props.exportTarget ?? '~/Downloads';
+    const TOASTS = {
+      exportSuccess: { tone: 'positive', text: '檔案已匯出至 ' + target + ' 目錄' },
+      exportFailed: { tone: 'negative', text: '匯出失敗' },
+      importSuccess: { tone: 'positive', text: '匯入完成' },
+      importFailed: { tone: 'negative', text: '匯入失敗' },
+      libraryNotFound: { tone: 'negative', text: '找不到收藏庫，請重新指定台詞音檔的存放位置', width: 480 },
+      networkDriveDenied: { tone: 'negative', text: '收藏庫無法存放在網路磁碟，請改選本機資料夾', width: 480 },
+    };
+    const toast = TOASTS[toastKey] || null;
+
+    return {
+      hasToast: !!toast,
+      toastTone: toast ? toast.tone : 'informative',
+      toastText: toast ? toast.text : '',
+      toastWidth: toast && toast.width ? toast.width : (toastKey === 'exportSuccess' ? 440 : 320),
+      dismissToast: this.dismissToast,
+      expanded,
+      toggleExpand: this.toggleExpand,
+      chevronName: expanded ? 'ChevronRight' : 'ChevronLeft',
+      toggleLabel: expanded ? '收合選單' : '展開選單',
+      themeVars,
+      setCardRef: this.setCardRef,
+      handleScroll: this.handleScroll,
+      toc: this.SECTIONS.map((s) => ({
+        label: s.label,
+        icon: s.icon,
+        cls: s.id === active ? 'is-active' : '',
+        current: s.id === active ? 'true' : 'false',
+        go: () => this.goTo(s.id),
+      })),
+      langOptions: [
+        { value: 'zh-Hant', label: '繁體中文' },
+        { value: 'zh-Hans', label: '簡體中文' },
+        { value: 'ja', label: '日文' },
+        { value: 'en', label: '英文' },
+      ],
+      lang: this.state.lang,
+      handleLangChange: this.handleLangChange,
+      themes: this.THEMES.map((t) => {
+        const color = t.ramp === 'neutral' ? v(t.ramp, 80) : v(t.ramp, 40);
+        const selected = t.id === themeId;
+        return {
+          name: t.name,
+          color,
+          ring: selected ? color : 'transparent',
+          selected: selected ? 'true' : 'false',
+          nameCls: selected ? 'is-active' : '',
+          pick: () => this.setState({ theme: t.id }),
+        };
+      }),
+      bookPageSize: this.state.bookPageSize,
+      handleBookPageSize: this.handleBookPageSize,
+      linesPageSize: this.state.linesPageSize,
+      playGap: this.state.playGap ?? '2',
+      handlePlayGap: this.handlePlayGap,
+      handleLinesPageSize: this.handleLinesPageSize,
+      fontOptions: [
+        { value: 'chiron', label: 'ChironGoRoundTC' },
+        { value: 'kosugi', label: 'KosugiMaru' },
+        { value: 'yomogi', label: 'Yomogi' },
+      ],
+      font: this.state.font,
+      fontFamily: this.FONTS[this.state.font] || this.FONTS.chiron,
+      handleFontChange: this.handleFontChange,
+      handleBrowse: this.handleBrowse,
+      handleExport: this.handleExport,
+      handleImport: this.handleImport,
+      ...(() => {
+        const pct = Math.round(this.state.exportProgress ?? this.props.exportProgress ?? 50);
+        const total = 1284;
+        const done = Math.round(total * pct / 100);
+        return {
+          showExporting: !!(this.state.exporting ?? this.props.exporting ?? false),
+          exportPct: pct,
+          exportPctCss: pct + '%',
+          exportStepText: pct < 90 ? '正在複製音檔 ' + done.toLocaleString() + ' / ' + total.toLocaleString() : '正在寫入設定與壓縮檔案…',
+          cancelExport: this.cancelExport,
+        };
+      })(),
+      showImportConfirm: !!(this.state.importConfirm ?? this.props.importConfirm ?? false),
+      cancelImport: this.cancelImport,
+      confirmImport: this.confirmImport,
+      handleCheckUpdate: this.handleCheckUpdate,
+      isLatest: (this.state.updateStatus ?? this.props.updateStatus ?? 'none') === 'latest',
+      isUpdating: (this.state.updateStatus ?? this.props.updateStatus ?? 'none') === 'updating',
+      autoUpdate: !!this.state.autoUpdate,
+      toggleAutoUpdate: this.toggleAutoUpdate,
+    };
+  }
+}
+</script>
+</body>
+</html>

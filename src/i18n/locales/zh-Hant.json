@@ -1,0 +1,37 @@
+{
+  "app": { "title": "台詞收藏家" },
+  "nav": {
+    "home": "主頁",
+    "scriptBook": "台詞本",
+    "settings": "設定",
+    "collapse": "收合選單",
+    "expand": "展開選單"
+  },
+  "main": {
+    "fromSubtitle": "從影片字幕匯入",
+    "manual": "直接匯入現有影音"
+  },
+  "scriptBook": { "title": "台詞本" },
+  "lines": { "title": "台詞" },
+  "import": {
+    "subtitleTitle": "從影片字幕匯入",
+    "manualTitle": "直接匯入現有影音"
+  },
+  "settings": {
+    "title": "設定",
+    "interface": "介面",
+    "language": "語系",
+    "theme": "主題",
+    "themes": {
+      "indigo": "靛藍",
+      "lightBlue": "舒適淺藍",
+      "ruby": "寶石紅",
+      "emerald": "翠綠",
+      "sunset": "夕陽橘",
+      "lipstick": "口紅粉",
+      "midnight": "夜光黑"
+    },
+    "version": "目前版本"
+  },
+  "common": { "notImplemented": "尚未實作" }
+}

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>編輯角色</title>
+  <script src="./support.js"></script>
+  <link rel="stylesheet" href="ds/bento/tokens.css">
+  <link rel="stylesheet" href="ds/bento/components/bundle.css">
+  <script src="ds/bento/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,0,0&amp;display=block" rel="stylesheet">
+  <style>
+    body { margin: 0; }
+    .material-symbol { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24; }
+
+    .ec-avatar { box-sizing: border-box; width: 240px; height: 240px; flex-shrink: 0; border-radius: 16px; overflow: hidden; background: var(--bento-bg-secondary); }
+    .ec-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ac-browse { appearance: none; -webkit-appearance: none; box-sizing: border-box; border-radius: 16px; border: 2px solid var(--bento-dv-indigo-40); background: transparent; color: var(--bento-dv-indigo-40); font-family: var(--font-bento-font-ui); font-weight: 500; font-size: 13px; line-height: 17px; padding: 8px 14px; cursor: pointer; }
+    .ac-browse:hover { background: var(--bento-bg-primary); }
+    .ac-remove { appearance: none; -webkit-appearance: none; box-sizing: border-box; border-radius: 16px; border: 2px solid var(--bento-negative-40); background: transparent; color: var(--bento-negative-40); width: 37px; height: 37px; padding: 0; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .ac-remove .material-symbol { font-size: 20px; font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+    .ac-remove:hover { background: var(--bento-negative-1); }
+    .ac-remove:disabled { border-color: var(--bento-action-disabled-bg); color: var(--bento-action-disabled-fg); background: transparent; cursor: not-allowed; }
+    .ac-hint { font: var(--bento-weight-regular) 12px/16px var(--bento-font-ui); color: var(--bento-content-secondary); text-align: center; }
+
+    .ec-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; border-radius: var(--bento-radius-16); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); padding: 12px 20px; cursor: pointer; }
+    .ec-btn-neutral { border: 1.5px solid var(--bento-neutral-60); background: transparent; color: var(--bento-neutral-60); }
+    .ec-btn-neutral:hover { background: var(--bento-bg-secondary); }
+    .ec-btn-primary { border: none; background: var(--bento-dv-indigo-40); color: var(--bento-white); }
+    .ec-btn-primary:hover { background: var(--bento-dv-indigo-50); }
+    .ec-btn-danger { border: 1.5px solid var(--bento-negative-40); background: transparent; color: var(--bento-content-negative); }
+    .ec-btn-danger:hover { background: var(--bento-negative-1); }
+    @keyframes modal-drop-in { 0% { opacity: 0; transform: translateY(-32px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes modal-backdrop-in { 0% { opacity: 0; } 100% { opacity: 1; } }
+    .modal-enter { animation: modal-drop-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .modal-backdrop { animation: modal-backdrop-in 300ms ease-out both; }
+    @media (prefers-reduced-motion: reduce) { .modal-enter, .modal-backdrop { animation: none; } }
+  </style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; position: relative; overflow: hidden; background: var(--bento-bg-secondary); display: flex; align-items: center; justify-content: center; font-family: var(--font-bento-font-ui);">
+
+  <div class="modal-backdrop" style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.48);" aria-hidden="true"></div>
+
+  <div class="modal-enter" style="position: relative; z-index: 1; --bento-action-solid-primary-bg: var(--bento-dv-indigo-40); --bento-action-solid-primary-bg-hover: var(--bento-dv-indigo-50);">
+    <x-import component-from-global-scope="BentoDS27_65ebe9.Modal" title="編輯角色" size="large" on-close="{{handleCancel}}">
+      <div style="display: flex; flex-direction: column; gap: 24px;">
+
+        <div style="display: flex; flex-direction: row; gap: 24px; align-items: flex-start;">
+
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; width: 240px; flex-shrink: 0;">
+            <div class="ec-avatar">
+              <sc-if value="{{hasPhoto}}" hint-placeholder-val="{{true}}">
+                <img src="/_blob/fa2a152862fdbc25f0c86a4ddb638a1c" alt="">
+              </sc-if>
+              <sc-if value="{{noPhoto}}" hint-placeholder-val="{{false}}">
+                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                  <span class="material-symbol" aria-hidden="true" style="font-size: 96px; color: var(--bento-icon-secondary);">person</span>
+                </div>
+              </sc-if>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <button type="button" class="ac-browse" onClick="{{handleBrowse}}">更換照片</button>
+              <button type="button" class="ac-remove" aria-label="刪除照片" title="刪除照片" disabled="{{noPhoto}}" onClick="{{handleRemovePhoto}}"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Bin" size="20"></x-import></button>
+            </div>
+            <div class="ac-hint" style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+              <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="LightbulbWeightRegular" size="14"></x-import>
+              <span>建議上傳透明背景的png</span>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 20px; width: 408px; flex-shrink: 0; box-sizing: border-box; padding: 0 16px;">
+            <x-import component-from-global-scope="BentoDS27_65ebe9.Field" label="角色名稱" placeholder="請輸入角色名稱" required="{{true}}" value="{{name}}" onChange="{{handleNameChange}}" width="{{selectWidth}}" style="width: 376px;"></x-import>
+            <div style="position: relative; z-index: 5; width: 376px;">
+              <x-import component-from-global-scope="BentoDS27_65ebe9.SelectField" label="類別" placeholder="請選擇類別" options="{{categoryOptions}}" value="{{category}}" onChange="{{handleCategoryChange}}" width="{{selectWidth}}" style="width: 376px;"></x-import>
+            </div>
+            <x-import component-from-global-scope="BentoDS27_65ebe9.Field" label="動畫/戲劇名稱" placeholder="請輸入動畫或戲劇名稱" required="{{true}}" value="{{source}}" onChange="{{handleSourceChange}}" width="{{selectWidth}}" style="width: 376px;"></x-import>
+            <x-import component-from-global-scope="BentoDS27_65ebe9.Field" label="CV/飾演（選填）" placeholder="請輸入CV或飾演者" value="{{cv}}" onChange="{{handleCvChange}}" width="{{selectWidth}}" style="width: 376px;"></x-import>
+          </div>
+
+        </div>
+
+        <x-import component-from-global-scope="BentoDS27_65ebe9.Divider"></x-import>
+
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <button type="button" class="ec-btn ec-btn-danger" onClick="{{handleDelete}}">刪除角色</button>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <button type="button" class="ec-btn ec-btn-neutral" onClick="{{handleCancel}}">取消</button>
+            <button type="button" class="ec-btn ec-btn-primary" onClick="{{handleEdit}}">編輯</button>
+          </div>
+        </div>
+
+      </div>
+    </x-import>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { name: '周公旦', category: 'tv', source: '封神榜', cv: '魏啟明', hasPhoto: true };
+  }
+
+  handleNameChange = (e) => {
+    this.setState({ name: e.target.value });
+  };
+
+  handleSourceChange = (e) => {
+    this.setState({ source: e.target.value });
+  };
+
+  handleCvChange = (e) => {
+    this.setState({ cv: e.target.value });
+  };
+
+  handleBrowse = () => {
+    // TODO: 開啟檔案選擇器
+  };
+
+  handleRemovePhoto = () => this.setState({ hasPhoto: false });
+
+  handleEdit = () => {
+    // TODO: 儲存編輯結果
+  };
+
+  handleDelete = () => {
+    // TODO: 刪除角色（需二次確認）
+  };
+
+  handleCancel = () => {
+    // TODO: 關閉此 modal
+  };
+
+  handleCategoryChange = (category) => this.setState({ category });
+
+  renderVals() {
+    return {
+      categoryOptions: [
+        { value: 'anime', label: '動畫' },
+        { value: 'movie', label: '電影' },
+        { value: 'tv', label: '電視劇' },
+      ],
+      category: this.state.category,
+      handleCategoryChange: this.handleCategoryChange,
+      selectWidth: 376,
+      name: this.state.name,
+      source: this.state.source,
+      cv: this.state.cv,
+      handleNameChange: this.handleNameChange,
+      handleSourceChange: this.handleSourceChange,
+      handleCvChange: this.handleCvChange,
+      handleBrowse: this.handleBrowse,
+      hasPhoto: this.state.hasPhoto !== false,
+      noPhoto: this.state.hasPhoto === false,
+      handleRemovePhoto: this.handleRemovePhoto,
+      handleEdit: this.handleEdit,
+      handleDelete: this.handleDelete,
+      handleCancel: this.handleCancel,
+    };
+  }
+}
+</script>
+</body>
+</html>

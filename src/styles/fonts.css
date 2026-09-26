@@ -1,0 +1,43 @@
+/* 台詞 content fonts (DD5 → B): these three faces apply to the 台詞 area only.
+   The interface stays on system-ui, with a per-locale fallback list so the chosen face is
+   deterministic on macOS and Windows. All three faces are OFL-licensed; licences sit next
+   to the files in src/assets/fonts/. */
+
+@font-face {
+  font-family: "ChironGoRoundTC";
+  /* Subset, ExtraLight only — the one face the app ships for this family. */
+  src: url("../assets/fonts/chiron-goround-tc-extralight-subset.woff2") format("woff2");
+  font-weight: 200;
+  font-display: swap;
+}
+@font-face {
+  font-family: "KosugiMaru";
+  src: url("../assets/fonts/KosugiMaru.woff2") format("woff2");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Yomogi";
+  src: url("../assets/fonts/Yomogi.woff2") format("woff2");
+  font-display: swap;
+}
+
+:root {
+  --dc-ui-font: system-ui, -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --dc-line-font: "ChironGoRoundTC", var(--dc-ui-font);
+}
+:root:lang(zh-Hans) {
+  --dc-ui-font: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+:root:lang(ja) {
+  --dc-ui-font: system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+}
+:root:lang(en) {
+  --dc-ui-font: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+:root[data-line-font="KosugiMaru"] { --dc-line-font: "KosugiMaru", var(--dc-ui-font); }
+:root[data-line-font="Yomogi"] { --dc-line-font: "Yomogi", var(--dc-ui-font); }
+
+.dc-line-text {
+  font-family: var(--dc-line-font);
+}
