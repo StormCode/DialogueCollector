@@ -139,6 +139,12 @@
             <div style="width: 100%; box-sizing: border-box; padding: 0 0 8px; --bento-border-input-enabled: var(--bento-dv-indigo-40); --bento-border-input-hover: var(--bento-dv-indigo-50); --bento-border-input-focus: var(--bento-dv-indigo-50);">
               <x-import component-from-global-scope="BentoDS27_65ebe9.SearchBar" placeholder="角色 or 作品名稱" value="{{charQuery}}" onChange="{{handleCharQuery}}" onClear="{{clearCharQuery}}" width="100%" style="width: 100%;"></x-import>
             </div>
+            <sc-if value="{{showUnassignMenu}}" hint-placeholder-val="{{true}}">
+              <button type="button" role="menuitem" class="assign-item" onClick="{{unassignSelected}}">
+                <span aria-hidden="true" style="box-sizing: border-box; width: 28px; height: 28px; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bento-neutral-5); color: var(--bento-neutral-40);"><span class="material-symbol" style="font-size: 18px;">person</span></span>
+                <span style="font: var(--bento-weight-regular) 14px/18px var(--font-bento-font-ui); color: var(--bento-content-secondary); white-space: nowrap;">未指派</span>
+              </button>
+            </sc-if>
             <sc-for list="{{characterMenuItems}}" as="c" hint-placeholder-count="6">
               <button type="button" role="menuitem" class="assign-item" onClick="{{c.pick}}">
                 <span class="sub-avatar" aria-hidden="true" style="width: 28px; height: 28px; font-size: 12px; box-shadow: none; background: {{c.bg}}; color: {{c.fg}};"><sc-if value="{{c.hasImg}}" hint-placeholder-val="{{false}}"><img src="{{c.img}}" alt="" style="object-position: {{c.imgPos}};"></sc-if><sc-if value="{{c.noImg}}" hint-placeholder-val="{{true}}">{{c.initial}}</sc-if></span>
@@ -225,6 +231,12 @@
           <x-import component-from-global-scope="BentoDS27_65ebe9.SearchBar" placeholder="角色 or 作品名稱" value="{{pickQuery}}" onChange="{{handlePickQuery}}" onClear="{{clearPickQuery}}" width="100%" style="width: 100%;"></x-import>
         </div>
         <div class="pick-grid">
+          <sc-if value="{{showUnassignPick}}" hint-placeholder-val="{{true}}">
+            <button type="button" class="pick-item {{pickNoneCls}}" onClick="{{pickNone}}" aria-pressed="{{pickNoneCurrent}}">
+              <span aria-hidden="true" style="box-sizing: border-box; width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bento-neutral-5); color: var(--bento-neutral-40);"><span class="material-symbol" style="font-size: 20px;">person</span></span>
+              <span style="font: var(--bento-weight-regular) 14px/18px var(--font-bento-font-ui); color: var(--bento-content-secondary); white-space: nowrap;">未指派</span>
+            </button>
+          </sc-if>
           <sc-for list="{{pickItems}}" as="pc" hint-placeholder-count="6">
             <button type="button" class="pick-item {{pc.cls}}" onClick="{{pc.pick}}" aria-pressed="{{pc.current}}">
               <span class="sub-avatar" aria-hidden="true" style="flex-shrink: 0; box-shadow: none; background: {{pc.bg}}; color: {{pc.fg}};"><sc-if value="{{pc.hasImg}}" hint-placeholder-val="{{false}}"><img src="{{pc.img}}" alt="" style="object-position: {{pc.imgPos}};"></sc-if><sc-if value="{{pc.noImg}}" hint-placeholder-val="{{true}}">{{pc.initial}}</sc-if></span>
@@ -420,6 +432,12 @@ class Component extends DCLogic {
       selectedCount: count,
       importDisabled: assignedCount === 0,
       assignedCount,
+      showUnassignMenu: !(this.state.charQuery || '').trim(),
+      unassignSelected: () => this.assignTo(null),
+      showUnassignPick: !(this.state.pickQuery || '').trim(),
+      pickNone: () => this.pickFor(pickerRow, null),
+      pickNoneCls: pickerRow !== null && !assigned[pickerRow] ? 'is-current' : '',
+      pickNoneCurrent: pickerRow !== null && !assigned[pickerRow] ? 'true' : 'false',
       noSubtitles,
       showToast: noSubtitles && !this.state.toastDismissed,
       dismissToast: this.dismissToast,
