@@ -30,10 +30,13 @@ if (upstream.split(FROM).length !== 2) {
 }
 const expected = upstream.replace(FROM, TO);
 
+// Git on Windows may check the file out with CRLF (core.autocrlf); compare content, not line endings.
+const lf = (text) => text.replace(/\r\n/g, "\n");
+
 if (process.argv.includes("--write")) {
   writeFileSync(vendored, expected);
   console.log(`wrote ${vendored} from tauri-cli ${version}`);
-} else if (readFileSync(vendored, "utf8") !== expected) {
+} else if (lf(readFileSync(vendored, "utf8")) !== lf(expected)) {
   console.error(`${vendored} does not match tauri-cli ${version}'s template + the install-dir change.`);
   console.error("Run: node scripts/nsis/check-template.mjs --write");
   process.exit(1);
