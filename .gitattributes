@@ -1,0 +1,2 @@
+# Vendored upstream template: keep byte-identical line endings on every platform.
+src-tauri/windows/installer.nsi text eol=lf
