@@ -76,28 +76,49 @@ jobs:
         with:
           workspaces: src-tauri
 
-      - name: Cache ffmpeg download
+      - name: Cache ffmpeg sidecar
+        id: ffmpeg-cache
         uses: actions/cache@v4
         with:
-          path: ~/.cache/dialogue-collector/*.zip
-          key: ffmpeg-windows-${{ hashFiles('scripts/ffmpeg/pins.json') }}
-      - name: Fetch pinned LGPL ffmpeg (SHA256-checked)
-        run: node scripts/ffmpeg/fetch-windows.mjs
+          path: |
+            src-tauri/binaries/ffmpeg-x86_64-pc-windows-msvc.exe
+            src-tauri/binaries/ffprobe-x86_64-pc-windows-msvc.exe
+          key: ffmpeg-x86_64-pc-windows-msvc-${{ hashFiles('scripts/ffmpeg/pins.json', 'scripts/ffmpeg/build-windows.sh') }}
+      - uses: msys2/setup-msys2@v2
+        if: steps.ffmpeg-cache.outputs.cache-hit != 'true'
+        with:
+          msystem: UCRT64
+          path-type: inherit
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-nasm mingw-w64-ucrt-x86_64-pkgconf
+            mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-bzip2 make diffutils tar xz curl
+      - name: Build LGPL ffmpeg
+        if: steps.ffmpeg-cache.outputs.cache-hit != 'true'
+        shell: msys2 {0}
+        run: scripts/ffmpeg/build-windows.sh
 
       - run: npm ci
       - run: npm test
+      - name: NSIS template matches the installed Tauri CLI
+        run: node scripts/nsis/check-template.mjs
       - name: Package
         run: npm run tauri build -- --bundles nsis
 
       - name: Install silently and smoke test the installed app
         shell: pwsh
         run: |
+          Get-ChildItem src-tauri/target/release/bundle/nsis/*-setup.exe | Format-Table Name, Length
           $setup = Get-ChildItem src-tauri/target/release/bundle/nsis/*-setup.exe | Select-Object -First 1
-          $dir = Join-Path $env:RUNNER_TEMP "dc-install"
-          Start-Process $setup.FullName -ArgumentList "/S", "/D=$dir" -Wait
+          # No /D: exercise the default per-user location, which must not be the library folder.
+          Start-Process $setup.FullName -ArgumentList "/S" -Wait
+          $dir = Join-Path $env:LOCALAPPDATA "Programs\DialogueCollector"
+          if (Test-Path (Join-Path $env:LOCALAPPDATA "DialogueCollector\uninstall.exe")) { throw "installed into the library folder" }
+          $exe = Get-ChildItem $dir -Filter *.exe | Where-Object { $_.Name -notmatch '^(ffmpeg|ffprobe|uninstall)\.exe$' } | Select-Object -First 1
+          if (-not $exe) { throw "no app executable in $dir" }
+          Get-ChildItem $dir | Format-Table Name, Length
           $report = Join-Path $env:RUNNER_TEMP "smoke.txt"
           # Release builds use the GUI subsystem, so stdout is not attached: read the report file.
-          $p = Start-Process (Join-Path $dir "dialogue-collector.exe") -ArgumentList "--smoke", "--smoke-report", $report -Wait -PassThru
+          $p = Start-Process $exe.FullName -ArgumentList "--smoke", "--smoke-report", $report -Wait -PassThru
           Get-Content $report
           exit $p.ExitCode
 
