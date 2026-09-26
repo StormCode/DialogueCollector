@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>選擇台詞</title>
+  <script src="./support.js"></script>
+  <link rel="stylesheet" href="ds/bento/tokens.css">
+  <link rel="stylesheet" href="ds/bento/components/bundle.css">
+  <script src="ds/bento/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,0,0&amp;display=block" rel="stylesheet">
+  <style>
+    body { margin: 0; }
+    .nav-item { appearance: none; -webkit-appearance: none; border: none; background: transparent; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 64px; padding: 8px 4px; border-radius: 8px; cursor: pointer; font-family: var(--font-bento-font-ui); font-weight: 500; font-size: 12px; line-height: 16px; }
+    .material-symbol { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24; }
+
+    .sub-scroll { scrollbar-width: none; scrollbar-color: transparent transparent; }
+    .sub-scroll::-webkit-scrollbar { width: 8px; }
+    .sub-scroll::-webkit-scrollbar-track { background: transparent; }
+    .sub-scroll::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; }
+    .sub-scroll:hover { scrollbar-width: thin; scrollbar-color: var(--bento-neutral-20, rgba(0,0,0,0.25)) transparent; }
+    .sub-scroll:hover::-webkit-scrollbar-thumb { background: var(--bento-neutral-20, rgba(0,0,0,0.25)); }
+
+    .sub-row { display: grid; grid-template-columns: 56px 250px minmax(0, 1fr); align-items: start; box-sizing: border-box; position: relative; cursor: pointer; background: var(--bento-bg-primary); border-bottom: 1px solid var(--bento-neutral-5); transition: background-color 120ms ease; }
+    .sub-row:last-child { border-bottom: none; }
+    .sub-row:hover { background: var(--bento-bg-secondary); }
+    .sub-row.is-selected, .sub-row.is-selected:hover { background: var(--bento-dv-indigo-1); }
+
+    .sub-input { position: absolute; opacity: 0; width: 0; height: 0; margin: 0; }
+    .sub-box-wrap { display: inline-flex; opacity: 0; transition: opacity 120ms ease; }
+    .sub-row:hover .sub-box-wrap, .sub-list.has-selection .sub-box-wrap, .sub-input:focus-visible + .sub-box-wrap { opacity: 1; }
+    .sub-box { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: var(--bento-radius-8); background: var(--bento-bg-primary); box-shadow: inset 0 0 0 1px var(--bento-neutral-40); color: var(--bento-white); transition: background-color 120ms ease; }
+    .sub-box.is-checked { background: var(--bento-dv-indigo-40); box-shadow: none; }
+    .sub-input:focus-visible + .sub-box-wrap .sub-box { outline: 2px solid var(--bento-dv-indigo-40); outline-offset: 2px; }
+
+    .sub-head { grid-template-columns: 56px 250px minmax(0, 1fr); }
+    .sub-list .sub-row, .sub-head { grid-template-columns: 56px 56px 250px minmax(0, 1fr); }
+    .sub-avatar-cell { display: flex; align-items: flex-start; justify-content: flex-start; padding-top: 9px; }
+    .sub-avatar-empty { background: var(--bento-neutral-5); color: var(--bento-neutral-40); }
+    .sub-avatar { box-sizing: border-box; width: 32px; height: 32px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; font: var(--bento-weight-semibold) 14px/1 var(--bento-font-ui); box-shadow: 0 0 0 2px var(--bento-bg-primary); }
+    .sub-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .sub-avatar-btn { appearance: none; -webkit-appearance: none; border: none; background: transparent; padding: 0; margin: 0; border-radius: 50%; cursor: pointer; display: inline-flex; transition: transform 120ms ease, box-shadow 120ms ease; }
+    .sub-avatar-btn:hover { transform: scale(1.08); box-shadow: 0 0 0 2px var(--bento-dv-indigo-20); }
+    .sub-avatar-btn:focus-visible { outline: 2px solid var(--bento-dv-indigo-40); outline-offset: 2px; }
+    .sub-avatar-btn.is-open { box-shadow: 0 0 0 2px var(--bento-dv-indigo-40); }
+    .pick-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+    .pick-item { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 8px 10px; min-height: 44px; border: none; border-radius: var(--bento-radius-12); background: transparent; cursor: pointer; text-align: left; min-width: 0; }
+    .pick-item:hover { background: var(--bento-bg-interactive-overlay); }
+    .pick-item.is-current { background: var(--bento-dv-indigo-5); box-shadow: inset 0 0 0 1.5px var(--bento-dv-indigo-40); }
+    @keyframes pick-pop { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+    .pick-panel { animation: pick-pop 160ms ease-out both; }
+    @media (prefers-reduced-motion: reduce) { .pick-panel { animation: none; } }
+
+    .assign-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; padding: 12px 14px 12px 20px; border-radius: var(--bento-radius-16); border: none; background: var(--bento-dv-indigo-40); color: var(--bento-white); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer; }
+    .assign-btn:hover { background: var(--bento-dv-indigo-50); }
+    .assign-btn:disabled { background: var(--bento-action-disabled-bg); color: var(--bento-action-disabled-fg); cursor: not-allowed; }
+    .assign-item { appearance: none; -webkit-appearance: none; display: flex; align-items: center; gap: 12px; padding: 8px 12px; border: none; border-radius: var(--bento-radius-16); background: transparent; cursor: pointer; text-align: left; }
+    .assign-item:hover { background: var(--bento-bg-interactive-overlay); }
+
+    .sub-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--bento-radius-16); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer; }
+    .sub-btn-outline { padding: 13px 20px; background: transparent; border: 1.5px solid var(--bento-dv-indigo-40); color: var(--bento-dv-indigo-40); }
+    .sub-btn-outline:hover { background: var(--bento-dv-indigo-1); }
+    .sub-btn-neutral { padding: 13px 20px; background: transparent; border: 1.5px solid var(--bento-neutral-70); color: var(--bento-neutral-70); }
+    .sub-btn-neutral:hover { background: var(--bento-bg-secondary); }
+    .sub-btn-back { gap: 8px; padding: 12.5px 24px 12.5px 16px; border-color: var(--bento-neutral-60); color: var(--bento-neutral-60); }
+    .sub-btn-primary { gap: 8px; padding: 14px 24px 14px 20px; border: none; background: var(--bento-dv-indigo-40); color: var(--bento-white); }
+    .sub-btn-primary:hover { background: var(--bento-dv-indigo-50); }
+    .sub-btn-primary:disabled { background: var(--bento-action-disabled-bg); color: var(--bento-action-disabled-fg); cursor: not-allowed; }
+  </style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 56px 104px; gap: 24px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0;">
+
+  <svg viewBox="0 0 1280 800" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
+    <path d="M 1020,0 C 1070,56 1100,175 1100,250 C 1100,415 1010,635 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--bento-dv-indigo-5);"></path>
+  </svg>
+
+  <div style="position: absolute; top: 50%; right: 0; transform: translateY(-50%); display: flex; flex-direction: column; align-items: stretch; gap: 4px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-5); border-right: none; border-top-left-radius: 16px; border-bottom-left-radius: 16px; box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.16); padding: 8px;">
+    <button type="button" aria-label="{{toggleLabel}}" onClick="{{toggleExpand}}" style="appearance: none; -webkit-appearance: none; position: absolute; top: 50%; left: -20px; transform: translateY(-50%); width: 20px; height: 56px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-5); border-right: none; border-radius: 999px 0 0 999px; box-shadow: -2px 0px 4px rgba(0, 0, 0, 0.12); color: var(--bento-icon-secondary); cursor: pointer;">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="{{chevronName}}" size="16"></x-import>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-informative-30); background-color: var(--bento-dv-indigo-5)">
+      <span style="display: inline-flex; color: var(--bento-dv-indigo-30);">
+        <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Home" size="24"></x-import>
+      </span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="color: var(--bento-dv-indigo-30)">主頁</span></sc-if>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-content-secondary);">
+      <span class="material-symbol" aria-hidden="true">book_2</span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>台詞本</span></sc-if>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-content-secondary);">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="GearWeightRegular" size="24"></x-import>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>設定</span></sc-if>
+    </button>
+  </div>
+
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; flex-shrink: 0;">
+    <h1 style="margin: 0; text-align: center; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">Step 2. 選擇台詞</h1>
+
+    <ol aria-label="步驟" style="list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 16px;">
+      <li style="display: flex; align-items: center; gap: 10px;">
+        <span style="box-sizing: border-box; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--bento-dv-indigo-40); background: var(--bento-dv-indigo-40); color: var(--bento-white); display: flex; align-items: center; justify-content: center;">
+          <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="CheckWeightBold" size="16"></x-import>
+        </span>
+        <span style="font: var(--bento-weight-medium) 14px/20px var(--bento-font-ui); color: var(--bento-neutral-60);">匯入字幕</span>
+      </li>
+      <li role="presentation" style="width: 96px; height: 1.5px; background: var(--bento-dv-indigo-40);"></li>
+      <li aria-current="step" style="display: flex; align-items: center; gap: 10px;">
+        <span style="box-sizing: border-box; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--bento-dv-indigo-40); color: var(--bento-dv-indigo-40); display: flex; align-items: center; justify-content: center; font: var(--bento-weight-semibold) 13px/16px var(--bento-font-ui);">2</span>
+        <span style="font: var(--bento-weight-semibold) 14px/20px var(--bento-font-ui); color: var(--bento-dv-indigo-40);">選擇台詞</span>
+      </li>
+      <li role="presentation" style="width: 96px; height: 1.5px; background: var(--bento-neutral-20);"></li>
+      <li style="display: flex; align-items: center; gap: 10px;">
+        <span style="box-sizing: border-box; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--bento-neutral-30); color: var(--bento-neutral-60); display: flex; align-items: center; justify-content: center; font: var(--bento-weight-medium) 13px/16px var(--bento-font-ui);">3</span>
+        <span style="font: var(--bento-weight-medium) 14px/20px var(--bento-font-ui); color: var(--bento-neutral-60);">匯入影片</span>
+      </li>
+    </ol>
+  </div>
+
+  <div ref="{{setCardRef}}" style="flex: 1 1 0; min-height: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; background: var(--bento-bg-primary); border-radius: 24px; padding: 24px 32px; box-shadow: var(--bento-elevation-md); position: relative;">
+
+    <div style="display: flex; align-items: center; justify-content: flex-start; gap: 12px; flex-shrink: 0; position: relative; z-index: 20;">
+      <button type="button" class="sub-btn sub-btn-outline" onClick="{{handleSelectAll}}">全部選取</button>
+      <button type="button" class="sub-btn sub-btn-neutral" onClick="{{handleClearAll}}">全部不選</button>
+      <div style="flex: 1 1 auto;" aria-hidden="true"></div>
+      <div style="position: relative;">
+        <button type="button" class="assign-btn" aria-haspopup="menu" aria-expanded="{{menuOpen}}" disabled="{{assignDisabled}}" onClick="{{toggleMenu}}">
+          <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">person_add</span>
+          指派給...
+          <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="{{menuChevron}}" size="20"></x-import>
+        </button>
+        <sc-if value="{{menuOpen}}" hint-placeholder-val="{{false}}">
+          <div role="menu" style="position: absolute; top: 100%; right: 0; z-index: 30; margin-top: 6px; width: 340px; box-sizing: border-box; padding: 8px; border-radius: var(--bento-radius-24); background: var(--bento-bg-primary); box-shadow: inset 0 0 0 1px var(--bento-neutral-5), var(--bento-elevation-md); display: flex; flex-direction: column;">
+            <div style="width: 100%; box-sizing: border-box; padding: 0 0 8px; --bento-border-input-enabled: var(--bento-dv-indigo-40); --bento-border-input-hover: var(--bento-dv-indigo-50); --bento-border-input-focus: var(--bento-dv-indigo-50);">
+              <x-import component-from-global-scope="BentoDS27_65ebe9.SearchBar" placeholder="角色 or 作品名稱" value="{{charQuery}}" onChange="{{handleCharQuery}}" onClear="{{clearCharQuery}}" width="100%" style="width: 100%;"></x-import>
+            </div>
+            <sc-for list="{{characterMenuItems}}" as="c" hint-placeholder-count="6">
+              <button type="button" role="menuitem" class="assign-item" onClick="{{c.pick}}">
+                <span class="sub-avatar" aria-hidden="true" style="width: 28px; height: 28px; font-size: 12px; box-shadow: none; background: {{c.bg}}; color: {{c.fg}};"><sc-if value="{{c.hasImg}}" hint-placeholder-val="{{false}}"><img src="{{c.img}}" alt="" style="object-position: {{c.imgPos}};"></sc-if><sc-if value="{{c.noImg}}" hint-placeholder-val="{{true}}">{{c.initial}}</sc-if></span>
+                <span style="flex: 1 1 auto; min-width: 0; font: var(--bento-weight-regular) 14px/18px var(--font-bento-font-ui); color: var(--bento-content-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{c.name}}</span>
+                <span style="flex-shrink: 0; box-sizing: border-box; padding: 3px 10px; border-radius: var(--bento-radius-8); background: var(--bento-dv-indigo-5); color: var(--bento-dv-indigo-50); font: var(--bento-weight-medium) 12px/18px var(--font-bento-font-ui); white-space: nowrap;">{{c.show}}</span>
+              </button>
+            </sc-for>
+            <sc-if value="{{charNoResult}}" hint-placeholder-val="{{false}}">
+              <div style="padding: 16px 12px; text-align: center; font: var(--bento-weight-regular) 13px/18px var(--font-bento-font-ui); color: var(--bento-content-secondary);">找不到符合的角色</div>
+            </sc-if>
+            <div style="height: 1px; background: var(--bento-border-decorative); margin: 8px 4px;"></div>
+            <button type="button" role="menuitem" class="assign-item" onClick="{{handleAddCharacter}}" style="color: var(--bento-content-secondary);">
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"></path></svg>
+              <span style="font: var(--bento-weight-medium) 14px/18px var(--font-bento-font-ui);">新增角色</span>
+            </button>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <div style="flex: 1 1 0; min-height: 0; box-sizing: border-box; display: flex; flex-direction: column; border: 1px solid var(--bento-neutral-10); border-radius: 16px; overflow: hidden;">
+      <div class="sub-head {{avatarClass}}" style="display: grid; align-items: center; flex-shrink: 0; height: 44px; background: var(--bento-bg-secondary); border-bottom: 1px solid var(--bento-neutral-10);">
+        <span></span>
+        <span class="sub-avatar-cell" style="padding-top: 0; align-items: center; font: var(--bento-weight-medium) 13px/18px var(--bento-font-ui); color: var(--bento-neutral-60);">角色</span>
+        <span style="font: var(--bento-weight-medium) 13px/18px var(--bento-font-ui); color: var(--bento-neutral-60);">時間</span>
+        <span style="font: var(--bento-weight-medium) 13px/18px var(--bento-font-ui); color: var(--bento-neutral-60);">內文</span>
+      </div>
+
+      <div class="sub-scroll sub-list {{listClass}} {{avatarClass}}" style="flex: 1 1 0; min-height: 0; max-height: 100%; overflow-y: auto; overflow-x: hidden;">
+        <sc-for list="{{rows}}" as="item" hint-placeholder-count="6">
+          <label class="sub-row {{item.rowClass}}">
+            <span style="display: flex; align-items: flex-start; justify-content: center; padding-top: 13px;">
+              <input type="checkbox" class="sub-input" aria-label="{{item.ariaLabel}}" checked="{{item.selected}}" onChange="{{item.toggle}}">
+              <span class="sub-box-wrap">
+                <span class="sub-box {{item.boxClass}}">
+                  <sc-if value="{{item.selected}}" hint-placeholder-val="{{false}}">
+                    <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="CheckWeightBold" size="16"></x-import>
+                  </sc-if>
+                </span>
+              </span>
+            </span>
+            <span class="sub-avatar-cell">
+              <button type="button" class="sub-avatar-btn {{item.pickClass}}" aria-label="為第 {{item.id}} 句選擇角色" aria-haspopup="dialog" onClick="{{item.openPicker}}">
+              <sc-if value="{{item.hasChar}}" hint-placeholder-val="{{false}}">
+                <span class="sub-avatar" role="img" aria-label="{{item.charName}}" title="{{item.charName}}" style="background: {{item.charBg}}; color: {{item.charFg}};"><sc-if value="{{item.charHasImg}}" hint-placeholder-val="{{false}}"><img src="{{item.charImg}}" alt="" style="object-position: {{item.charImgPos}};"></sc-if><sc-if value="{{item.charNoImg}}" hint-placeholder-val="{{true}}">{{item.charInitial}}</sc-if></span>
+              </sc-if>
+              <sc-if value="{{item.noChar}}" hint-placeholder-val="{{true}}">
+                <span class="sub-avatar sub-avatar-empty" role="img" aria-label="尚未指派角色" title="尚未指派角色">
+                  <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">person</span>
+                </span>
+              </sc-if>
+              </button>
+            </span>
+            <span style="padding: 14px 16px 14px 0; font: var(--bento-weight-regular) 13px/22px var(--bento-font-ui); color: var(--bento-content-primary); font-variant-numeric: tabular-nums; white-space: nowrap;">{{item.time}}</span>
+            <span style="display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 14px 24px 14px 0;">
+              <span style="font: var(--bento-weight-regular) 15px/22px var(--bento-font-ui); color: var(--bento-content-primary);">{{item.text}}</span>
+              <sc-if value="{{item.hasTranslation}}" hint-placeholder-val="{{true}}">
+                <span style="font: var(--bento-weight-regular) 13px/20px var(--bento-font-ui); color: var(--bento-neutral-60);">{{item.translation}}</span>
+              </sc-if>
+            </span>
+          </label>
+        </sc-for>
+        <sc-if value="{{noSubtitles}}" hint-placeholder-val="{{false}}">
+          <div style="height: 100%; min-height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--bento-content-secondary); font: var(--bento-weight-regular) 14px/20px var(--bento-font-ui);">
+            <span class="material-symbol" aria-hidden="true" style="font-size: 40px; color: var(--bento-neutral-40);">subtitles_off</span>
+            沒有可選擇的台詞
+          </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-shrink: 0;">
+      <span style="text-align: left; font: var(--bento-weight-regular) 14px/20px var(--bento-font-ui); color: var(--bento-content-primary);">全部 <span style="font-weight: 600;">{{totalCount}}</span> 個台詞<span style="color: var(--bento-neutral-30); margin: 0 10px;" aria-hidden="true">|</span>已勾選 <span style="font-weight: 600; color: var(--bento-dv-indigo-40)">{{selectedCount}}</span> 個台詞<span style="color: var(--bento-neutral-30); margin: 0 10px;" aria-hidden="true">|</span>已指派角色 <span style="font-weight: 600; color: var(--bento-dv-indigo-40)">{{assignedCount}}</span> 個台詞</span>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button type="button" class="sub-btn sub-btn-neutral sub-btn-back" onClick="{{handleBack}}"><span class="material-symbol" aria-hidden="true">arrow_back</span>回上一步</button>
+        <button type="button" class="sub-btn sub-btn-primary" disabled="{{importDisabled}}" onClick="{{handleImport}}"><span class="material-symbol" aria-hidden="true">movie</span>匯入影片</button>
+      </div>
+    </div>
+
+    <sc-if value="{{pickerOpen}}" hint-placeholder-val="{{false}}">
+      <div aria-hidden="true" onClick="{{closePicker}}" style="position: absolute; inset: 0; z-index: 40; border-radius: 24px;"></div>
+      <div class="pick-panel" role="dialog" aria-label="選擇角色" style="position: absolute; z-index: 41; left: {{pickerLeft}}; top: {{pickerTop}}; width: 400px; box-sizing: border-box; padding: 12px; border-radius: var(--bento-radius-24); background: var(--bento-bg-primary); box-shadow: inset 0 0 0 1px var(--bento-neutral-5), var(--bento-elevation-lg); display: flex; flex-direction: column; gap: 8px;">
+        <div style="width: 100%; box-sizing: border-box; --bento-border-input-enabled: var(--bento-dv-indigo-40); --bento-border-input-hover: var(--bento-dv-indigo-50); --bento-border-input-focus: var(--bento-dv-indigo-50);">
+          <x-import component-from-global-scope="BentoDS27_65ebe9.SearchBar" placeholder="角色 or 作品名稱" value="{{pickQuery}}" onChange="{{handlePickQuery}}" onClear="{{clearPickQuery}}" width="100%" style="width: 100%;"></x-import>
+        </div>
+        <div class="pick-grid">
+          <sc-for list="{{pickItems}}" as="pc" hint-placeholder-count="6">
+            <button type="button" class="pick-item {{pc.cls}}" onClick="{{pc.pick}}" aria-pressed="{{pc.current}}">
+              <span class="sub-avatar" aria-hidden="true" style="flex-shrink: 0; box-shadow: none; background: {{pc.bg}}; color: {{pc.fg}};"><sc-if value="{{pc.hasImg}}" hint-placeholder-val="{{false}}"><img src="{{pc.img}}" alt="" style="object-position: {{pc.imgPos}};"></sc-if><sc-if value="{{pc.noImg}}" hint-placeholder-val="{{true}}">{{pc.initial}}</sc-if></span>
+              <span style="min-width: 0; font: var(--bento-weight-regular) 14px/18px var(--font-bento-font-ui); color: var(--bento-content-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{pc.name}}</span>
+            </button>
+          </sc-for>
+        </div>
+        <sc-if value="{{pickNoResult}}" hint-placeholder-val="{{false}}">
+          <div style="padding: 16px 12px; text-align: center; font: var(--bento-weight-regular) 13px/18px var(--font-bento-font-ui); color: var(--bento-content-secondary);">找不到符合的角色</div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+  </div>
+
+  <sc-if value="{{showToast}}" hint-placeholder-val="{{false}}">
+    <div role="alert" style="position: absolute; top: 32px; left: 50%; transform: translateX(-50%); z-index: 50;">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Toast" tone="negative" text="無法從字幕檔提取任何台詞" width="{{360}}" onDismiss="{{dismissToast}}"></x-import>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"noSubtitles":{"editor":"boolean","default":false},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    // 示意資料：前 4 句已指派角色，第 5、6 句為勾選中
+    this.state = { expanded: true, selected: { 5: true, 6: true }, assigned: { 1: 'yuki', 2: 'frieren', 3: 'yuki', 4: 'frieren' }, menuOpen: false };
+    this.CHARACTERS = [
+      { id: 'yuki', name: '優希', show: '他是傳奇', ramp: 'indigo', img: '/_blob/8e7c48a81577b215f6492ed5ac49e399', imgPos: '50% 45%' },
+      { id: 'frieren', name: '芙莉蓮', show: '葬送的芙莉蓮', ramp: 'jade', img: '/_blob/d21b13f3cadc7105e91cae2176052ebd', imgPos: '47% 45%' },
+      { id: 'fern', name: '費倫', show: '葬送的芙莉蓮', ramp: 'violet' },
+      { id: 'lena', name: '蕾娜', show: '86－不存在的戰區－', ramp: 'pink' },
+      { id: 'kenshin', name: '緋村劍心', show: '神劍闖江湖', ramp: 'red' },
+      { id: 'okabe', name: '岡部倫太郎', show: '命運石之門', ramp: 'orange' },
+    ];
+    this.SUBTITLES = [
+      { id: 1, start: 12480, end: 15230, text: 'おはよう。今日は早いんだね。', translation: '早安。今天真早呢。' },
+      { id: 2, start: 15900, end: 18040, text: 'ちょっと眠れなくてさ。', translation: '因為有點睡不著。' },
+      { id: 3, start: 19310, end: 21760, text: 'そう言えば、昨日の話なんだけど。', translation: '說到這個，昨天說的那件事……' },
+      { id: 4, start: 22100, end: 23450, text: 'ん？', translation: '' },
+      { id: 5, start: 24020, end: 27880, text: '駅前に新しいお店ができたって聞いたから、帰りに寄ってみない？', translation: '聽說車站前開了一間新店，回家路上要不要順道去看看？' },
+      { id: 6, start: 28500, end: 30120, text: 'いいね、行こう。', translation: '好啊，走吧。' },
+      { id: 7, start: 31340, end: 33900, text: 'でも、雨が降りそうだよ。', translation: '不過，好像快下雨了喔。' },
+      { id: 8, start: 34250, end: 36700, text: '傘なら持ってるから大丈夫。', translation: '' },
+      { id: 9, start: 37480, end: 41310, text: '本当に？ じゃあ、お言葉に甘えて一緒に入れてもらおうかな。', translation: '真的嗎？那我就不客氣，跟你共撐一把傘囉。' },
+      { id: 10, start: 42000, end: 43220, text: 'どうぞ。', translation: '請。' },
+      { id: 11, start: 44650, end: 47400, text: 'あ、先生が来た。', translation: '' },
+      { id: 12, start: 48110, end: 51960, text: 'みんな席についてください。出席を取ります。', translation: '大家請入座，我要點名了。' },
+      { id: 13, start: 53020, end: 54380, text: 'はい。', translation: '' },
+      { id: 14, start: 55000, end: 58740, text: '今日は先週の続きから始めましょう。教科書の四十二ページを開いてください。', translation: '今天從上週的進度繼續，請翻開課本第四十二頁。' },
+      { id: 15, start: 60270, end: 62900, text: '先生、質問してもいいですか？', translation: '老師，我可以問問題嗎？' },
+      { id: 16, start: 63500, end: 65080, text: 'もちろん。', translation: '當然可以。' },
+    ];
+  }
+
+  toggleExpand = () => {
+    this.setState({ expanded: !this.state.expanded });
+  };
+
+  formatTime = (ms) => {
+    const pad = (n, w) => String(n).padStart(w, '0');
+    const h = Math.floor(ms / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    const s = Math.floor((ms % 60000) / 1000);
+    const x = ms % 1000;
+    return pad(h, 2) + ':' + pad(m, 2) + ':' + pad(s, 2) + '.' + pad(x, 3);
+  };
+
+  handleSelectAll = () => {
+    const all = {};
+    this.SUBTITLES.forEach((r) => { all[r.id] = true; });
+    this.setState({ selected: all });
+  };
+
+  handleClearAll = () => {
+    this.setState({ selected: {} });
+  };
+
+  handleCharQuery = (e) => this.setState({ charQuery: e.target.value });
+  clearCharQuery = () => this.setState({ charQuery: '' });
+  filteredChars = () => {
+    const q = (this.state.charQuery || '').trim().toLowerCase();
+    if (!q) return this.CHARACTERS;
+    return this.CHARACTERS.filter((c) => c.name.toLowerCase().includes(q) || (c.show || '').toLowerCase().includes(q));
+  };
+
+  setCardRef = (el) => { this.card = el; };
+
+  // 點擊列表中的角色頭像：在頭像右側彈出角色選擇面板
+  openPicker = (rowId, e) => {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    const card = this.card;
+    let left = 160, top = 120;
+    if (card && e && e.currentTarget) {
+      const cr = card.getBoundingClientRect();
+      const br = e.currentTarget.getBoundingClientRect();
+      const scale = cr.width / (card.offsetWidth || cr.width) || 1;
+      left = (br.right - cr.left) / scale + 12;
+      top = (br.top - cr.top) / scale - 12;
+      const maxTop = card.offsetHeight - 280;
+      top = Math.max(12, Math.min(top, maxTop));
+    }
+    this.setState({ pickerRow: rowId, pickerLeft: left + 'px', pickerTop: top + 'px', pickQuery: '', menuOpen: false });
+  };
+
+  closePicker = () => this.setState({ pickerRow: null });
+  handlePickQuery = (e) => this.setState({ pickQuery: e.target.value });
+  clearPickQuery = () => this.setState({ pickQuery: '' });
+
+  pickFor = (rowId, charId) => {
+    this.setState((prev) => ({ assigned: { ...(prev.assigned || {}), [rowId]: charId }, pickerRow: null, pickQuery: '' }));
+  };
+
+  dismissToast = () => this.setState({ toastDismissed: true });
+
+  toggleMenu = () => this.setState({ menuOpen: !this.state.menuOpen });
+
+  // 將目前勾選的台詞指派給角色，並清除勾選，方便接著選下一位角色的台詞
+  assignTo = (charId) => {
+    this.setState({ charQuery: '' });
+    const selected = this.state.selected || {};
+    const assigned = { ...(this.state.assigned || {}) };
+    Object.keys(selected).forEach((id) => { if (selected[id]) assigned[id] = charId; });
+    this.setState({ assigned, selected: {}, menuOpen: false });
+  };
+
+  handleAddCharacter = () => {
+    this.setState({ menuOpen: false });
+    // TODO: 開啟「新增角色」表單
+  };
+
+  charStyle = (c) => ({
+    bg: 'var(--bento-dv-' + c.ramp + '-10)',
+    fg: 'var(--bento-dv-' + c.ramp + '-70)',
+    initial: c.name.charAt(0),
+    img: c.img || '',
+    imgPos: c.imgPos || '50% 50%',
+    hasImg: !!c.img,
+    noImg: !c.img,
+  });
+
+  handleBack = () => {
+    // TODO: 回到 Step 1. 匯入字幕
+  };
+
+  handleImport = () => {
+    // TODO: 進入 Step 3. 匯入影片
+  };
+
+  renderVals() {
+    const expanded = this.state.expanded ?? true;
+    const selected = this.state.selected || {};
+    const assigned = this.state.assigned || {};
+    const noSubtitles = !!(this.props.noSubtitles ?? false);
+    const rows = (noSubtitles ? [] : this.SUBTITLES).map((r) => {
+      const isSelected = !!selected[r.id];
+      return {
+        id: r.id,
+        time: this.formatTime(r.start) + ' ~ ' + this.formatTime(r.end),
+        text: r.text,
+        translation: r.translation,
+        hasTranslation: !!r.translation,
+        selected: isSelected,
+        rowClass: isSelected ? 'is-selected' : '',
+        boxClass: isSelected ? 'is-checked' : '',
+        ariaLabel: '選取字幕 ' + r.id,
+        noChar: !assigned[r.id],
+        pickClass: this.state.pickerRow === r.id ? 'is-open' : '',
+        openPicker: (e) => this.openPicker(r.id, e),
+        ...(() => {
+          const c = this.CHARACTERS.find((x) => x.id === assigned[r.id]);
+          if (!c) return { hasChar: false, charName: '', charBg: 'transparent', charFg: 'inherit', charInitial: '', charImg: '', charImgPos: '50% 50%', charHasImg: false, charNoImg: true };
+          const st = this.charStyle(c);
+          return { hasChar: true, charName: c.name, charBg: st.bg, charFg: st.fg, charInitial: st.initial, charImg: st.img, charImgPos: st.imgPos, charHasImg: st.hasImg, charNoImg: st.noImg };
+        })(),
+        toggle: () => this.setState((prev) => ({ selected: { ...prev.selected, [r.id]: !prev.selected[r.id] } })),
+      };
+    });
+    const count = rows.filter((r) => r.selected).length;
+    const assignedCount = rows.filter((r) => r.hasChar).length;
+    const menuOpen = !!this.state.menuOpen && count > 0;
+    const pickerRow = this.state.pickerRow ?? null;
+    const pq = (this.state.pickQuery || '').trim().toLowerCase();
+    const pickChars = pq ? this.CHARACTERS.filter((c) => c.name.toLowerCase().includes(pq) || (c.show || '').toLowerCase().includes(pq)) : this.CHARACTERS;
+    return {
+      expanded,
+      toggleExpand: this.toggleExpand,
+      chevronName: expanded ? 'ChevronRight' : 'ChevronLeft',
+      toggleLabel: expanded ? '收合選單' : '展開選單',
+      rows,
+      listClass: count > 0 ? 'has-selection' : '',
+      selectedCount: count,
+      importDisabled: assignedCount === 0,
+      assignedCount,
+      noSubtitles,
+      showToast: noSubtitles && !this.state.toastDismissed,
+      dismissToast: this.dismissToast,
+      setCardRef: this.setCardRef,
+      pickerOpen: pickerRow !== null,
+      pickerLeft: this.state.pickerLeft || '160px',
+      pickerTop: this.state.pickerTop || '120px',
+      closePicker: this.closePicker,
+      pickQuery: this.state.pickQuery ?? '',
+      handlePickQuery: this.handlePickQuery,
+      clearPickQuery: this.clearPickQuery,
+      pickNoResult: pickChars.length === 0,
+      pickItems: pickChars.map((c) => {
+        const st = this.charStyle(c);
+        const isCur = pickerRow !== null && assigned[pickerRow] === c.id;
+        return { name: c.name, bg: st.bg, fg: st.fg, initial: st.initial, img: st.img, imgPos: st.imgPos, hasImg: st.hasImg, noImg: st.noImg, cls: isCur ? 'is-current' : '', current: isCur ? 'true' : 'false', pick: () => this.pickFor(pickerRow, c.id) };
+      }),
+      totalCount: rows.length,
+      avatarClass: '',
+      assignDisabled: count === 0,
+      menuOpen,
+      menuChevron: menuOpen ? 'ChevronUp' : 'ChevronDown',
+      toggleMenu: this.toggleMenu,
+      handleAddCharacter: this.handleAddCharacter,
+      charQuery: this.state.charQuery ?? '',
+      handleCharQuery: this.handleCharQuery,
+      clearCharQuery: this.clearCharQuery,
+      charNoResult: this.filteredChars().length === 0,
+      characterMenuItems: this.filteredChars().map((c) => {
+        const st = this.charStyle(c);
+        return { name: c.name, show: c.show, bg: st.bg, fg: st.fg, initial: st.initial, img: st.img, imgPos: st.imgPos, hasImg: st.hasImg, noImg: st.noImg, pick: () => this.assignTo(c.id) };
+      }),
+      handleSelectAll: this.handleSelectAll,
+      handleClearAll: this.handleClearAll,
+      handleBack: this.handleBack,
+      handleImport: this.handleImport,
+    };
+  }
+}
+</script>
+</body>
+</html>

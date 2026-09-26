@@ -1,0 +1,37 @@
+{
+  "app": { "title": "Dialogue Collector" },
+  "nav": {
+    "home": "Home",
+    "scriptBook": "Script Book",
+    "settings": "Settings",
+    "collapse": "Collapse menu",
+    "expand": "Expand menu"
+  },
+  "main": {
+    "fromSubtitle": "Import from video subtitles",
+    "manual": "Import existing audio"
+  },
+  "scriptBook": { "title": "Script Book" },
+  "lines": { "title": "Lines" },
+  "import": {
+    "subtitleTitle": "Import from video subtitles",
+    "manualTitle": "Import existing audio"
+  },
+  "settings": {
+    "title": "Settings",
+    "interface": "Interface",
+    "language": "Language",
+    "theme": "Theme",
+    "themes": {
+      "indigo": "Indigo",
+      "lightBlue": "Soft Blue",
+      "ruby": "Ruby",
+      "emerald": "Emerald",
+      "sunset": "Sunset",
+      "lipstick": "Lipstick",
+      "midnight": "Midnight"
+    },
+    "version": "Version"
+  },
+  "common": { "notImplemented": "Not implemented yet" }
+}

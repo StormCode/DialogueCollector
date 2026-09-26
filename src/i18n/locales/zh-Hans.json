@@ -1,0 +1,37 @@
+{
+  "app": { "title": "台词收藏家" },
+  "nav": {
+    "home": "主页",
+    "scriptBook": "台词本",
+    "settings": "设置",
+    "collapse": "收起菜单",
+    "expand": "展开菜单"
+  },
+  "main": {
+    "fromSubtitle": "从视频字幕导入",
+    "manual": "直接导入现有影音"
+  },
+  "scriptBook": { "title": "台词本" },
+  "lines": { "title": "台词" },
+  "import": {
+    "subtitleTitle": "从视频字幕导入",
+    "manualTitle": "直接导入现有影音"
+  },
+  "settings": {
+    "title": "设置",
+    "interface": "界面",
+    "language": "语言",
+    "theme": "主题",
+    "themes": {
+      "indigo": "靛蓝",
+      "lightBlue": "舒适浅蓝",
+      "ruby": "宝石红",
+      "emerald": "翠绿",
+      "sunset": "夕阳橙",
+      "lipstick": "口红粉",
+      "midnight": "夜光黑"
+    },
+    "version": "当前版本"
+  },
+  "common": { "notImplemented": "尚未实现" }
+}

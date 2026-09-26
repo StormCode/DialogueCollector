@@ -1,0 +1,69 @@
+/* Product theme layer (DD6 → B).
+   Binding rule: when a board is translated into a component, every `--bento-dv-indigo-*`
+   reference becomes one of the `--dc-*` variables below. Seven themes are seven sets of
+   these values; `--bento-dv-*` is left to its data-visualisation purpose.
+
+   gstack-shortcut: completeness 7/10, accepted in the design review (D7 → B). Upgrade
+   trigger: the first new board drawn in the canvas after that decision — it will copy
+   `dv-indigo` from the boards beside it and widen the gap.
+
+   Only `indigo` is taken from the boards. The other six map onto the matching Bento ramp and
+   are PROVISIONAL until T16 verifies every text/background pair at 4.5:1 (3:1 at 24px+). */
+
+:root,
+[data-theme="indigo"] {
+  --dc-accent: var(--bento-dv-indigo-40);
+  --dc-accent-hover: var(--bento-dv-indigo-50);
+  --dc-accent-strong: var(--bento-dv-indigo-30);
+  --dc-accent-soft: var(--bento-dv-indigo-5);
+}
+
+[data-theme="lightBlue"] {
+  --dc-accent: var(--bento-dv-blue-50);
+  --dc-accent-hover: var(--bento-dv-blue-60);
+  --dc-accent-strong: var(--bento-dv-blue-40);
+  --dc-accent-soft: var(--bento-dv-blue-5);
+}
+
+[data-theme="ruby"] {
+  --dc-accent: var(--bento-dv-red-40);
+  --dc-accent-hover: var(--bento-dv-red-50);
+  --dc-accent-strong: var(--bento-dv-red-30);
+  --dc-accent-soft: var(--bento-dv-red-5);
+}
+
+[data-theme="emerald"] {
+  --dc-accent: var(--bento-dv-jade-60);
+  --dc-accent-hover: var(--bento-dv-jade-70);
+  --dc-accent-strong: var(--bento-dv-jade-50);
+  --dc-accent-soft: var(--bento-dv-jade-5);
+}
+
+[data-theme="sunset"] {
+  --dc-accent: var(--bento-dv-orange-40);
+  --dc-accent-hover: var(--bento-dv-orange-50);
+  --dc-accent-strong: var(--bento-dv-orange-30);
+  --dc-accent-soft: var(--bento-dv-orange-5);
+}
+
+[data-theme="lipstick"] {
+  --dc-accent: var(--bento-dv-pink-40);
+  --dc-accent-hover: var(--bento-dv-pink-50);
+  --dc-accent-strong: var(--bento-dv-pink-30);
+  --dc-accent-soft: var(--bento-dv-pink-5);
+}
+
+/* The one dark theme: repoints the Bento semantic surfaces as well as the accent. */
+[data-theme="midnight"] {
+  color-scheme: dark;
+  --dc-accent: var(--bento-dv-indigo-20);
+  --dc-accent-hover: var(--bento-dv-indigo-10);
+  --dc-accent-strong: var(--bento-dv-indigo-10);
+  --dc-accent-soft: var(--bento-neutral-80);
+  --bento-bg-primary: var(--bento-neutral-80);
+  --bento-bg-secondary: var(--bento-neutral-90);
+  --bento-content-primary: var(--bento-neutral-1);
+  --bento-content-secondary: var(--bento-neutral-30);
+  --bento-icon-secondary: var(--bento-neutral-30);
+  --bento-neutral-5: var(--bento-neutral-70);
+}

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>部分完成</title>
+  <script src="./support.js"></script>
+  <link rel="stylesheet" href="ds/bento/tokens.css">
+  <link rel="stylesheet" href="ds/bento/components/bundle.css">
+  <script src="ds/bento/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,0,0&amp;display=block" rel="stylesheet">
+  <style>
+    body { margin: 0; }
+    .nav-item { appearance: none; -webkit-appearance: none; border: none; background: transparent; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 64px; padding: 8px 4px; border-radius: 8px; cursor: pointer; font-family: var(--font-bento-font-ui); font-weight: 500; font-size: 12px; line-height: 16px; }
+    .material-symbol { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24; }
+
+    @keyframes partial-fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .partial-fade-1 { animation: partial-fade-up 0.5s ease-out both; }
+    .partial-fade-2 { animation: partial-fade-up 0.5s ease-out 0.1s both; }
+    .partial-fade-3 { animation: partial-fade-up 0.5s ease-out 0.2s both; }
+    .partial-fade-4 { animation: partial-fade-up 0.5s ease-out 0.3s both; }
+    @media (prefers-reduced-motion: reduce) { .partial-fade-1, .partial-fade-2, .partial-fade-3, .partial-fade-4 { animation: none; } }
+
+    .complete-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; border-radius: var(--bento-radius-16); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 24px 13px 20px; }
+    .complete-btn-neutral { border: 1.5px solid var(--bento-neutral-60); background: transparent; color: var(--bento-neutral-60); }
+    .complete-btn-neutral:hover { background: var(--bento-bg-secondary); }
+    .complete-btn-primary { border: none; background: var(--bento-dv-indigo-40); color: var(--bento-white); }
+    .complete-btn-primary:hover { background: var(--bento-dv-indigo-50); }
+
+    .stat { flex: 1 1 0; display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-radius: var(--bento-radius-16); }
+    .stat-icon { width: 40px; height: 40px; border-radius: 999px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .stat-num { font: var(--bento-weight-semibold) 26px/30px var(--font-bento-font-ui); }
+    .stat-cap { font: var(--bento-weight-regular) 13px/18px var(--font-bento-font-ui); color: var(--bento-content-secondary); }
+
+    .fail-scroll { scrollbar-width: none; scrollbar-color: transparent transparent; }
+    .fail-scroll::-webkit-scrollbar { width: 8px; }
+    .fail-scroll::-webkit-scrollbar-track { background: transparent; }
+    .fail-scroll::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; }
+    .fail-scroll:hover { scrollbar-width: thin; scrollbar-color: var(--bento-neutral-20, rgba(0,0,0,0.25)) transparent; }
+    .fail-scroll:hover::-webkit-scrollbar-thumb { background: var(--bento-neutral-20, rgba(0,0,0,0.25)); }
+
+    .fail-row { display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 12px; align-items: start; padding: 14px 16px; }
+    .fail-row + .fail-row { border-top: 1px solid var(--bento-neutral-10); }
+    .fail-idx { font: var(--bento-weight-medium) 13px/20px var(--font-bento-font-ui); color: var(--bento-neutral-50); font-variant-numeric: tabular-nums; }
+    .fail-line { font: var(--bento-weight-medium) 14px/20px var(--font-bento-font-ui); color: var(--bento-content-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fail-time { font: var(--bento-weight-regular) 12px/16px var(--font-bento-font-ui); color: var(--bento-content-secondary); font-variant-numeric: tabular-nums; }
+    .fail-reason { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font: var(--bento-weight-regular) 13px/18px var(--font-bento-font-ui); color: var(--bento-negative-50); }
+  </style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 56px 80px; gap: 40px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0;">
+
+  <svg viewBox="0 0 1280 800" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
+    <path d="M 1020,0 C 1070,56 1100,175 1100,250 C 1100,415 1010,635 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--bento-dv-indigo-5);"></path>
+  </svg>
+
+  <div style="position: absolute; top: 50%; right: 0; transform: translateY(-50%); display: flex; flex-direction: column; align-items: stretch; gap: 4px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-5); border-right: none; border-top-left-radius: 16px; border-bottom-left-radius: 16px; box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.16); padding: 8px;">
+    <button type="button" aria-label="{{toggleLabel}}" onClick="{{toggleExpand}}" style="appearance: none; -webkit-appearance: none; position: absolute; top: 50%; left: -20px; transform: translateY(-50%); width: 20px; height: 56px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-5); border-right: none; border-radius: 999px 0 0 999px; box-shadow: -2px 0px 4px rgba(0, 0, 0, 0.12); color: var(--bento-icon-secondary); cursor: pointer;">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="{{chevronName}}" size="16"></x-import>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-informative-30); background-color: var(--bento-dv-indigo-5)">
+      <span style="display: inline-flex; color: var(--bento-dv-indigo-30);">
+        <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Home" size="24"></x-import>
+      </span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="color: var(--bento-dv-indigo-30)">主頁</span></sc-if>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-content-secondary);">
+      <span class="material-symbol" aria-hidden="true">book_2</span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>台詞本</span></sc-if>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-content-secondary);">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="GearWeightRegular" size="24"></x-import>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>設定</span></sc-if>
+    </button>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 0;">
+    <div style="width: 720px; max-width: 100%; max-height: 100%; box-sizing: border-box; background: var(--bento-bg-primary); border-radius: 24px; padding: 40px 48px; display: flex; flex-direction: column; gap: 24px; box-shadow: var(--bento-elevation-md);">
+
+      <div class="partial-fade-1" style="display: flex; align-items: center; gap: 20px; flex-shrink: 0;">
+        <div style="width: 72px; height: 72px; box-sizing: border-box; border-radius: 50%; border: 4px solid var(--bento-warning-40); background: var(--bento-warning-1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <span class="material-symbol" aria-hidden="true" style="font-size: 40px; color: var(--bento-warning-50);">priority_high</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <h1 style="margin: 0; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 28px; line-height: 36px; color: var(--bento-content-primary);">部分完成</h1>
+          <div style="font: var(--bento-weight-regular) 14px/20px var(--font-bento-font-ui); color: var(--bento-content-secondary);">部分台詞片段切割失敗，其餘已加入台詞本</div>
+        </div>
+      </div>
+
+      <div class="partial-fade-2" style="display: flex; gap: 16px; flex-shrink: 0;">
+        <div class="stat" style="background: var(--bento-positive-1);">
+          <div class="stat-icon" style="background: var(--bento-positive-5); color: var(--bento-positive-60);">
+            <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="CheckWeightBold" size="20"></x-import>
+          </div>
+          <div style="display: flex; flex-direction: column;">
+            <span class="stat-num" style="color: var(--bento-positive-70);">{{successCount}} 句</span>
+            <span class="stat-cap">成功</span>
+          </div>
+        </div>
+        <div class="stat" style="background: var(--bento-negative-1);">
+          <div class="stat-icon" style="background: var(--bento-negative-5); color: var(--bento-negative-50);">
+            <span class="material-symbol" aria-hidden="true" style="font-size: 22px;">close</span>
+          </div>
+          <div style="display: flex; flex-direction: column;">
+            <span class="stat-num" style="color: var(--bento-negative-60);">{{failCount}} 句</span>
+            <span class="stat-cap">失敗</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="partial-fade-3" style="flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 10px;">
+        <h2 style="margin: 0; flex-shrink: 0; font: var(--bento-weight-semibold) 15px/20px var(--font-bento-font-ui); color: var(--bento-content-primary);">失敗原因</h2>
+        <ul class="fail-scroll" style="list-style: none; margin: 0; padding: 0; flex: 1 1 auto; min-height: 0; max-height: 100%; overflow-y: auto; overflow-x: hidden; border: 1px solid var(--bento-neutral-10); border-radius: var(--bento-radius-16);">
+          <sc-for list="{{failures}}" as="f" hint-placeholder-count="4">
+            <li class="fail-row">
+              <span class="fail-idx">#{{f.index}}</span>
+              <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0;">
+                <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px; min-width: 0;">
+                  <span class="fail-line">{{f.text}}</span>
+                  <span class="fail-time" style="flex-shrink: 0;">{{f.start}} → {{f.end}}</span>
+                </div>
+                <span class="fail-reason">
+                  <span class="material-symbol" aria-hidden="true" style="font-size: 16px;">error</span>
+                  {{f.reason}}
+                </span>
+              </div>
+            </li>
+          </sc-for>
+        </ul>
+      </div>
+
+      <div class="partial-fade-4" style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-shrink: 0;">
+        <button type="button" class="complete-btn complete-btn-neutral" onClick="{{handleBackHome}}"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Home" size="24"></x-import>返回主頁</button>
+        <button type="button" class="complete-btn complete-btn-primary" onClick="{{handleRetry}}"><span class="material-symbol" aria-hidden="true">refresh</span>再試一次</button>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { expanded: true };
+    this.SUCCESS = 38;
+    this.FAILURES = [
+      { index: 7, text: 'もう一度、あの場所で会おう。', start: '00:03:12.480', end: '00:03:15.020', reason: '字幕時間超出影片長度' },
+      { index: 15, text: '約束だよ、忘れないでね。', start: '00:07:44.100', end: '00:07:44.100', reason: '片段長度為 0（開始與結束時間相同）' },
+      { index: 23, text: 'ここから先は、一人で行く。', start: '00:12:05.300', end: '00:12:08.960', reason: '音軌解碼失敗，請確認影片的音訊格式' },
+      { index: 31, text: 'ありがとう。本当に、ありがとう。', start: '00:18:27.640', end: '00:18:31.200', reason: '寫入音檔失敗：磁碟空間不足' },
+    ];
+  }
+
+  toggleExpand = () => this.setState({ expanded: !this.state.expanded });
+
+  handleBackHome = () => {
+    // TODO: 導向主頁
+  };
+
+  handleRetry = () => {
+    // TODO: 重新切割失敗的片段
+  };
+
+  renderVals() {
+    const expanded = this.state.expanded ?? true;
+    return {
+      expanded,
+      toggleExpand: this.toggleExpand,
+      chevronName: expanded ? 'ChevronRight' : 'ChevronLeft',
+      toggleLabel: expanded ? '收合選單' : '展開選單',
+      successCount: this.SUCCESS,
+      failCount: this.FAILURES.length,
+      failures: this.FAILURES,
+      handleBackHome: this.handleBackHome,
+      handleRetry: this.handleRetry,
+    };
+  }
+}
+</script>
+</body>
+</html>

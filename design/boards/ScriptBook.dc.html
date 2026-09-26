@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>台詞本</title>
+  <script src="./support.js"></script>
+  <link rel="stylesheet" href="ds/bento/tokens.css">
+  <link rel="stylesheet" href="ds/bento/components/bundle.css">
+  <script src="ds/bento/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,0,0&amp;display=block" rel="stylesheet">
+  <style>
+    body { margin: 0; }
+    .nav-item { appearance: none; -webkit-appearance: none; border: none; background: transparent; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 64px; padding: 8px 4px; border-radius: 8px; cursor: pointer; font-family: var(--font-bento-font-ui); font-weight: 500; font-size: 12px; line-height: 16px; }
+    .material-symbol { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24; }
+
+    .sb-scroll { scrollbar-width: none; scrollbar-color: transparent transparent; }
+    .sb-scroll::-webkit-scrollbar { width: 8px; }
+    .sb-scroll::-webkit-scrollbar-track { background: transparent; }
+    .sb-scroll::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; }
+    .sb-scroll:hover { scrollbar-width: thin; scrollbar-color: var(--bento-neutral-20, rgba(0,0,0,0.25)) transparent; }
+    .sb-scroll:hover::-webkit-scrollbar-thumb { background: var(--bento-neutral-20, rgba(0,0,0,0.25)); }
+
+    .sb-add-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px 14px 20px; border: none; border-radius: var(--bento-radius-16); background: var(--bento-dv-indigo-40); color: var(--bento-white); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer; }
+    .sb-add-btn:hover { background: var(--bento-dv-indigo-50); }
+
+    .sb-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-content: start; }
+
+    @keyframes sb-fade-up { 0% { opacity: 0; transform: translateY(48px); } 100% { opacity: 1; transform: translateY(0); } }
+    /* Base state is fully visible (matches the animation's 100% frame) so the
+       card always shows even where the animation never runs, e.g. a static
+       edit-mode render. animation-fill-mode has no "backwards", so before the
+       animation actually starts playing, this base style is what's used —
+       only real playback (Play mode, a normal page load) shows the fade-up. */
+    .sb-card-wrap { position: relative; box-sizing: border-box; border-radius: var(--bento-radius-16); overflow: hidden; opacity: 1; transform: translateY(0); animation-name: sb-fade-up; animation-duration: 1100ms; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); animation-fill-mode: forwards; }
+    @media (prefers-reduced-motion: reduce) { .sb-card-wrap { animation: none; } }
+    .sb-card { appearance: none; -webkit-appearance: none; text-align: left; width: 100%; display: flex; align-items: center; gap: 16px; box-sizing: border-box; padding: 16px 20px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-10); border-radius: var(--bento-radius-16); cursor: pointer; transition: background-color 120ms ease, box-shadow 120ms ease; }
+    .sb-card:hover { background: var(--bento-bg-secondary); box-shadow: var(--bento-elevation-sm); }
+
+    /* Hover reveal: hovering anywhere on the card shows the arc + edit icon
+       in the top-right corner, after a 1s delay (transition-delay trick:
+       0-duration opacity transition with a delay on the way in, and no
+       delay on the way out so it hides immediately on mouse-leave). */
+    .sb-card-corner { position: absolute; top: 0; right: 0; width: 96px; height: 96px; border-radius: 50%; transform: translate(40%, -40%); background: var(--bento-dv-indigo-10); opacity: 0; pointer-events: none; transition: opacity 0s linear 0s; }
+    .sb-card-wrap:hover .sb-card-corner { opacity: 0.5; transition: opacity 0s linear 1s; }
+
+    .sb-card-edit-btn { appearance: none; -webkit-appearance: none; position: absolute; top: 6px; right: 6px; width: 34px; height: 34px; box-sizing: border-box; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: transparent; color: var(--bento-dv-indigo-30); opacity: 0; cursor: pointer; transition: opacity 0s linear 0s; }
+    .sb-card-wrap:hover .sb-card-edit-btn { opacity: 1; transition: opacity 0s linear 1s; }
+    .sb-card-edit-btn:hover { color: var(--bento-dv-indigo-50); }
+
+    .sb-card-avatar { flex-shrink: 0; width: 72px; height: 72px; border-radius: var(--bento-radius-12); background: var(--bento-bg-secondary); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .sb-card-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .sb-card-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .sb-card-name { font: var(--bento-weight-semibold) 18px/24px var(--bento-font-ui); color: var(--bento-content-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sb-card-source { font: var(--bento-weight-medium) 14px/20px var(--bento-font-ui); color: var(--bento-content-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sb-card-cv { font: var(--bento-weight-regular) 13px/18px var(--bento-font-ui); color: var(--bento-neutral-60); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .sb-filter-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; flex-shrink: 0; border-radius: var(--bento-radius-16); border: none; box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-border-input-enabled); background: var(--bento-bg-primary); color: var(--bento-content-secondary); cursor: pointer; }
+    .sb-filter-btn:hover { background: var(--bento-bg-secondary); box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-border-input-hover); }
+    .sb-filter-btn.is-active { background: var(--bento-dv-indigo-5); box-shadow: inset 0 0 0 var(--bento-border-width-strong) var(--bento-border-input-focus); color: var(--bento-dv-indigo-40); }
+
+    .sb-filter-panel { position: absolute; top: calc(100% + 8px); left: 0; z-index: 999; transform: translateZ(0); will-change: transform; width: 560px; max-height: 50vh; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-10); border-radius: var(--bento-radius-16); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16); }
+    .sb-filter-cols { display: grid; grid-template-columns: 1fr 1fr; flex: 1 1 auto; min-height: 0; }
+    .sb-filter-col { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+    .sb-filter-col + .sb-filter-col { border-left: 1px solid var(--bento-neutral-10); }
+    .sb-filter-col-title { flex-shrink: 0; padding: 14px 16px 6px; font: var(--bento-weight-semibold) 13px/16px var(--bento-font-ui); color: var(--bento-content-secondary); }
+    .sb-filter-tags { flex-shrink: 0; display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 10px; }
+    .sb-filter-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 4px 16px 14px; display: flex; flex-direction: column; gap: 2px; scrollbar-width: none; scrollbar-color: transparent transparent; }
+    .sb-filter-list::-webkit-scrollbar { width: 8px; }
+    .sb-filter-list::-webkit-scrollbar-track { background: transparent; }
+    .sb-filter-list::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; }
+    .sb-filter-list:hover { scrollbar-width: thin; scrollbar-color: var(--bento-neutral-20, rgba(0,0,0,0.25)) transparent; }
+    .sb-filter-list:hover::-webkit-scrollbar-thumb { background: var(--bento-neutral-20, rgba(0,0,0,0.25)); }
+    .sb-filter-item { --bento-bg-interactive: var(--bento-dv-indigo-40); --bento-border-input-enabled: var(--bento-dv-indigo-20); --bento-border-input-hover: var(--bento-dv-indigo-40); width: 100%; box-sizing: border-box; padding: 6px 4px; border-radius: var(--bento-radius-8); }
+    .sb-filter-item:hover { background: var(--bento-bg-secondary); }
+
+    .sb-pagination { display: flex; align-items: center; justify-content: center; gap: 6px; flex-shrink: 0; }
+    .sb-page-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 6px; border-radius: var(--bento-radius-8); border: 1px solid var(--bento-neutral-10); background: var(--bento-bg-primary); color: var(--bento-content-secondary); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer; }
+    .sb-page-btn:hover:not(:disabled) { background: var(--bento-bg-secondary); }
+    .sb-page-btn:disabled { color: var(--bento-action-disabled-fg); cursor: not-allowed; opacity: 0.5; }
+    .sb-page-btn.is-current { background: var(--bento-dv-indigo-40); border-color: var(--bento-dv-indigo-40); color: var(--bento-white); }
+    .sb-page-ellipsis { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; color: var(--bento-neutral-40); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); }
+  </style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 56px 104px; gap: 28px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0;">
+
+  <svg viewBox="0 0 1280 800" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
+    <path d="M 1020,0 C 1070,56 1100,175 1100,250 C 1100,415 1010,635 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--bento-dv-indigo-5);"></path>
+  </svg>
+
+  <div style="position: absolute; top: 50%; right: 0; transform: translateY(-50%); display: flex; flex-direction: column; align-items: stretch; gap: 4px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-5); border-right: none; border-top-left-radius: 16px; border-bottom-left-radius: 16px; box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.16); padding: 8px;">
+    <button type="button" aria-label="{{toggleLabel}}" onClick="{{toggleExpand}}" style="appearance: none; -webkit-appearance: none; position: absolute; top: 50%; left: -20px; transform: translateY(-50%); width: 20px; height: 56px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-5); border-right: none; border-radius: 999px 0 0 999px; box-shadow: -2px 0px 4px rgba(0, 0, 0, 0.12); color: var(--bento-icon-secondary); cursor: pointer;">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="{{chevronName}}" size="16"></x-import>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-content-secondary);">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Home" size="24"></x-import>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>主頁</span></sc-if>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-informative-30); background-color: var(--bento-dv-indigo-5)">
+      <span style="display: inline-flex; color: var(--bento-dv-indigo-30);">
+        <span class="material-symbol" aria-hidden="true">book_2</span>
+      </span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="color: var(--bento-dv-indigo-30)">台詞本</span></sc-if>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-content-secondary);">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="GearWeightRegular" size="24"></x-import>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>設定</span></sc-if>
+    </button>
+  </div>
+
+  <h1 style="margin: 0; flex-shrink: 0; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">台詞本</h1>
+
+  <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
+    <x-import component-from-global-scope="BentoDS27_65ebe9.SearchBar" placeholder="角色名稱 or CV/飾演" value="{{query}}" onChange="{{handleQueryChange}}" onClear="{{handleQueryClear}}" style="width: 400px;"></x-import>
+
+    <div style="position: relative; z-index: 30; flex-shrink: 0; margin-left: -12px; transform: translateX(-62px);">
+      <button type="button" class="sb-filter-btn {{filterBtnClass}}" aria-label="篩選" aria-expanded="{{filterOpen}}" onClick="{{toggleFilter}}">
+        <span class="material-symbol" aria-hidden="true">filter_list</span>
+      </button>
+      <sc-if value="{{filterOpen}}" hint-placeholder-val="{{false}}">
+        <div class="sb-filter-panel">
+          <div class="sb-filter-cols">
+            <div class="sb-filter-col">
+              <div class="sb-filter-col-title">類別</div>
+              <div class="sb-filter-tags">
+                <sc-for list="{{catTags}}" as="tag" hint-placeholder-count="0">
+                  <x-import component-from-global-scope="BentoDS27_65ebe9.Chip" label="{{tag.name}}" color="indigo" removable="{{true}}" onRemove="{{tag.remove}}"></x-import>
+                </sc-for>
+              </div>
+              <div class="sb-filter-list">
+                <sc-for list="{{catOptions}}" as="opt" hint-placeholder-count="6">
+                  <span class="sb-filter-item">
+                    <x-import component-from-global-scope="BentoDS27_65ebe9.Checkbox" label="{{opt.name}}" checked="{{opt.checked}}" onChange="{{opt.toggle}}" style="width: 100%;"></x-import>
+                  </span>
+                </sc-for>
+              </div>
+            </div>
+            <div class="sb-filter-col">
+              <div class="sb-filter-col-title">動畫/電影/電視劇名稱</div>
+              <div class="sb-filter-tags">
+                <sc-for list="{{sourceTags}}" as="tag" hint-placeholder-count="0">
+                  <x-import component-from-global-scope="BentoDS27_65ebe9.Chip" label="{{tag.name}}" color="indigo" removable="{{true}}" onRemove="{{tag.remove}}"></x-import>
+                </sc-for>
+              </div>
+              <div class="sb-filter-list">
+                <sc-for list="{{sourceOptions}}" as="opt" hint-placeholder-count="6">
+                  <span class="sb-filter-item">
+                    <x-import component-from-global-scope="BentoDS27_65ebe9.Checkbox" label="{{opt.name}}" checked="{{opt.checked}}" onChange="{{opt.toggle}}" style="width: 100%;"></x-import>
+                  </span>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="flex: 1 1 auto;" aria-hidden="true"></div>
+
+    <button type="button" class="sb-add-btn" onClick="{{handleAdd}}"><span class="material-symbol" aria-hidden="true">add</span>
+      新增角色</button>
+  </div>
+
+  <sc-if value="{{isEmpty}}" hint-placeholder-val="{{false}}">
+    <div style="flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center;">
+      <img src="/_blob/a41f06bab49514a736e15468dc1a8344" alt="" aria-hidden="true" style="width: 360px; height: 360px; object-fit: contain; mix-blend-mode: multiply; margin: -40px 0 -48px;">
+      <p style="margin: 0; font: var(--bento-weight-medium) 18px/26px var(--bento-font-ui); color: var(--bento-content-secondary);">這裡什麼都沒有</p>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{noResult}}" hint-placeholder-val="{{false}}">
+    <div role="status" style="flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center;">
+      <img src="/_blob/a41f06bab49514a736e15468dc1a8344" alt="" aria-hidden="true" style="width: 360px; height: 360px; object-fit: contain; mix-blend-mode: multiply; margin: -40px 0 -44px;">
+      <p style="margin: 0; font: var(--bento-weight-medium) 18px/26px var(--bento-font-ui); color: var(--bento-content-secondary);">找不到符合的角色</p>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{notEmpty}}" hint-placeholder-val="{{true}}">
+  <div class="sb-scroll" style="flex: 1 1 0; min-height: 0; overflow-y: auto; overflow-x: hidden; padding-right: 4px;">
+    <div class="sb-grid">
+      <sc-for list="{{books}}" as="item" hint-placeholder-count="8">
+        <div class="sb-card-wrap" style="animation-delay: {{item.delay}};">
+          <button type="button" class="sb-card" onClick="{{item.open}}">
+            <span class="sb-card-avatar">
+              <sc-if value="{{item.hasImage}}" hint-placeholder-val="{{false}}">
+                <img src="{{item.image}}" alt="">
+              </sc-if>
+              <sc-if value="{{item.noImage}}" hint-placeholder-val="{{true}}">
+                <span class="material-symbol" aria-hidden="true" style="font-size: 32px; color: var(--bento-icon-secondary);">person</span>
+              </sc-if>
+            </span>
+            <span class="sb-card-body">
+              <span class="sb-card-name">{{item.name}}</span>
+              <span class="sb-card-source">{{item.source}}</span>
+              <span class="sb-card-cv">{{item.cv}}</span>
+            </span>
+          </button>
+          <span class="sb-card-corner" aria-hidden="true"></span>
+          <button type="button" class="sb-card-edit-btn" aria-label="編輯{{item.name}}" onClick="{{item.edit}}">
+            <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="PencilWeightRegular" size="20"></x-import>
+          </button>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div class="sb-pagination">
+    <button type="button" class="sb-page-btn" aria-label="第一頁" disabled="{{isFirstPage}}" onClick="{{goFirst}}">
+      <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">first_page</span>
+    </button>
+    <button type="button" class="sb-page-btn" aria-label="上一頁" disabled="{{isFirstPage}}" onClick="{{goPrev}}">
+      <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">chevron_left</span>
+    </button>
+    <sc-for list="{{pageItems}}" as="p" hint-placeholder-count="4">
+      <sc-if value="{{p.isEllipsis}}" hint-placeholder-val="{{false}}">
+        <span class="sb-page-ellipsis">…</span>
+      </sc-if>
+      <sc-if value="{{p.isPage}}" hint-placeholder-val="{{true}}">
+        <button type="button" class="sb-page-btn {{p.currentClass}}" aria-label="第 {{p.label}} 頁" onClick="{{p.go}}">{{p.label}}</button>
+      </sc-if>
+    </sc-for>
+    <button type="button" class="sb-page-btn" aria-label="下一頁" disabled="{{isLastPage}}" onClick="{{goNext}}">
+      <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">chevron_right</span>
+    </button>
+    <button type="button" class="sb-page-btn" aria-label="最後一頁" disabled="{{isLastPage}}" onClick="{{goLast}}">
+      <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">last_page</span>
+    </button>
+  </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"empty":{"editor":"boolean","default":false},"searchQuery":{"editor":"text","default":""},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: true,
+      page: 1,
+      query: props.searchQuery ?? '',
+      filterOpen: false,
+      selectedSources: [],
+      selectedCats: [],
+    };
+    this.PAGE_SIZE = 8;
+    this.BOOKS = Array.from({ length: 26 }, (_, i) => ({
+      id: i + 1,
+      name: '角色名稱',
+      source: '動畫／戲劇名稱',
+      cv: 'CV／飾演',
+      image: null,
+    }));
+    this.SOURCES = Array.from({ length: 14 }, (_, i) => `作品名稱 ${String(i + 1).padStart(2, '0')}`);
+    this.CATS = ['動畫', '電影', '電視劇'];
+  }
+
+  toggleExpand = () => {
+    this.setState({ expanded: !this.state.expanded });
+  };
+
+  handleAdd = () => {
+    // TODO: 開啟「新增台詞本」流程
+  };
+
+  handleQueryChange = (e) => {
+    this.setState({ query: e.target.value, page: 1 });
+  };
+
+  handleQueryClear = () => {
+    this.setState({ query: '', page: 1 });
+  };
+
+  toggleFilter = () => {
+    this.setState({ filterOpen: !this.state.filterOpen });
+  };
+
+  toggleSource = (name) => {
+    const cur = this.state.selectedSources || [];
+    const next = cur.includes(name) ? cur.filter((n) => n !== name) : [...cur, name];
+    this.setState({ selectedSources: next });
+  };
+
+  toggleCat = (name) => {
+    const cur = this.state.selectedCats || [];
+    const next = cur.includes(name) ? cur.filter((n) => n !== name) : [...cur, name];
+    this.setState({ selectedCats: next });
+  };
+
+  getFiltered = () => {
+    const query = (this.state.query || '').trim();
+    if (!query) return this.BOOKS;
+    return this.BOOKS.filter((b) => b.name.includes(query) || b.cv.includes(query));
+  };
+
+  totalPages = () => Math.max(1, Math.ceil(this.getFiltered().length / this.PAGE_SIZE));
+
+  goToPage = (n) => {
+    const total = this.totalPages();
+    const clamped = Math.min(Math.max(1, n), total);
+    this.setState({ page: clamped });
+  };
+
+  goFirst = () => this.goToPage(1);
+  goPrev = () => this.goToPage((this.state.page ?? 1) - 1);
+  goNext = () => this.goToPage((this.state.page ?? 1) + 1);
+  goLast = () => this.goToPage(this.totalPages());
+
+  buildPageItems = (current, total) => {
+    const nums = [1];
+    const delta = 1;
+    for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
+      nums.push(i);
+    }
+    if (total > 1) nums.push(total);
+    const items = [];
+    let prev = 0;
+    nums.forEach((n) => {
+      if (n - prev > 1) {
+        items.push({ isEllipsis: true, isPage: false, label: '…' });
+      }
+      items.push({
+        isEllipsis: false,
+        isPage: true,
+        label: String(n),
+        currentClass: n === current ? 'is-current' : '',
+        go: () => this.goToPage(n),
+      });
+      prev = n;
+    });
+    return items;
+  };
+
+  renderVals() {
+    const expanded = this.state.expanded ?? true;
+    const filterOpen = this.state.filterOpen ?? false;
+    const selectedSources = this.state.selectedSources || [];
+    const selectedCats = this.state.selectedCats || [];
+    const sourceTags = selectedSources.map((name) => ({ name, remove: () => this.toggleSource(name) }));
+    const catTags = selectedCats.map((name) => ({ name, remove: () => this.toggleCat(name) }));
+    const sourceOptions = this.SOURCES.map((name) => ({
+      name,
+      checked: selectedSources.includes(name),
+      toggle: () => this.toggleSource(name),
+    }));
+    const catOptions = this.CATS.map((name) => ({
+      name,
+      checked: selectedCats.includes(name),
+      toggle: () => this.toggleCat(name),
+    }));
+    const isEmpty = !!(this.props.empty ?? false);
+    const filtered = isEmpty ? [] : this.getFiltered();
+    const total = this.totalPages();
+    const page = Math.min(Math.max(1, this.state.page ?? 1), total);
+    const cols = 2;
+    const start = (page - 1) * this.PAGE_SIZE;
+    const pageBooks = filtered.slice(start, start + this.PAGE_SIZE);
+    const books = pageBooks.map((b, i) => {
+      const row = Math.floor(i / cols); // top row appears first; each card still rises up from below as it fades in
+      return {
+        id: b.id,
+        name: b.name,
+        source: b.source,
+        cv: b.cv,
+        image: b.image,
+        hasImage: !!b.image,
+        noImage: !b.image,
+        delay: (row * 180) + 'ms',
+        open: () => {
+          // TODO: 開啟此台詞本
+        },
+        edit: (e) => {
+          e.stopPropagation();
+          // TODO: 開啟編輯此角色的表單
+        },
+      };
+    });
+    return {
+      isEmpty,
+      noResult: !isEmpty && filtered.length === 0,
+      notEmpty: !isEmpty && filtered.length > 0,
+      expanded,
+      toggleExpand: this.toggleExpand,
+      chevronName: expanded ? 'ChevronRight' : 'ChevronLeft',
+      toggleLabel: expanded ? '收合選單' : '展開選單',
+      books,
+      handleAdd: this.handleAdd,
+      query: this.state.query ?? '',
+      handleQueryChange: this.handleQueryChange,
+      handleQueryClear: this.handleQueryClear,
+      filterOpen,
+      toggleFilter: this.toggleFilter,
+      filterBtnClass: (filterOpen || selectedSources.length || selectedCats.length) ? 'is-active' : '',
+      sourceTags,
+      catTags,
+      sourceOptions,
+      catOptions,
+      pageItems: this.buildPageItems(page, total),
+      isFirstPage: page <= 1,
+      isLastPage: page >= total,
+      goFirst: this.goFirst,
+      goPrev: this.goPrev,
+      goNext: this.goNext,
+      goLast: this.goLast,
+    };
+  }
+}
+</script>
+</body>
+</html>
