@@ -29,4 +29,27 @@ impl From<crate::library::LibraryError> for CommandError {
     }
 }
 
+impl From<crate::media::MediaError> for CommandError {
+    fn from(e: crate::media::MediaError) -> Self {
+        use crate::media::MediaError;
+        let kind = match e {
+            MediaError::SidecarUnusable(_) => "Media.SidecarUnusable",
+            MediaError::Exit { .. } => "Media.Exit",
+            MediaError::Killed => "Media.Killed",
+        };
+        Self::new(kind, e)
+    }
+}
+
+impl From<crate::store::StoreError> for CommandError {
+    fn from(e: crate::store::StoreError) -> Self {
+        use crate::store::StoreError;
+        let kind = match e {
+            StoreError::Sqlite(_) => "Store.Sqlite",
+            StoreError::SchemaTooNew { .. } => "Store.SchemaTooNew",
+        };
+        Self::new(kind, e)
+    }
+}
+
 pub type CommandResult<T> = Result<T, CommandError>;

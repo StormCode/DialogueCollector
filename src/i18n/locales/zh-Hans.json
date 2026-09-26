@@ -1,5 +1,7 @@
 {
-  "app": { "title": "台词收藏家" },
+  "app": {
+    "title": "台词收藏家"
+  },
   "nav": {
     "home": "主页",
     "scriptBook": "台词本",
@@ -11,8 +13,12 @@
     "fromSubtitle": "从视频字幕导入",
     "manual": "直接导入现有影音"
   },
-  "scriptBook": { "title": "台词本" },
-  "lines": { "title": "台词" },
+  "scriptBook": {
+    "title": "台词本"
+  },
+  "lines": {
+    "title": "台词"
+  },
   "import": {
     "subtitleTitle": "从视频字幕导入",
     "manualTitle": "直接导入现有影音"
@@ -33,5 +39,15 @@
     },
     "version": "当前版本"
   },
-  "common": { "notImplemented": "尚未实现" }
+  "common": {
+    "notImplemented": "尚未实现"
+  },
+  "diagnostics": {
+    "title": "诊断",
+    "run": "运行冒烟测试",
+    "running": "运行中…",
+    "passed": "通过",
+    "failed": "失败",
+    "link": "诊断工具"
+  }
 }

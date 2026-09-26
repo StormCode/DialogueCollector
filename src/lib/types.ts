@@ -47,3 +47,11 @@ export interface CommandError {
   kind: string;
   message: string;
 }
+
+/** Result of the T1 walking-skeleton check (`smoke.rs`). */
+export interface SmokeReport {
+  clipPath: string;
+  clipBytes: number;
+  rowId: number;
+  cutMs: number;
+}

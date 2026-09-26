@@ -1,15 +1,14 @@
 //! The bundled ffmpeg sidecar (D7 → A). One ffmpeg pass per cue: seek + audio-only + encode
 //! straight to `.m4a` — there is no intermediate video segment and no temp video dir (D1).
 //!
-//! TODO(T1/T3): register `binaries/ffmpeg` (and `ffprobe`) under `bundle.externalBin` once an
-//! LGPL build is pinned with a SHA256 per target. Until then the sidecar is not bundled.
+//! The sidecar binaries are LGPL builds pinned in `scripts/ffmpeg/pins.json` (T3) and
+//! registered under `bundle.externalBin`.
 //! TODO(T2/ET8): measure per-cue cost; if > 500 ms/cue, fall back to one invocation per source
 //! with many `-ss`/`-to` outputs, chunked under Windows' 32767-char argv limit.
 
-use rand::Rng;
+pub mod ffmpeg;
 
-/// Sidecar name as registered in `tauri.conf.json` `bundle.externalBin`.
-pub const FFMPEG_SIDECAR: &str = "binaries/ffmpeg";
+use rand::Rng;
 
 /// Containers accepted by the subtitle path (G3: TS was cut).
 pub const VIDEO_EXTENSIONS: &[&str] = &["mkv", "mp4", "webm"];
@@ -20,8 +19,10 @@ const CLIP_NAME_ALPHABET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 #[derive(Debug, thiserror::Error)]
 pub enum MediaError {
-    #[error("failed to spawn ffmpeg: {0}")]
-    Spawn(String),
+    /// The bundled binary exists but cannot run: missing, quarantined, unsigned, or lost its
+    /// `+x` bit (FC2). User-visible as 「內建的 ffmpeg 無法執行」.
+    #[error("the bundled ffmpeg cannot be executed: {0}")]
+    SidecarUnusable(String),
 
     #[error("ffmpeg exited with code {code:?}: {stderr_tail}")]
     Exit {

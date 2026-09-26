@@ -1,0 +1,107 @@
+# T1: build the packaged app on every target and run the walking-skeleton check against the
+# packaged artifact (not a dev build): sidecar spawns, one cue is cut, one row is written,
+# the renderer loads the clip through the asset protocol. T21 grows this into the full matrix
+# (downloaded-artifact launch for quarantine, ET11).
+name: package-smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  macos:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: aarch64
+          # x86_64 is cross-built on the arm64 runner and smoke-tested under Rosetta.
+          - arch: x86_64
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.arch }}-apple-darwin
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Cache ffmpeg sidecar
+        id: ffmpeg-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            src-tauri/binaries/ffmpeg-${{ matrix.arch }}-apple-darwin
+            src-tauri/binaries/ffprobe-${{ matrix.arch }}-apple-darwin
+          key: ffmpeg-${{ matrix.arch }}-apple-darwin-${{ hashFiles('scripts/ffmpeg/pins.json', 'scripts/ffmpeg/build-macos.sh') }}
+      - name: Build LGPL ffmpeg
+        if: steps.ffmpeg-cache.outputs.cache-hit != 'true'
+        run: |
+          [ "${{ matrix.arch }}" = x86_64 ] && brew install nasm
+          scripts/ffmpeg/build-macos.sh ${{ matrix.arch }}
+
+      - run: npm ci
+      - run: npm test
+      - name: Package
+        run: npm run tauri build -- --target ${{ matrix.arch }}-apple-darwin
+
+      - name: Smoke test the packaged app
+        run: |
+          app="src-tauri/target/${{ matrix.arch }}-apple-darwin/release/bundle/macos/DialogueCollector.app"
+          "$app/Contents/MacOS/dialogue-collector" --smoke --smoke-report smoke.txt
+          cat smoke.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-${{ matrix.arch }}
+          path: src-tauri/target/${{ matrix.arch }}-apple-darwin/release/bundle/dmg/*.dmg
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Cache ffmpeg download
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/dialogue-collector/*.zip
+          key: ffmpeg-windows-${{ hashFiles('scripts/ffmpeg/pins.json') }}
+      - name: Fetch pinned LGPL ffmpeg (SHA256-checked)
+        run: node scripts/ffmpeg/fetch-windows.mjs
+
+      - run: npm ci
+      - run: npm test
+      - name: Package
+        run: npm run tauri build -- --bundles nsis
+
+      - name: Install silently and smoke test the installed app
+        shell: pwsh
+        run: |
+          $setup = Get-ChildItem src-tauri/target/release/bundle/nsis/*-setup.exe | Select-Object -First 1
+          $dir = Join-Path $env:RUNNER_TEMP "dc-install"
+          Start-Process $setup.FullName -ArgumentList "/S", "/D=$dir" -Wait
+          $report = Join-Path $env:RUNNER_TEMP "smoke.txt"
+          # Release builds use the GUI subsystem, so stdout is not attached: read the report file.
+          $p = Start-Process (Join-Path $dir "dialogue-collector.exe") -ArgumentList "--smoke", "--smoke-report", $report -Wait -PassThru
+          Get-Content $report
+          exit $p.ExitCode
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: src-tauri/target/release/bundle/nsis/*-setup.exe

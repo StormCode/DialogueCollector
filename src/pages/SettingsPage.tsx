@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import { LOCALE_NAMES } from "../i18n";
@@ -51,7 +52,9 @@ export function SettingsPage() {
       </label>
 
       <h2>{t("settings.version")}</h2>
-      <p>{version}</p>
+      <p>
+        {version} · <Link to="/diagnostics">{t("diagnostics.link")}</Link>
+      </p>
     </section>
   );
 }
