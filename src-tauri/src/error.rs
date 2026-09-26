@@ -47,6 +47,7 @@ impl From<crate::store::StoreError> for CommandError {
         let kind = match e {
             StoreError::Sqlite(_) => "Store.Sqlite",
             StoreError::SchemaTooNew { .. } => "Store.SchemaTooNew",
+            StoreError::Migration { .. } => "Store.Migration",
         };
         Self::new(kind, e)
     }
