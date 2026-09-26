@@ -38,6 +38,14 @@ rm -rf "$WORK" && mkdir -p "$WORK"
 tar -xJf "$TARBALL" -C "$WORK" --strip-components=1
 cd "$WORK"
 
+# configure and make write to log files to keep CI output readable; show their tails on failure.
+dump_logs() {
+  for log in configure.log ffbuild/config.log make.log; do
+    [ -f "$log" ] && { echo "::group::tail $log" >&2; tail -n 60 "$log" >&2; echo "::endgroup::" >&2; }
+  done
+}
+trap 'status=$?; [ $status -ne 0 ] && dump_logs; exit $status' EXIT
+
 ASM_FLAGS=()
 if [ "$ARCH" = x86_64 ] && ! command -v nasm >/dev/null; then
   echo "warning: nasm not found, building x86_64 without assembly optimizations" >&2
