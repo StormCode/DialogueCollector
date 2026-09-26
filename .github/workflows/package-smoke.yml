@@ -10,6 +10,11 @@ on:
   pull_request:
   workflow_dispatch:
 
+# A newer push to the same ref supersedes a run in progress (macOS minutes bill at 10x).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   macos:
     strategy:
@@ -21,8 +26,8 @@ jobs:
           - arch: x86_64
     runs-on: macos-14
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -35,7 +40,7 @@ jobs:
 
       - name: Cache ffmpeg sidecar
         id: ffmpeg-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             src-tauri/binaries/ffmpeg-${{ matrix.arch }}-apple-darwin
@@ -58,7 +63,7 @@ jobs:
           "$app/Contents/MacOS/dialogue-collector" --smoke --smoke-report smoke.txt
           cat smoke.txt
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: macos-${{ matrix.arch }}
           path: src-tauri/target/${{ matrix.arch }}-apple-darwin/release/bundle/dmg/*.dmg
@@ -66,8 +71,8 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -78,7 +83,7 @@ jobs:
 
       - name: Cache ffmpeg sidecar
         id: ffmpeg-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             src-tauri/binaries/ffmpeg-x86_64-pc-windows-msvc.exe
@@ -122,7 +127,7 @@ jobs:
           Get-Content $report
           exit $p.ExitCode
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: windows-x64
           path: src-tauri/target/release/bundle/nsis/*-setup.exe
