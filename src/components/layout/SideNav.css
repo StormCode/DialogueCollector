@@ -61,6 +61,7 @@
   border-radius: 8px;
   color: var(--bento-content-secondary);
   font: 500 12px/16px var(--dc-ui-font);
+  text-align: center;
   text-decoration: none;
 }
 
