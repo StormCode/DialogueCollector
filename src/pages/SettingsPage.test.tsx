@@ -1,8 +1,9 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, Route, Routes } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import "../i18n";
+import { ipc } from "../lib/ipc";
 import { DEFAULT_SETTINGS } from "../lib/types";
 import { useBackupStore } from "../stores/backupStore";
 import { useLibraryStore } from "../stores/libraryStore";
@@ -36,6 +37,7 @@ describe("SettingsPage", () => {
     });
     useBackupStore.setState({ exporting: false, exportProgress: null, importing: false });
     dialog.open.mockReset();
+    vi.restoreAllMocks();
   });
 
   it("lists the five sections of the board in the index", () => {
@@ -122,5 +124,37 @@ describe("SettingsPage", () => {
     expect(modal).toHaveTextContent("正在複製音檔 642 / 1,284");
     expect(within(modal).getByRole("progressbar")).toHaveAttribute("aria-valuenow", "50");
     expect(within(modal).getByRole("button", { name: "取消匯出" })).toBeInTheDocument();
+  });
+
+  it("hides 遺失的檔案數 while every clip is on disk", async () => {
+    const verify = vi.spyOn(ipc, "verifyLibrary").mockResolvedValue([]);
+    renderPage();
+    await vi.waitFor(() => expect(verify).toHaveBeenCalled());
+    expect(screen.queryByRole("button", { name: /遺失的檔案數/ })).not.toBeInTheDocument();
+  });
+
+  it("lists missing clips and links each to its character's 台詞頁 (T20)", async () => {
+    vi.spyOn(ipc, "verifyLibrary").mockResolvedValue([
+      { lineId: 3, characterId: 7, characterName: "岡部倫太郎", portraitPath: null, text: "這一切都是命運石之門的選擇。" },
+      { lineId: 1, characterId: 2, characterName: "芙莉蓮", portraitPath: null, text: "人類的壽命真的很短暫呢。" },
+    ]);
+    render(
+      <MemoryRouter initialEntries={["/settings"]}>
+        <Routes>
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/characters/:characterId" element={<p>lines page</p>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    const stat = await screen.findByRole("button", { name: /遺失的檔案數/ });
+    expect(stat).toHaveTextContent("2");
+    fireEvent.click(stat);
+
+    const modal = screen.getByRole("dialog", { name: "遺失的檔案" });
+    expect(modal).toHaveTextContent("共 2 個台詞的音檔已不在收藏庫中");
+    expect(within(modal).getAllByRole("row")).toHaveLength(3);
+    expect(modal).toHaveTextContent("這一切都是命運石之門的選擇。");
+    fireEvent.click(within(modal).getByRole("link", { name: "查看芙莉蓮的台詞" }));
+    expect(await screen.findByText("lines page")).toBeInTheDocument();
   });
 });

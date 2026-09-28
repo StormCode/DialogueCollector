@@ -236,6 +236,10 @@
   width: 520px;
 }
 
+.ui-modal--large {
+  width: 720px;
+}
+
 .ui-modal__head {
   display: flex;
   align-items: center;

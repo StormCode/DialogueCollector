@@ -324,6 +324,18 @@ pub async fn import_backup(
     })
 }
 
+/// 驗證收藏庫 (T20): every line whose clip is gone from the library folder.
+#[tauri::command]
+pub fn verify_library(
+    state: State<'_, AppState>,
+) -> CommandResult<Vec<crate::library::folder::MissingFile>> {
+    let guard = state.library.lock().unwrap();
+    match guard.library() {
+        Some(lib) => Ok(lib.missing_files()?),
+        None => Ok(Vec::new()),
+    }
+}
+
 /// 檢查更新 (T22). Resolves only when already up to date; otherwise the app restarts into the
 /// new version, reporting download progress on `update-progress` first.
 #[tauri::command]

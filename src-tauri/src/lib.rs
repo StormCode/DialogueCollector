@@ -106,6 +106,7 @@ pub fn run() {
             commands::inspect_backup,
             commands::import_backup,
             commands::check_for_update,
+            commands::verify_library,
             smoke::smoke_mode,
             smoke::run_smoke,
             smoke::smoke_finish,

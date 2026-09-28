@@ -80,6 +80,16 @@
         "tooNew": "the backup was made by a newer version of the app",
         "unsafe": "the backup contains unsafe paths",
         "busy": "another library operation is running"
+      },
+      "missing": {
+        "count": "Missing files",
+        "title": "Missing files",
+        "banner": "{{count}} lines no longer have their audio file in the library. Choose View to open that character's lines page and re-import or delete them.",
+        "character": "Character",
+        "line": "Line",
+        "view": "View",
+        "viewLabel": "View {{name}}'s lines",
+        "banner_one": "1 line no longer has its audio file in the library. Choose View to open that character's lines page and re-import or delete it."
       }
     },
     "toc": "Settings sections",
