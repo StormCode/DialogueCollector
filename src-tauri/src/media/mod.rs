@@ -11,8 +11,9 @@ pub mod process;
 
 use rand::Rng;
 
-/// Containers accepted by the subtitle path (G3: TS was cut).
-pub const VIDEO_EXTENSIONS: &[&str] = &["mkv", "mp4", "webm"];
+/// Sources the subtitle path cuts from (Step 3 board: MKV、MP4、WEBM、OGG、M4A、MP3; G3 cut TS).
+/// Audio files work too: the cut takes the first audio stream either way.
+pub const SOURCE_EXTENSIONS: &[&str] = &["mkv", "mp4", "webm", "ogg", "m4a", "mp3"];
 
 pub const CLIP_EXTENSION: &str = "m4a";
 const CLIP_NAME_LEN: usize = 12;

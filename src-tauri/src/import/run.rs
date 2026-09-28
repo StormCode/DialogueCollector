@@ -11,7 +11,7 @@
 use std::collections::VecDeque;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::Mutex;
 
 use serde::Serialize;
@@ -80,6 +80,8 @@ pub enum Event {
         cue_index: u32,
     },
     Progress(Progress),
+    /// Every cue is encoded (or settled without encoding); only writes remain: 建立索引 (R8).
+    Indexing,
 }
 
 pub struct Pass<'a> {
@@ -123,6 +125,13 @@ pub fn run_pass(pass: &Pass<'_>, cues: Vec<PlannedCue>) -> PassSummary {
         imported: 0,
         failed: 0,
     });
+    // Called once per cue as soon as it no longer needs ffmpeg; the last call starts 建立索引.
+    let unencoded = AtomicUsize::new(total);
+    let encoded = || {
+        if unencoded.fetch_sub(1, Ordering::AcqRel) == 1 {
+            (pass.on_event)(Event::Indexing);
+        }
+    };
 
     std::thread::scope(|scope| {
         for _ in 0..pass.workers.max(1) {
@@ -131,9 +140,10 @@ pub fn run_pass(pass: &Pass<'_>, cues: Vec<PlannedCue>) -> PassSummary {
                     break;
                 };
                 let outcome = if pass.cancel.load(Ordering::Acquire) {
+                    encoded();
                     Outcome::Cancelled
                 } else {
-                    process(pass, &job)
+                    process(pass, &job, &encoded)
                 };
                 let progress = {
                     let mut c = counts.lock().unwrap();
@@ -187,12 +197,15 @@ pub fn run_pass(pass: &Pass<'_>, cues: Vec<PlannedCue>) -> PassSummary {
     }
 }
 
-fn process(pass: &Pass<'_>, job: &PlannedCue) -> Outcome {
+/// `encoded` is called exactly once, as soon as the cue no longer needs ffmpeg.
+fn process(pass: &Pass<'_>, job: &PlannedCue, encoded: &dyn Fn()) -> Outcome {
     let cue = &job.cue;
     if cue.end_ms <= cue.start_ms {
+        encoded();
         return Outcome::Failed(Reason::ZeroLength, None);
     }
     if pass.duration_ms.is_some_and(|d| cue.start_ms >= d) {
+        encoded();
         return Outcome::Failed(Reason::OutOfRange, None);
     }
 
@@ -200,14 +213,15 @@ fn process(pass: &Pass<'_>, job: &PlannedCue) -> Outcome {
         .library
         .join(TMP_DIR)
         .join(format!("{}.tmp", new_clip_filename()));
-    let encoded = pass
+    let result = pass
         .encoder
         .encode(pass.source, cue.start_ms, cue.end_ms, &tmp, pass.cancel);
+    encoded();
     if pass.cancel.load(Ordering::Acquire) {
         remove_quietly(&tmp);
         return Outcome::Cancelled;
     }
-    if let Err(e) = encoded {
+    if let Err(e) = result {
         remove_quietly(&tmp);
         let (reason, detail) = classify_media(&e);
         return Outcome::Failed(reason, detail);

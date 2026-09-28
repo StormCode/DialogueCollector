@@ -226,8 +226,10 @@ fn a_clean_run_imports_every_cue() {
     let f = fixture();
     let (encoder, prober) = (FakeEncoder::default(), prober());
     let cancel = AtomicBool::new(false);
+    let events = Mutex::new(Vec::new());
+    let record = |e: Event| events.lock().unwrap().push(e);
     let out = import_subtitle(
-        &engine(&f, &encoder, &prober, &cancel, &quiet),
+        &engine(&f, &encoder, &prober, &cancel, &record),
         &f.subtitle,
         &f.video,
         plan(&f.subtitle),
@@ -238,6 +240,18 @@ fn a_clean_run_imports_every_cue() {
     assert!(out.failures.is_empty());
     let rows = assert_rows_equal_files(&f.root);
     assert_eq!(rows.len(), 5);
+
+    // 建立索引 starts exactly once, after the last encode and before the last cue settles.
+    let events = events.into_inner().unwrap();
+    let indexing: Vec<usize> = (0..events.len())
+        .filter(|&i| events[i] == Event::Indexing)
+        .collect();
+    assert_eq!(indexing.len(), 1);
+    let settled_before = events[..indexing[0]]
+        .iter()
+        .filter(|e| matches!(e, Event::Progress(_)))
+        .count();
+    assert!(settled_before < 5);
 }
 
 /// T7: two artificial failures → 部分完成 with both reasons; rows equal files.

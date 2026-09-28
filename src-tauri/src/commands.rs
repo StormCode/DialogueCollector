@@ -61,7 +61,9 @@ struct MoveProgress {
     total: u64,
 }
 
-fn lock<'a, T>(m: &'a std::sync::Mutex<T>) -> CommandResult<std::sync::MutexGuard<'a, T>> {
+pub(crate) fn lock<'a, T>(
+    m: &'a std::sync::Mutex<T>,
+) -> CommandResult<std::sync::MutexGuard<'a, T>> {
     m.lock()
         .map_err(|e| CommandError::new("Internal.Poisoned", e))
 }
@@ -161,10 +163,10 @@ async fn relocate_to(
 pub const EXPORT_PROGRESS_EVENT: &str = "library-export-progress";
 
 /// Holds the busy flag for the lifetime of one library operation.
-struct BusyGuard<'a>(&'a AtomicBool);
+pub(crate) struct BusyGuard<'a>(&'a AtomicBool);
 
 impl<'a> BusyGuard<'a> {
-    fn acquire(flag: &'a AtomicBool) -> CommandResult<Self> {
+    pub(crate) fn acquire(flag: &'a AtomicBool) -> CommandResult<Self> {
         if flag.swap(true, Ordering::SeqCst) {
             return Err(LibraryError::Busy.into());
         }

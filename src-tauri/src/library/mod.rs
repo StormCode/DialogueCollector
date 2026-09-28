@@ -17,8 +17,10 @@
 //! machine — so moving or copying the whole folder keeps every internal reference valid.
 
 pub mod backup;
+pub mod characters;
 pub mod deletion;
 pub mod folder;
+pub mod images;
 pub mod paths;
 pub mod relocate;
 pub mod settings;
@@ -78,6 +80,10 @@ pub enum LibraryError {
     #[error("another library operation is in progress")]
     Busy,
 
+    /// A command needs the library, but none is open (找不到收藏庫).
+    #[error("no library is open")]
+    NotReady,
+
     #[error("{path}: {source}")]
     Io {
         path: PathBuf,
@@ -116,6 +122,7 @@ impl LibraryError {
             Self::UnsupportedVolume { .. } => "UnsupportedVolume.Network",
             Self::MoveVerifyFailed(_) => "MoveVerifyFailed",
             Self::Busy => "Busy",
+            Self::NotReady => "NotReady",
             Self::Io { .. } => "Io",
             Self::Store(StoreError::SchemaTooNew { .. }) => "SchemaTooNew",
             Self::Store(_) => "Store",
