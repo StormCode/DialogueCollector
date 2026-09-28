@@ -14,6 +14,7 @@ mod commands;
 mod error;
 mod import_cmd;
 mod library;
+mod lines_cmd;
 mod smoke;
 mod updater;
 
@@ -118,6 +119,12 @@ pub fn run() {
             import_cmd::update_character,
             import_cmd::delete_character,
             import_cmd::allow_preview,
+            lines_cmd::open_lines,
+            lines_cmd::get_line,
+            lines_cmd::set_line_pinned,
+            lines_cmd::update_line,
+            lines_cmd::delete_line,
+            lines_cmd::set_poster,
             import_cmd::start_subtitle_import,
             import_cmd::retry_import,
             import_cmd::cancel_import,

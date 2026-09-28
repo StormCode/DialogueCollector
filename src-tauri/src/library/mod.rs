@@ -21,6 +21,7 @@ pub mod characters;
 pub mod deletion;
 pub mod folder;
 pub mod images;
+pub mod lines;
 pub mod paths;
 pub mod relocate;
 pub mod settings;

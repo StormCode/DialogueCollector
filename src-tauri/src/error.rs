@@ -116,4 +116,16 @@ impl From<crate::import::ImportError> for CommandError {
     }
 }
 
+impl From<crate::library::lines::LineError> for CommandError {
+    fn from(e: crate::library::lines::LineError) -> Self {
+        use crate::library::lines::LineError;
+        match e {
+            LineError::Invalid { field } => Self::new(format!("Line.Invalid.{field}"), e),
+            LineError::NotFound(_) => Self::new("Line.NotFound", e),
+            LineError::Character(inner) => inner.into(),
+            LineError::Store(inner) => inner.into(),
+        }
+    }
+}
+
 pub type CommandResult<T> = Result<T, CommandError>;
