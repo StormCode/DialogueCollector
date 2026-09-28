@@ -10,8 +10,8 @@
 //! - cancel kills every in-flight ffmpeg child and leaves no `.tmp`, file or row (ENG6)
 //! - a single-job guard: a second import cannot start while one is running
 //!
-//! OPEN DECISION R8: what the 索引中 state does. Must be defined or cut before the final
-//! state of the import flow is built.
+//! 索引中 (R8, decided 2026-09-29) is the `commit_cue` phase: giving each clip its 12-character
+//! name and writing its row. It is real work, normally quick, and builds no search index.
 
 pub mod commit;
 
