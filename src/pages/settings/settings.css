@@ -634,7 +634,9 @@
 
 .mf-actions {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 /* ---- entrance (Settings board): ① the title fades in, then ② the index slides in from the

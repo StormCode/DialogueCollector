@@ -180,7 +180,12 @@
         "line": "Line",
         "view": "View",
         "viewLabel": "View {{name}}'s lines",
-        "banner_one": "1 line no longer has its audio file in the library. Choose View to open that character's lines page and re-import or delete it."
+        "banner_one": "1 line no longer has its audio file in the library. Choose View to open that character's lines page and re-import or delete it.",
+        "deleteAll": "Delete all",
+        "deleteAllTitle": "Delete all {{count}} lines?",
+        "deleteAllTitle_one": "Delete this line?",
+        "deleteAllBody": "These lines have lost their audio files. Deleting them removes them from every character’s lines page and can’t be undone.",
+        "deleteFailed": "Couldn’t delete them. Try again later."
       }
     },
     "toc": "Settings sections",

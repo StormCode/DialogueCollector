@@ -233,6 +233,19 @@ impl Library {
         Ok(missing)
     }
 
+    /// 全部刪除 in 遺失的檔案: deletes every line whose clip is gone, found afresh here rather
+    /// than trusted from the renderer. Rows go through `pending_deletions` like any delete
+    /// (their files are already missing, so draining just clears the entries). Returns the count.
+    pub fn delete_missing_lines(&mut self) -> Result<usize, LibraryError> {
+        let ids: Vec<i64> = self.missing_files()?.iter().map(|m| m.line_id).collect();
+        let tx = self.conn.transaction().map_err(store::StoreError::from)?;
+        let deleted = super::deletion::delete_lines(&tx, &ids)?;
+        tx.commit().map_err(store::StoreError::from)?;
+        super::deletion::drain(&self.conn, &self.root)?;
+        log::info!("deleted {deleted} line(s) whose clips were missing");
+        Ok(deleted)
+    }
+
     /// Fold the WAL back into the main file and close, so the folder is self-contained on
     /// disk (no `-wal` content) before it is moved or copied.
     pub fn close(self) -> Result<PathBuf, LibraryError> {
@@ -279,6 +292,40 @@ fn sweep_tmp(tmp: &Path) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn delete_missing_lines_removes_only_lines_without_clips() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().join("lib");
+        let mut lib = Library::create(&root).unwrap();
+        lib.conn()
+            .execute_batch(
+                "INSERT INTO characters (id, name, category, source, created_at, updated_at)
+                 VALUES (1, 'a', 'anime', 's', 0, 0);
+                 INSERT INTO lines (id, character_id, text, audio_filename, audio_bytes, duration_ms, created_at, updated_at)
+                 VALUES (1, 1, 'kept', 'AAAAAAAAAAAA.m4a', 1, 1, 0, 0),
+                        (2, 1, 'gone', 'BBBBBBBBBBBB.m4a', 1, 1, 0, 0);",
+            )
+            .unwrap();
+        fs::write(root.join("AAAAAAAAAAAA.m4a"), b"m4a").unwrap();
+
+        assert_eq!(lib.delete_missing_lines().unwrap(), 1);
+        assert!(lib.missing_files().unwrap().is_empty());
+        let left: Vec<String> = lib
+            .conn()
+            .prepare("SELECT text FROM lines")
+            .unwrap()
+            .query_map([], |r| r.get(0))
+            .unwrap()
+            .map(Result::unwrap)
+            .collect();
+        assert_eq!(left, ["kept"]);
+        let pending: i64 = lib
+            .conn()
+            .query_row("SELECT COUNT(*) FROM pending_deletions", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(pending, 0);
+    }
 
     #[test]
     fn deleting_a_clip_on_disk_shows_up_as_a_missing_file() {

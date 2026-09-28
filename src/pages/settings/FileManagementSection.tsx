@@ -242,7 +242,22 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
         </div>
       </div>
 
-      {missingOpen && <MissingFilesModal files={missing} onClose={() => setMissingOpen(false)} />}
+      {missingOpen && (
+        <MissingFilesModal
+          files={missing}
+          onClose={() => setMissingOpen(false)}
+          onDeleteAll={async () => {
+            try {
+              await ipc.deleteMissingLines();
+              setMissing([]);
+              setMissingOpen(false);
+              void useLibraryStore.getState().load();
+            } catch (e) {
+              setToast({ tone: "negative", text: t(backupReasonKey(errorKind(e)) ?? "settings.files.missing.deleteFailed") });
+            }
+          }}
+        />
+      )}
 
       {exporting && (
         <Modal title={t("settings.files.export")}>

@@ -88,6 +88,18 @@
   color: var(--bento-white);
 }
 
+/* .ic-btn-danger-outline on the Settings board (遺失的檔案's 全部刪除). */
+.ui-btn--danger-outline {
+  gap: 6px;
+  border: 1.5px solid var(--bento-negative-40);
+  background: transparent;
+  color: var(--bento-negative-50);
+}
+
+.ui-btn--danger-outline:hover:not(:disabled) {
+  background: var(--bento-negative-1);
+}
+
 .ui-btn--danger:hover:not(:disabled) {
   background: var(--bento-negative-50);
 }

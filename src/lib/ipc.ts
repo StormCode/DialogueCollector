@@ -31,6 +31,7 @@ export const ipc = {
   cancelExport: () => invoke<void>("cancel_export"),
   inspectBackup: (path: string) => invoke<BackupPreview>("inspect_backup", { path }),
   importBackup: (path: string) => invoke<ImportOutcome>("import_backup", { path }),
+  deleteMissingLines: () => invoke<number>("delete_missing_lines"),
   verifyLibrary: () => invoke<VerifyReport>("verify_library"),
   parseSubtitle: (path: string) => invoke<Cue[]>("parse_subtitle", { path }),
   listCharacters: () => invoke<Character[]>("list_characters"),

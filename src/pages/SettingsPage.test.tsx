@@ -162,4 +162,33 @@ describe("SettingsPage", () => {
     fireEvent.click(view);
     expect(await screen.findByText("lines page")).toBeInTheDocument();
   });
+
+  it("全部刪除 asks first, Esc closes only the confirmation, and confirming clears the list", async () => {
+    vi.spyOn(ipc, "verifyLibrary").mockResolvedValue({
+      missing: [
+        { lineId: 3, characterId: 7, characterName: "岡部倫太郎", portraitPath: null, text: "這一切都是命運石之門的選擇。" },
+        { lineId: 1, characterId: 2, characterName: "芙莉蓮", portraitPath: null, text: "人類的壽命真的很短暫呢。" },
+      ],
+      orphans: [],
+    });
+    const del = vi.spyOn(ipc, "deleteMissingLines").mockResolvedValue(2);
+    renderPage();
+    fireEvent.click(await screen.findByRole("button", { name: /遺失的檔案數/ }));
+    const list = screen.getByRole("dialog", { name: "遺失的檔案" });
+
+    fireEvent.click(within(list).getByRole("button", { name: "全部刪除" }));
+    const confirm = screen.getByRole("dialog", { name: "確認" });
+    expect(confirm).toHaveTextContent("確定要刪除全部 2 句台詞嗎？");
+    expect(within(confirm).getByRole("button", { name: "取消" })).toHaveFocus();
+
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name: "確認" })).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "遺失的檔案" })).toBeInTheDocument();
+
+    fireEvent.click(within(screen.getByRole("dialog", { name: "遺失的檔案" })).getByRole("button", { name: "全部刪除" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "確認" })).getByRole("button", { name: "全部刪除" }));
+    await vi.waitFor(() => expect(del).toHaveBeenCalledOnce());
+    await vi.waitFor(() => expect(screen.queryByRole("dialog", { name: "遺失的檔案" })).not.toBeInTheDocument());
+    expect(screen.queryByRole("button", { name: /遺失的檔案數/ })).not.toBeInTheDocument();
+  });
 });

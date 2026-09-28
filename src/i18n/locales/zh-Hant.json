@@ -178,7 +178,11 @@
         "character": "角色",
         "line": "台詞",
         "view": "查看",
-        "viewLabel": "查看{{name}}的台詞"
+        "viewLabel": "查看{{name}}的台詞",
+        "deleteAll": "全部刪除",
+        "deleteAllTitle": "確定要刪除全部 {{count}} 句台詞嗎？",
+        "deleteAllBody": "這些台詞的音檔已遺失，刪除後將從各角色的台詞頁一併移除，且無法復原。",
+        "deleteFailed": "無法刪除，請稍後再試"
       }
     },
     "toc": "設定目錄",

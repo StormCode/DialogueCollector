@@ -221,6 +221,13 @@ impl LibraryState {
         }
     }
 
+    pub fn library_mut(&mut self) -> Option<&mut Library> {
+        match self {
+            Self::Ready(library) => Some(library),
+            Self::Unavailable { .. } => None,
+        }
+    }
+
     pub fn status(&self) -> LibraryStatus {
         match self {
             Self::Ready(library) => LibraryStatus {

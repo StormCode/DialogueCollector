@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes } from "react";
 
 import "./ui.css";
 
-type Variant = "solid" | "outline" | "neutral" | "danger";
+type Variant = "solid" | "outline" | "neutral" | "danger" | "dangerOutline";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
@@ -23,7 +23,7 @@ export function Button({
   return (
     <button
       type={type}
-      className={`ui-btn ui-btn--${variant} ui-btn--${size}${fullWidth ? " ui-btn--full" : ""} ${className}`}
+      className={`ui-btn ui-btn--${variant === "dangerOutline" ? "danger-outline" : variant} ui-btn--${size}${fullWidth ? " ui-btn--full" : ""} ${className}`}
       {...rest}
     />
   );

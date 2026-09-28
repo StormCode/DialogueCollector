@@ -59,6 +59,8 @@
     .ic-btn-neutral:hover { background: var(--bento-bg-secondary); }
     .ic-btn-danger { border: none; background: var(--bento-negative-40); color: var(--bento-white); }
     .ic-btn-danger:hover { background: var(--bento-negative-50); }
+    .ic-btn-danger-outline { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--bento-negative-40); background: transparent; color: var(--bento-negative-50); }
+    .ic-btn-danger-outline:hover { background: var(--bento-negative-1); }
     @keyframes ic-drop-in { 0% { opacity: 0; transform: translateY(-32px); } 100% { opacity: 1; transform: translateY(0); } }
     @keyframes ic-backdrop-in { 0% { opacity: 0; } 100% { opacity: 1; } }
     .ic-enter { animation: ic-drop-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
@@ -266,13 +268,40 @@
                       <span style="font: var(--bento-weight-medium) 14px/20px var(--bento-font-ui); color: var(--bento-content-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{mf.name}}</span>
                     </span>
                     <span title="{{mf.text}}" style="min-width: 0; font: var(--bento-weight-regular) 14px/20px var(--bento-font-ui); color: var(--bento-content-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{mf.text}}</span>
-                    <a class="mf-view" href="Lines.dc.html" aria-label="查看{{mf.name}}的台詞">查看<span class="material-symbol" aria-hidden="true" style="font-size: 18px;">chevron_right</span></a>
+                    <a class="mf-view" href="LinesMissing.dc.html" aria-label="查看{{mf.name}}的台詞">查看<span class="material-symbol" aria-hidden="true" style="font-size: 18px;">chevron_right</span></a>
                   </div>
                 </sc-for>
               </div>
             </div>
-            <div style="display: flex; justify-content: flex-end;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+              <button type="button" class="ic-btn ic-btn-danger-outline" aria-haspopup="dialog" onClick="{{openDeleteAll}}"><span aria-hidden="true" style="display: inline-flex;"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Bin" size="18"></x-import></span>全部刪除</button>
               <button type="button" class="ic-btn ic-btn-neutral" onClick="{{closeMissing}}">關閉</button>
+            </div>
+          </div>
+        </x-import>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{showDeleteAll}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center;">
+      <div class="ic-backdrop" style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.48);" aria-hidden="true"></div>
+      <div class="ic-enter" style="position: relative; z-index: 1;">
+        <x-import component-from-global-scope="BentoDS27_65ebe9.Modal" title="確認" size="small" on-close="{{cancelDeleteAll}}">
+          <div style="display: flex; flex-direction: column; gap: 24px; align-items: stretch; width: 100%; box-sizing: border-box;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+              <div style="width: 64px; height: 64px; border-radius: 999px; background: var(--bento-negative-1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <span aria-hidden="true" style="display: inline-flex; color: var(--bento-content-negative);"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Bin" size="32"></x-import></span>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;">
+                <div style="font: var(--bento-weight-semibold) 18px/24px var(--bento-font-heading); color: var(--bento-content-primary);">確定要刪除全部 {{missingCount}} 句台詞嗎？</div>
+                <div style="font: var(--bento-weight-regular) 14px/20px var(--bento-font-ui); color: var(--bento-content-secondary);">這些台詞的音檔已遺失，刪除後將從各角色的台詞頁一併移除，且無法復原。</div>
+              </div>
+            </div>
+            <x-import component-from-global-scope="BentoDS27_65ebe9.Divider"></x-import>
+            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px;">
+              <button type="button" class="ic-btn ic-btn-neutral" onClick="{{cancelDeleteAll}}">取消</button>
+              <button type="button" class="ic-btn ic-btn-danger" onClick="{{confirmDeleteAll}}">全部刪除</button>
             </div>
           </div>
         </x-import>
@@ -351,7 +380,7 @@
   </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"toast":{"editor":"enum","options":["none","exportSuccess","exportFailed","importSuccess","importFailed","libraryNotFound","networkDriveDenied"],"default":"none"},"exportTarget":{"editor":"text","default":"~/Downloads"},"updateStatus":{"editor":"enum","options":["none","latest","updating"],"default":"none"},"importConfirm":{"editor":"boolean","default":false},"exporting":{"editor":"boolean","default":false},"missingFiles":{"editor":"boolean","default":false},"theme":{"editor":"enum","options":["indigo","blue","red","jade","orange","pink","neutral"],"default":"indigo"},"initialSection":{"editor":"enum","options":["ui","book","lines","files","version"],"default":"ui"},"missingModal":{"editor":"boolean","default":false},"exportProgress":{"editor":"range","min":0,"max":100,"step":1,"default":50},"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"toast":{"editor":"enum","options":["none","exportSuccess","exportFailed","importSuccess","importFailed","libraryNotFound","networkDriveDenied"],"default":"none"},"exportTarget":{"editor":"text","default":"~/Downloads"},"updateStatus":{"editor":"enum","options":["none","latest","updating"],"default":"none"},"importConfirm":{"editor":"boolean","default":false},"exporting":{"editor":"boolean","default":false},"missingFiles":{"editor":"boolean","default":false},"theme":{"editor":"enum","options":["indigo","blue","red","jade","orange","pink","neutral"],"default":"indigo"},"initialSection":{"editor":"enum","options":["ui","book","lines","files","version"],"default":"ui"},"missingModal":{"editor":"boolean","default":false},"deleteAllConfirm":{"editor":"boolean","default":false},"exportProgress":{"editor":"range","min":0,"max":100,"step":1,"default":50},"$preview":{"width":1280,"height":800}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
@@ -464,6 +493,9 @@ class Component extends DCLogic {
   };
   openMissing = () => this.setState({ missingOpen: true });
   closeMissing = () => this.setState({ missingOpen: false });
+  openDeleteAll = () => this.setState({ deleteAllOpen: true });
+  cancelDeleteAll = () => this.setState({ deleteAllOpen: false });
+  confirmDeleteAll = () => this.setState({ deleteAllOpen: false, missingOpen: false, missingCleared: true });
 
   cancelExport = () => {
     clearInterval(this.exportTimer);
@@ -626,17 +658,23 @@ class Component extends DCLogic {
         const LIST = [
           { c: 'okabe', text: '這一切都是命運石之門的選擇。' },
           { c: 'frieren', text: '人類的壽命真的很短暫呢。' },
-          { c: 'yuki', text: 'おはよう。今日は早いんだね。' },
+          { c: 'yuki', text: '謝謝你，一直以來都陪在我身邊。' },
           { c: 'lena', text: '我們不會忘記你們的名字。' },
           { c: 'frieren', text: '那就再去一次吧，這次一起。' },
         ];
-        const modalOpen = !!(this.state.missingOpen ?? this.props.missingModal ?? false);
-        const has = !!(this.props.missingFiles ?? false) || modalOpen;
+        const cleared = !!this.state.missingCleared;
+        const deleteAllOpen = !cleared && !!(this.state.deleteAllOpen ?? this.props.deleteAllConfirm ?? false);
+        const modalOpen = !cleared && (!!(this.state.missingOpen ?? this.props.missingModal ?? false) || deleteAllOpen);
+        const has = !cleared && (!!(this.props.missingFiles ?? false) || modalOpen);
         return {
           hasMissing: has,
           missingCount: LIST.length,
           openMissing: this.openMissing,
           closeMissing: this.closeMissing,
+          showDeleteAll: deleteAllOpen,
+          openDeleteAll: this.openDeleteAll,
+          cancelDeleteAll: this.cancelDeleteAll,
+          confirmDeleteAll: this.confirmDeleteAll,
           showMissingModal: modalOpen,
           missingFiles: LIST.map((m) => {
             const a = AV[m.c];

@@ -347,6 +347,16 @@ pub fn verify_library(state: State<'_, AppState>) -> CommandResult<VerifyReport>
     Ok(report)
 }
 
+/// 遺失的檔案 → 全部刪除: deletes the lines whose clips are gone. Holds the library-busy guard so
+/// it never runs beside an import, move or backup.
+#[tauri::command]
+pub fn delete_missing_lines(state: State<'_, AppState>) -> CommandResult<usize> {
+    let _busy = BusyGuard::acquire(&state.library_busy)?;
+    let mut library = lock(&state.library)?;
+    let lib = library.library_mut().ok_or(LibraryError::NotReady)?;
+    Ok(lib.delete_missing_lines()?)
+}
+
 /// 驗證收藏庫: rows whose clip is gone (T20), and clips no row points at (ENG2 crash leftovers).
 #[derive(Debug, Default, Serialize)]
 #[serde(rename_all = "camelCase")]

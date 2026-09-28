@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import { BentoIcon } from "../icons/Icon";
@@ -19,6 +20,9 @@ interface ModalProps {
   };
 }
 
+/** Open modals, bottom to top. */
+const openModals: symbol[] = [];
+
 // Bento Modal as drawn on the boards: scrim, drop-in card, title bar. Focus moves into the
 // dialog on open; the first element marked data-autofocus wins (DT2: 取消 on destructive
 // dialogs), otherwise the dialog itself.
@@ -34,16 +38,28 @@ export function Modal({ title, children, onClose, size = "medium", actions, clas
     target?.focus();
   }, []);
 
+  // Stacked modals (e.g. 全部刪除's confirmation over 遺失的檔案): Esc closes only the top one.
+  const id = useRef(Symbol("modal"));
+  useEffect(() => {
+    const me = id.current;
+    openModals.push(me);
+    return () => {
+      openModals.splice(openModals.indexOf(me), 1);
+    };
+  }, []);
+
   useEffect(() => {
     if (!onClose) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape" && openModals[openModals.length - 1] === id.current) onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  return (
+  // Rendered into <body>: an ancestor with a transform (a section's entrance, another modal's
+  // drop-in) would otherwise become the containing block of this fixed layer.
+  return createPortal(
     <div className="ui-modal-layer">
       <div className="ui-modal-backdrop" aria-hidden="true" />
       <div
@@ -80,6 +96,7 @@ export function Modal({ title, children, onClose, size = "medium", actions, clas
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

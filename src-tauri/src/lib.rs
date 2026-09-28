@@ -111,6 +111,7 @@ pub fn run() {
             commands::import_backup,
             commands::check_for_update,
             commands::verify_library,
+            commands::delete_missing_lines,
             import_cmd::parse_subtitle,
             import_cmd::list_characters,
             import_cmd::create_character,
