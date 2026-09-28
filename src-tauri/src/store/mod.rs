@@ -10,13 +10,16 @@
 //! rename or drop), each runs in its own transaction, and a library written by a newer app is
 //! refused by name instead of being opened.
 //!
-//! TODO(T5/FC8): funnel all writes through one single-writer task once concurrent encoding
-//! lands in `import`, so parallel cues never surface `SQLITE_BUSY`.
+//! Imports write through `writer::Writer`, one thread with its own connection (FC8, T5).
 
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use rusqlite::{Connection, OptionalExtension, TransactionBehavior};
+
+// Used only by `import` until its commands land (T7/T8).
+#[allow(dead_code)]
+pub mod writer;
 
 /// One schema step. `sql` runs inside a transaction together with the version bump.
 pub struct Migration {
@@ -47,6 +50,13 @@ pub enum StoreError {
         #[source]
         source: rusqlite::Error,
     },
+
+    #[error("cannot start the database writer thread: {0}")]
+    WriterSpawn(std::io::Error),
+
+    /// The writer thread is gone (closed, or a job panicked).
+    #[error("the database writer has stopped")]
+    WriterClosed,
 }
 
 /// Open (creating if needed) a library database, apply pragmas, and migrate it to

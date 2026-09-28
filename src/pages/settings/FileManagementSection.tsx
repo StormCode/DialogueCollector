@@ -101,7 +101,7 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
     let live = true;
     ipc
       .verifyLibrary()
-      .then((files) => live && setMissing(files))
+      .then((report) => live && setMissing(report.missing))
       .catch(() => live && setMissing([]));
     return () => {
       live = false;

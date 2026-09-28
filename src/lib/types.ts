@@ -136,6 +136,12 @@ export interface UpdateCheck {
   version: string;
 }
 
+/** `verify_library`: rows whose clip is gone (T20) and clips no row points at (ENG2). */
+export interface VerifyReport {
+  missing: MissingFile[];
+  orphans: string[];
+}
+
 /** A line whose clip is gone from the library folder (T20, `verify_library`). */
 export interface MissingFile {
   lineId: number;

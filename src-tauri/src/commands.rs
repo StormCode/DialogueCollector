@@ -326,14 +326,31 @@ pub async fn import_backup(
 
 /// 驗證收藏庫 (T20): every line whose clip is gone from the library folder.
 #[tauri::command]
-pub fn verify_library(
-    state: State<'_, AppState>,
-) -> CommandResult<Vec<crate::library::folder::MissingFile>> {
+pub fn verify_library(state: State<'_, AppState>) -> CommandResult<VerifyReport> {
     let guard = state.library.lock().unwrap();
-    match guard.library() {
-        Some(lib) => Ok(lib.missing_files()?),
-        None => Ok(Vec::new()),
+    let Some(lib) = guard.library() else {
+        return Ok(VerifyReport::default());
+    };
+    let report = VerifyReport {
+        missing: lib.missing_files()?,
+        orphans: lib.orphan_files()?,
+    };
+    if !report.orphans.is_empty() {
+        log::warn!(
+            "{} orphan clip(s) with no row: {:?}",
+            report.orphans.len(),
+            report.orphans
+        );
     }
+    Ok(report)
+}
+
+/// 驗證收藏庫: rows whose clip is gone (T20), and clips no row points at (ENG2 crash leftovers).
+#[derive(Debug, Default, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct VerifyReport {
+    pub missing: Vec<crate::library::folder::MissingFile>,
+    pub orphans: Vec<String>,
 }
 
 /// 檢查更新 (T22). Resolves only when already up to date; otherwise the app restarts into the
