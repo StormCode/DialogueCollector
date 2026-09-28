@@ -174,22 +174,30 @@ impl From<(Option<PathBuf>, LibraryError)> for LibraryState {
 }
 
 impl LibraryState {
-    /// Resolve the library at startup from the pointer in `machine.json`. On first run the
-    /// default folder does not exist yet and is created; any other missing folder is reported,
-    /// never silently recreated, so a lost library is not papered over with an empty one.
-    pub fn at_startup(pointer: Option<&Path>, first_run: bool) -> Self {
+    /// Resolve the library at startup from the pointer in `machine.json`.
+    ///
+    /// The default location belongs to the app, so a library missing there is simply created:
+    /// a first launch never shows 找不到收藏庫 — including a launch whose `machine.json` was
+    /// written by an older build that never created the folder. Anywhere else, a missing folder
+    /// is reported and never silently recreated, because it usually means a drive is not
+    /// attached, and an empty stand-in would hide that.
+    pub fn at_startup(pointer: Option<&Path>, default_dir: &Path) -> Self {
         let Some(path) = pointer else {
             return Self::Unavailable {
                 path: None,
                 reason: UnavailableReason::NoPointer,
             };
         };
-        let opened =
-            if first_run && folder::classify_dir(path).ok() != Some(folder::DirKind::Library) {
-                Library::create(path)
-            } else {
-                Library::open(path)
-            };
+        let create_default = path == default_dir
+            && matches!(
+                folder::classify_dir(path),
+                Ok(folder::DirKind::Missing | folder::DirKind::Empty)
+            );
+        let opened = if create_default {
+            Library::create(path)
+        } else {
+            Library::open(path)
+        };
         match opened {
             Ok(library) => Self::Ready(library),
             Err(e) => (Some(path.to_owned()), e).into(),
@@ -236,28 +244,59 @@ mod tests {
     use super::*;
 
     #[test]
-    fn first_run_creates_the_default_library() {
+    fn a_missing_default_library_is_created_silently() {
         let dir = tempfile::tempdir().unwrap();
-        let path = dir.path().join("DialogueCollector");
-        let state = LibraryState::at_startup(Some(&path), true);
+        let default = dir.path().join("DialogueCollector");
+        let state = LibraryState::at_startup(Some(&default), &default);
         assert!(state.status().ready);
-        assert!(path.join(paths::DB_FILE).is_file());
+        assert!(default.join(paths::DB_FILE).is_file());
+
+        // An existing default library is opened, not recreated.
+        if let LibraryState::Ready(library) = state {
+            library
+                .conn()
+                .execute(
+                    "INSERT INTO characters (name, category, source, created_at, updated_at)
+                     VALUES ('a', 'tv', 'b', 0, 0)",
+                    [],
+                )
+                .unwrap();
+        }
+        let reopened = LibraryState::at_startup(Some(&default), &default);
+        let count: i64 = reopened
+            .library()
+            .unwrap()
+            .conn()
+            .query_row("SELECT COUNT(*) FROM characters", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(count, 1);
     }
 
     #[test]
-    fn a_deleted_library_is_reported_not_recreated() {
+    fn a_missing_library_elsewhere_is_reported_not_recreated() {
         let dir = tempfile::tempdir().unwrap();
-        let path = dir.path().join("DialogueCollector");
-        let status = LibraryState::at_startup(Some(&path), false).status();
+        let default = dir.path().join("DialogueCollector");
+        let moved = dir.path().join("USB/DialogueCollector");
+        let status = LibraryState::at_startup(Some(&moved), &default).status();
         assert!(!status.ready);
         assert_eq!(status.reason, Some(UnavailableReason::NotFound));
-        assert_eq!(status.path.as_deref(), Some(path.as_path()));
-        assert!(!path.exists());
+        assert_eq!(status.path.as_deref(), Some(moved.as_path()));
+        assert!(!moved.exists());
+    }
+
+    #[test]
+    fn a_default_folder_with_foreign_content_is_not_taken_over() {
+        let dir = tempfile::tempdir().unwrap();
+        let default = dir.path().join("DialogueCollector");
+        std::fs::create_dir(&default).unwrap();
+        std::fs::write(default.join("notes.txt"), "x").unwrap();
+        let status = LibraryState::at_startup(Some(&default), &default).status();
+        assert_eq!(status.reason, Some(UnavailableReason::NotALibrary));
     }
 
     #[test]
     fn no_pointer_is_its_own_state() {
-        let status = LibraryState::at_startup(None, false).status();
+        let status = LibraryState::at_startup(None, Path::new("/default")).status();
         assert_eq!(status.reason, Some(UnavailableReason::NoPointer));
     }
 
@@ -269,7 +308,7 @@ mod tests {
         conn.execute("UPDATE schema_version SET version = 99", [])
             .unwrap();
         drop(conn);
-        let status = LibraryState::at_startup(Some(dir.path()), false).status();
+        let status = LibraryState::at_startup(Some(dir.path()), Path::new("/elsewhere")).status();
         assert_eq!(
             status.reason,
             Some(UnavailableReason::SchemaTooNew {
