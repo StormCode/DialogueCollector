@@ -4,10 +4,13 @@
 //!   Chinese subtitles are often Big5.
 //! - ASS: only `Dialogue:` events (`Comment:` is skipped); fields follow the `[Events]`
 //!   `Format:` line, with Text taking the rest of the line so commas in it survive; `{...}`
-//!   override blocks are stripped, vector drawings (`\p1`…`\p0`) dropped, `\N`/`\n` become
-//!   newlines and `\h` a space. Typesetting often repeats one line on several layers: events
-//!   with the same start, end and text are kept once.
+//!   override blocks are stripped, vector drawings (`\p1`…`\p0`) dropped, the hard break `\N`
+//!   splits lines while the soft `\n` and `\h` are spaces (the default wrap style). Typesetting
+//!   often repeats one line on several layers: events with the same start, end and text are
+//!   kept once.
 //! - SRT: `<i>`-style tags and `{\an8}`-style overrides are stripped.
+//! - 原文／譯文 follow the subtitle's own lines (decided 2026-09-29): the first line is the
+//!   text, any further lines the translation.
 //!
 //! Cues are returned in start-time order; `index` keeps each one's position in the file.
 
@@ -27,8 +30,26 @@ pub struct Cue {
     pub index: u32,
     pub start_ms: u64,
     pub end_ms: u64,
-    /// Plain text, override tags stripped, `\N` turned into a newline.
+    /// 原文: the first line, override tags stripped.
     pub text: String,
+    /// 譯文: the remaining lines joined with `\n`, if there are any.
+    pub translation: Option<String>,
+}
+
+impl Cue {
+    fn new(index: u32, start_ms: u64, end_ms: u64, lines: &str) -> Self {
+        let (text, translation) = match lines.split_once('\n') {
+            Some((first, rest)) => (first.to_owned(), Some(rest.to_owned())),
+            None => (lines.to_owned(), None),
+        };
+        Self {
+            index,
+            start_ms,
+            end_ms,
+            text,
+            translation,
+        }
+    }
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -145,12 +166,7 @@ pub fn parse_srt(text: &str) -> Result<Vec<Cue>, SubsError> {
         }
         let cleaned = clean_srt_text(&body.join("\n"));
         if !cleaned.is_empty() {
-            cues.push(Cue {
-                index: position,
-                start_ms: start,
-                end_ms: end,
-                text: cleaned,
-            });
+            cues.push(Cue::new(position, start, end, &cleaned));
         }
         position += 1;
     }
@@ -270,12 +286,7 @@ pub fn parse_ass(text: &str) -> Result<Vec<Cue>, SubsError> {
         if !seen.insert((start_ms, end_ms, text.clone())) {
             continue; // the same line repeated on another layer
         }
-        cues.push(Cue {
-            index: this_position,
-            start_ms,
-            end_ms,
-            text,
-        });
+        cues.push(Cue::new(this_position, start_ms, end_ms, &text));
     }
     Ok(sort(cues))
 }
@@ -303,7 +314,7 @@ fn clean_ass_text(text: &str) -> String {
     }
     let out = out
         .replace("\\N", "\n")
-        .replace("\\n", "\n")
+        .replace("\\n", " ")
         .replace("\\h", " ");
     normalize(&out)
 }

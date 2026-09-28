@@ -491,6 +491,7 @@ fn a_repeated_text_is_matched_to_the_nearest_start_time() {
         start_ms,
         end_ms: start_ms + 500,
         text: text.into(),
+        translation: None,
     };
     let parsed = [
         cue(0, 1_000, "はい"),
