@@ -45,7 +45,7 @@ export function MissingFilesModal({ files, onClose }: { files: MissingFile[]; on
             <span role="columnheader">{t("settings.files.missing.line")}</span>
             <span role="columnheader" aria-hidden="true" />
           </div>
-          <div className="mf-scroll" role="rowgroup">
+          <div className="mf-scroll st-scroll" role="rowgroup">
             {files.map((file) => (
               <div className="mf-row" role="row" key={file.lineId}>
                 <span className="mf-who" role="cell">
