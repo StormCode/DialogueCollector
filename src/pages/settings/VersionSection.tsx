@@ -22,6 +22,8 @@ function updateErrorKey(kind: string): string {
       return "settings.update.unreachable";
     case "Update.BadSignature":
       return "settings.update.badSignature";
+    case "Update.InProgress":
+      return "settings.update.inProgress";
     case "Update.Busy":
       return "settings.update.busy";
     default:

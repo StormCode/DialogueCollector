@@ -10,6 +10,7 @@
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
+use std::time::Duration;
 
 use serde::Serialize;
 use tauri::{AppHandle, Emitter, Manager, Runtime};
@@ -19,6 +20,12 @@ use crate::AppState;
 
 pub const UPDATE_PROGRESS_EVENT: &str = "update-progress";
 
+/// The plugin sets no timeout, so a stalled connection used to hang a check forever — and
+/// with it the busy flag, refusing every later 檢查更新 (seen on Windows with 0.1.0).
+const CHECK_TIMEOUT: Duration = Duration::from_secs(30);
+/// Whole-request timeout for the ~30 MB bundle.
+const DOWNLOAD_TIMEOUT: Duration = Duration::from_secs(15 * 60);
+
 #[derive(Debug, thiserror::Error)]
 pub enum UpdateError {
     #[error("update feed unreachable: {0}")]
@@ -27,7 +34,9 @@ pub enum UpdateError {
     BadSignature(String),
     #[error("update failed: {0}")]
     Failed(String),
-    #[error("another update, import or export is running")]
+    #[error("an update is already being checked or downloaded")]
+    InProgress,
+    #[error("the library is being moved, exported or imported")]
     Busy,
 }
 
@@ -37,6 +46,7 @@ impl UpdateError {
             Self::Unreachable(_) => "Unreachable",
             Self::BadSignature(_) => "BadSignature",
             Self::Failed(_) => "Failed",
+            Self::InProgress => "InProgress",
             Self::Busy => "Busy",
         }
     }
@@ -86,10 +96,10 @@ pub enum CheckOutcome {
 struct Busy<'a>(&'a AtomicBool);
 
 impl<'a> Busy<'a> {
-    fn take(flag: &'a AtomicBool) -> Result<Self, UpdateError> {
+    fn take(flag: &'a AtomicBool, err: fn() -> UpdateError) -> Result<Self, UpdateError> {
         flag.compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
             .map(|_| Self(flag))
-            .map_err(|_| UpdateError::Busy)
+            .map_err(|_| err())
     }
 }
 
@@ -105,10 +115,10 @@ pub async fn check_and_install<R: Runtime>(
     app: &AppHandle<R>,
 ) -> Result<CheckOutcome, UpdateError> {
     let state = app.state::<UpdaterState>();
-    let _busy = Busy::take(&state.busy)?;
+    let _busy = Busy::take(&state.busy, || UpdateError::InProgress)?;
     // Never swap the binary out from under a relocation, export or import.
     let app_state = app.state::<AppState>();
-    let _library = Busy::take(&app_state.library_busy)?;
+    let _library = Busy::take(&app_state.library_busy, || UpdateError::Busy)?;
 
     let staged = state.staged.lock().unwrap().take();
     if let Some((update, bytes)) = staged {
@@ -123,7 +133,9 @@ pub async fn check_and_install<R: Runtime>(
         app.restart();
     }
 
-    let Some(update) = app.updater()?.check().await? else {
+    log::info!("checking for updates");
+    let Some(update) = check(app).await? else {
+        log::info!("no update available");
         return Ok(CheckOutcome::UpToDate {
             version: app.package_info().version.to_string(),
         });
@@ -138,14 +150,19 @@ pub async fn check_and_install<R: Runtime>(
 /// 自動更新: runs once after startup. Failures are logged, never shown.
 pub async fn stage_in_background<R: Runtime>(app: AppHandle<R>) {
     let state = app.state::<UpdaterState>();
-    let Ok(_busy) = Busy::take(&state.busy) else {
+    let Ok(_busy) = Busy::take(&state.busy, || UpdateError::InProgress) else {
         return;
     };
+    log::info!("checking for updates in the background");
     let result = async {
-        let Some(update) = app.updater()?.check().await? else {
+        let Some(update) = check(&app).await? else {
             return Ok(None);
         };
-        let bytes = update.download(|_, _| {}, || {}).await?;
+        log::info!(
+            "update {} found, downloading in the background",
+            update.version
+        );
+        let bytes = download(&app, &update).await?;
         Ok::<_, UpdateError>(Some((update, bytes)))
     }
     .await;
@@ -180,14 +197,36 @@ pub fn install_staged_on_exit<R: Runtime>(app: &AppHandle<R>) {
     }
 }
 
+async fn check<R: Runtime>(app: &AppHandle<R>) -> Result<Option<Update>, UpdateError> {
+    let update = app
+        .updater_builder()
+        .timeout(CHECK_TIMEOUT)
+        .build()?
+        .check()
+        .await?;
+    // `check` does not pass its timeout on to the download.
+    Ok(update.map(|mut u| {
+        u.timeout = Some(DOWNLOAD_TIMEOUT);
+        u
+    }))
+}
+
 async fn download<R: Runtime>(app: &AppHandle<R>, update: &Update) -> Result<Vec<u8>, UpdateError> {
     let mut downloaded = 0u64;
+    let mut logged_quarter = 0;
     emit_progress(app, &update.version, 0, None);
     let bytes = update
         .download(
             |chunk, total| {
                 downloaded += chunk as u64;
                 emit_progress(app, &update.version, downloaded, total);
+                if let Some(total) = total.filter(|t| *t > 0) {
+                    let quarter = downloaded * 4 / total;
+                    if quarter > logged_quarter {
+                        logged_quarter = quarter;
+                        log::info!("downloaded {downloaded} of {total} bytes");
+                    }
+                }
             },
             || {},
         )
