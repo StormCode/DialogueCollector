@@ -10,6 +10,9 @@ import type {
   CharacterEdit,
   Cue,
   JobOutcome,
+  Line,
+  LineEdit,
+  LinesPageData,
   NewCharacter,
   BackupManifest,
   BackupPreview,
@@ -40,6 +43,13 @@ export const ipc = {
   updateCharacter: (id: number, character: CharacterEdit) =>
     invoke<Character>("update_character", { id, character }),
   deleteCharacter: (id: number) => invoke<void>("delete_character", { id }),
+  openLines: (characterId: number) => invoke<LinesPageData>("open_lines", { characterId }),
+  getLine: (id: number) => invoke<Line>("get_line", { id }),
+  setLinePinned: (id: number, pinned: boolean) => invoke<void>("set_line_pinned", { id, pinned }),
+  updateLine: (id: number, line: LineEdit) => invoke<Line>("update_line", { id, line }),
+  deleteLine: (id: number) => invoke<void>("delete_line", { id }),
+  setPoster: (characterId: number, path: string | null) =>
+    invoke<string | null>("set_poster", { characterId, path }),
   allowPreview: (path: string) => invoke<void>("allow_preview", { path }),
   createCharacter: (character: NewCharacter) => invoke<Character>("create_character", { character }),
   startSubtitleImport: (subtitle: string, source: string, assignments: Assignment[]) =>
