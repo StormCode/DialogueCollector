@@ -28,6 +28,8 @@ dirs = "6"
 rand = "0.9"
 zip = { version = "8", default-features = false, features = ["deflate-flate2-zlib-rs"] }
 fs4 = "1"
+encoding_rs = "0.8"
+chardetng = "1"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 libc = "0.2"
