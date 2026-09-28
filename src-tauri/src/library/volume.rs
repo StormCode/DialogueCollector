@@ -127,7 +127,8 @@ fn network_detail(path: &Path) -> Option<String> {
 fn network_detail(path: &Path) -> Option<String> {
     use std::os::windows::ffi::OsStrExt;
     use std::path::{Component, Prefix};
-    use windows_sys::Win32::Storage::FileSystem::{GetDriveTypeW, DRIVE_REMOTE};
+    use windows_sys::Win32::Storage::FileSystem::GetDriveTypeW;
+    use windows_sys::Win32::System::WindowsProgramming::DRIVE_REMOTE;
 
     let prefix = match path.components().next() {
         Some(Component::Prefix(p)) => p.kind(),
