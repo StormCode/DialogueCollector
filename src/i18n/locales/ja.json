@@ -10,8 +10,13 @@
     "expand": "メニューを開く"
   },
   "main": {
-    "fromSubtitle": "動画の字幕から取り込む",
-    "manual": "既存の音声を直接取り込む"
+    "fromSubtitle": "字幕のタイミングで動画を分割する",
+    "manual": "手持ちの動画や音声をそのまま取り込む",
+    "title": "セリフの取り込み方法を選んでください",
+    "subtitleFormats": "ASS、SRT に対応",
+    "mediaFormats": "MKV、MP4、WEBM、OGG、M4A、MP3 に対応",
+    "subtitleFilter": "字幕ファイル",
+    "mediaFilter": "動画・音声ファイル"
   },
   "scriptBook": {
     "title": "台本"
@@ -21,7 +26,92 @@
   },
   "import": {
     "subtitleTitle": "動画の字幕から取り込む",
-    "manualTitle": "既存の音声を直接取り込む"
+    "manualTitle": "既存の音声を直接取り込む",
+    "dropHere": "ここにファイルをドロップ",
+    "or": "または",
+    "browse": "ファイルを選択",
+    "back": "前に戻る",
+    "cancel": "キャンセル",
+    "home": "ホームに戻る",
+    "retry": "もう一度試す",
+    "oops": "Oops... Something went wrong",
+    "steps": {
+      "label": "ステップ",
+      "subtitle": "字幕の取り込み",
+      "select": "セリフの選択",
+      "source": "動画の取り込み"
+    },
+    "reading": {
+      "title": "字幕を読み込み中",
+      "hint": "字幕ファイルを読み込んでいます"
+    },
+    "readFailed": {
+      "title": "読み込みに失敗しました"
+    },
+    "select": {
+      "title": "Step 2. セリフの選択",
+      "selectAll": "すべて選択",
+      "clearAll": "選択を解除",
+      "assignTo": "割り当て...",
+      "searchCharacter": "キャラクター or 作品名",
+      "unassigned": "未割り当て",
+      "noCharacter": "一致するキャラクターがいません",
+      "addCharacter": "キャラクターを追加",
+      "character": "キャラクター",
+      "time": "時間",
+      "text": "本文",
+      "selectLine": "字幕 {{n}} を選択",
+      "pickFor": "{{n}} 行目のキャラクターを選択",
+      "noCharacterYet": "キャラクター未割り当て",
+      "empty": "選択できるセリフがありません",
+      "total": "全",
+      "lines": "件",
+      "checked": "選択中",
+      "assigned": "割り当て済み",
+      "importSource": "動画を取り込む",
+      "pickCharacter": "キャラクターを選択",
+      "noCues": "字幕ファイルからセリフを取り出せませんでした"
+    },
+    "source": {
+      "title": "Step 3. 動画の取り込み",
+      "filter": "動画・音声ファイル",
+      "formats": "MKV、MP4、WEBM、OGG、M4A、MP3 に対応",
+      "unsupported": "このファイル形式には対応していません"
+    },
+    "cutting": {
+      "title": "動画を分割中",
+      "hint": "字幕のタイミングで動画を分割しています"
+    },
+    "indexing": {
+      "title": "取り込み中",
+      "hint": "インデックスを作成しています"
+    },
+    "complete": {
+      "title": "取り込み完了",
+      "toScriptBook": "セリフ帳へ"
+    },
+    "failed": {
+      "title": "取り込みに失敗しました"
+    },
+    "partial": {
+      "title": "一部完了",
+      "hint": "一部のセリフの分割に失敗しました。それ以外はセリフ帳に追加されています",
+      "count": "{{count}} 件",
+      "succeeded": "成功",
+      "failed": "失敗",
+      "reasons": "失敗の理由"
+    },
+    "reasons": {
+      "zeroLength": "長さが 0 です（開始と終了が同じ時刻）",
+      "outOfRange": "字幕の時刻が動画の長さを超えています",
+      "decodeFailed": "音声のデコードに失敗しました。動画の音声形式を確認してください",
+      "diskFull": "音声の書き込みに失敗しました：ディスクの空き容量が不足しています",
+      "writeFailed": "音声の書き込みに失敗しました",
+      "sidecarUnusable": "内蔵の ffmpeg を実行できません",
+      "killed": "分割処理が中断されました",
+      "other": "分割に失敗しました",
+      "cancelled": "キャンセルしました"
+    }
   },
   "settings": {
     "title": "設定",
@@ -125,7 +215,8 @@
   },
   "common": {
     "notImplemented": "未実装",
-    "close": "閉じる"
+    "close": "閉じる",
+    "clearSearch": "検索をクリア"
   },
   "diagnostics": {
     "title": "診断",
@@ -150,6 +241,51 @@
       "targetInsideLibrary": "ライブラリを自身のフォルダの中に移動することはできません",
       "busy": "ライブラリを移動中です。しばらくお待ちください",
       "failed": "ライブラリの保存場所を変更できませんでした"
+    }
+  },
+  "characters": {
+    "add": {
+      "title": "キャラクターを追加",
+      "cancel": "キャンセル",
+      "submit": "追加",
+      "dropHere": "ここに画像をドロップ",
+      "or": "または",
+      "browse": "ファイルを選択",
+      "formats": "JPG、PNG、GIF に対応",
+      "pngHint": "背景が透明な PNG がおすすめです",
+      "changePhoto": "写真を変更",
+      "removePhoto": "写真を削除",
+      "imageFilter": "画像",
+      "errors": {
+        "generic": "キャラクターを追加できませんでした。もう一度お試しください",
+        "Image": {
+          "Unsupported": "JPG、PNG、GIF の画像のみ対応しています",
+          "TooLarge": "画像が大きすぎます。小さい画像を選んでください",
+          "Io": "この画像を読み込めません"
+        },
+        "Character": {
+          "Invalid": {
+            "name": "キャラクター名を入力してください",
+            "source": "作品名を入力してください",
+            "cv": "CV／演者が長すぎます",
+            "category": "カテゴリーを選んでください"
+          }
+        }
+      }
+    },
+    "fields": {
+      "name": "キャラクター名",
+      "namePlaceholder": "キャラクター名を入力",
+      "category": "カテゴリー",
+      "source": "アニメ／ドラマ名",
+      "sourcePlaceholder": "アニメまたはドラマの名前を入力",
+      "cv": "CV／演者（任意）",
+      "cvPlaceholder": "CV または演者を入力"
+    },
+    "categories": {
+      "anime": "アニメ",
+      "movie": "映画",
+      "tv": "ドラマ"
     }
   }
 }

@@ -150,3 +150,80 @@ export interface MissingFile {
   portraitPath: string | null;
   text: string;
 }
+
+// ---------------------------------------------------------------- subtitle import (S8, T7/T8)
+
+/** One subtitle cue (`subs::Cue`). */
+export interface Cue {
+  index: number;
+  startMs: number;
+  endMs: number;
+  /** 原文: the first line. */
+  text: string;
+  /** 譯文: the remaining lines, if any. */
+  translation: string | null;
+}
+
+export type Category = "anime" | "movie" | "tv";
+
+export interface Character {
+  id: number;
+  name: string;
+  category: Category;
+  source: string;
+  cv: string | null;
+  portraitPath: string | null;
+  lineCount: number;
+}
+
+/** 新增角色's form; `portrait` is the picked image file. */
+export interface NewCharacter {
+  name: string;
+  category: Category;
+  source: string;
+  cv: string | null;
+  portrait: string | null;
+}
+
+export interface Assignment {
+  cue: Cue;
+  characterId: number;
+}
+
+export interface ImportProgress {
+  phase: "cutting" | "indexing";
+  done: number;
+  total: number;
+  imported: number;
+  failed: number;
+}
+
+export type FailureReason =
+  | "zeroLength"
+  | "outOfRange"
+  | "decodeFailed"
+  | "diskFull"
+  | "writeFailed"
+  | "sidecarUnusable"
+  | "killed"
+  | "other"
+  | "cancelled";
+
+export interface ImportFailure {
+  cueIndex: number;
+  text: string;
+  startMs: number;
+  endMs: number;
+  characterId: number;
+  reason: FailureReason;
+  detail: string | null;
+}
+
+export interface JobOutcome {
+  runId: number;
+  imported: number;
+  failures: ImportFailure[];
+  status: "running" | "complete" | "partial" | "failed" | "cancelled";
+  lost: number[];
+  changedSources: string[];
+}

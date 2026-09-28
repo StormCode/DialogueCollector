@@ -1,0 +1,185 @@
+.char-avatar {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  font-family: var(--dc-ui-font);
+  font-weight: var(--bento-weight-semibold);
+  line-height: 1;
+}
+
+.char-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---- 新增角色 / 編輯角色 (AddCharacter.dc.html, EditCharacter.dc.html) ---- */
+
+/* The boards retint the solid primary action with the accent's step 40. */
+.char-form-modal {
+  --bento-action-solid-primary-bg: var(--dc-accent-40);
+  --bento-action-solid-primary-bg-hover: var(--dc-accent-50);
+}
+
+.char-form {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.char-form__photo {
+  flex-shrink: 0;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.char-form__fields {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: 408px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 16px;
+}
+
+.char-drop {
+  position: relative;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: 240px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 3px dashed var(--dc-accent-40);
+  border-radius: 16px;
+  background: transparent;
+  transition: background-color 120ms ease;
+}
+
+.char-drop:hover,
+.char-drop.is-over {
+  background: color-mix(in srgb, var(--dc-accent-5) 25%, transparent);
+}
+
+.char-drop__art {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: var(--dc-accent-20);
+  opacity: 0.2;
+}
+
+.char-drop__content {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+}
+
+.char-drop__title {
+  text-align: center;
+  font: var(--bento-weight-medium) 13px/18px var(--dc-ui-font);
+  color: var(--dc-accent-40);
+}
+
+.char-drop__or {
+  text-align: center;
+  font: var(--bento-weight-regular) 12px/16px var(--dc-ui-font);
+  color: var(--bento-neutral-60);
+}
+
+.char-browse {
+  appearance: none;
+  box-sizing: border-box;
+  padding: 8px 14px;
+  border: 2px solid var(--dc-accent-40);
+  border-radius: 16px;
+  background: transparent;
+  color: var(--dc-accent-40);
+  font: var(--bento-weight-medium) 13px/17px var(--dc-ui-font);
+  cursor: pointer;
+}
+
+.char-browse:hover {
+  background: var(--bento-bg-primary);
+}
+
+.char-photo {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: 240px;
+  height: 240px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--bento-bg-secondary);
+}
+
+.char-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.char-photo__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.char-remove {
+  appearance: none;
+  box-sizing: border-box;
+  width: 37px;
+  height: 37px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 2px solid var(--bento-negative-40);
+  border-radius: 16px;
+  background: transparent;
+  color: var(--bento-negative-40);
+  cursor: pointer;
+}
+
+.char-remove:hover {
+  background: var(--bento-negative-1);
+}
+
+.char-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  font: var(--bento-weight-regular) 12px/16px var(--dc-ui-font);
+  color: var(--bento-content-secondary);
+}
+
+.char-error {
+  text-align: center;
+  font: var(--bento-weight-regular) 12px/16px var(--dc-ui-font);
+  color: var(--bento-content-negative);
+}

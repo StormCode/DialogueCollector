@@ -5,6 +5,11 @@ import { invoke } from "@tauri-apps/api/core";
 
 import type {
   AppInfo,
+  Assignment,
+  Character,
+  Cue,
+  JobOutcome,
+  NewCharacter,
   BackupManifest,
   BackupPreview,
   ImportOutcome,
@@ -27,6 +32,14 @@ export const ipc = {
   inspectBackup: (path: string) => invoke<BackupPreview>("inspect_backup", { path }),
   importBackup: (path: string) => invoke<ImportOutcome>("import_backup", { path }),
   verifyLibrary: () => invoke<VerifyReport>("verify_library"),
+  parseSubtitle: (path: string) => invoke<Cue[]>("parse_subtitle", { path }),
+  listCharacters: () => invoke<Character[]>("list_characters"),
+  allowPreview: (path: string) => invoke<void>("allow_preview", { path }),
+  createCharacter: (character: NewCharacter) => invoke<Character>("create_character", { character }),
+  startSubtitleImport: (subtitle: string, source: string, assignments: Assignment[]) =>
+    invoke<JobOutcome>("start_subtitle_import", { subtitle, source, assignments }),
+  retryImport: (runId: number) => invoke<JobOutcome>("retry_import", { runId }),
+  cancelImport: () => invoke<void>("cancel_import"),
   checkForUpdate: () => invoke<UpdateCheck>("check_for_update"),
   smokeMode: () => invoke<boolean>("smoke_mode"),
   runSmoke: () => invoke<SmokeReport>("run_smoke"),

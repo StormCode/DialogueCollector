@@ -558,3 +558,68 @@ fn shift_clock(clock: &str, seconds: u64) -> String {
         total % 60
     )
 }
+
+/// The real sidecars, end to end: ffprobe reads the duration, ffmpeg cuts every cue, a cue
+/// past the end is refused as out of range. Skipped where the pinned binaries are not built.
+#[test]
+fn real_ffmpeg_cuts_a_generated_video() {
+    use super::job::FfprobeProber;
+    use super::run::FfmpegEncoder;
+
+    let triple = match (std::env::consts::ARCH, std::env::consts::OS) {
+        ("aarch64", "macos") => "aarch64-apple-darwin",
+        ("x86_64", "macos") => "x86_64-apple-darwin",
+        ("x86_64", "windows") => "x86_64-pc-windows-msvc",
+        _ => return,
+    };
+    let bin = |name: &str| {
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("binaries")
+            .join(format!("{name}-{triple}{}", std::env::consts::EXE_SUFFIX))
+    };
+    let (ffmpeg, ffprobe) = (bin("ffmpeg"), bin("ffprobe"));
+    if !ffmpeg.is_file() || !ffprobe.is_file() {
+        eprintln!("skipped: {} not built", ffmpeg.display());
+        return;
+    }
+
+    let f = fixture();
+    // 5 s of test tone behind a black picture, like the smoke test's source.
+    let video = f.root.parent().unwrap().join("tone.mp4");
+    let status = std::process::Command::new(&ffmpeg)
+        .args(["-v", "error", "-f", "lavfi", "-i", "sine=frequency=440:duration=5"])
+        .args(["-f", "lavfi", "-i", "color=c=black:s=64x64:d=5", "-c:a", "aac", "-c:v", "mpeg4"])
+        .args(["-shortest", "-y"])
+        .arg(&video)
+        .status()
+        .unwrap();
+    assert!(status.success());
+    fs::write(
+        &f.subtitle,
+        "1\n00:00:00,500 --> 00:00:01,500\n一\n\n2\n00:00:02,000 --> 00:00:03,250\n二\n\n3\n00:00:09,000 --> 00:00:10,000\n三\n",
+    )
+    .unwrap();
+
+    let encoder = FfmpegEncoder { ffmpeg };
+    let prober = FfprobeProber { ffprobe };
+    let cancel = AtomicBool::new(false);
+    let engine = Engine {
+        library: &f.root,
+        writer: &f.writer,
+        encoder: &encoder,
+        prober: &prober,
+        workers: 2,
+        cancel: &cancel,
+        on_event: &quiet,
+    };
+    let out = import_subtitle(&engine, &f.subtitle, &video, plan(&f.subtitle)).unwrap();
+
+    assert_eq!(out.imported, 2, "{:?}", out.failures);
+    assert_eq!(out.failures.len(), 1);
+    assert_eq!(out.failures[0].reason, Reason::OutOfRange);
+    let rows = assert_rows_equal_files(&f.root);
+    for (name, _) in &rows {
+        let bytes = fs::metadata(f.root.join(name)).unwrap().len();
+        assert!(bytes > 1000, "{name} is only {bytes} bytes");
+    }
+}

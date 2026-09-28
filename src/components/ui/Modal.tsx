@@ -10,12 +10,19 @@ interface ModalProps {
   /** Omit to make the modal non-dismissable (e.g. while an export runs). */
   onClose?: () => void;
   size?: "small" | "medium" | "large";
+  /** Extra class on the dialog, e.g. to retint its buttons as a board does. */
+  className?: string;
+  /** Bento Modal's Actions row: a transparent secondary and a solid primary button. */
+  actions?: {
+    primary: { label: string; onClick: () => void; disabled?: boolean };
+    secondary: { label: string; onClick: () => void };
+  };
 }
 
 // Bento Modal as drawn on the boards: scrim, drop-in card, title bar. Focus moves into the
 // dialog on open; the first element marked data-autofocus wins (DT2: 取消 on destructive
 // dialogs), otherwise the dialog itself.
-export function Modal({ title, children, onClose, size = "medium" }: ModalProps) {
+export function Modal({ title, children, onClose, size = "medium", actions, className = "" }: ModalProps) {
   const { t } = useTranslation();
   const dialog = useRef<HTMLDivElement>(null);
 
@@ -39,7 +46,7 @@ export function Modal({ title, children, onClose, size = "medium" }: ModalProps)
       <div className="ui-modal-backdrop" aria-hidden="true" />
       <div
         ref={dialog}
-        className={`ui-modal ui-modal--${size}`}
+        className={`ui-modal ui-modal--${size} ${className}`}
         role="dialog"
         aria-modal="true"
         aria-label={title}
@@ -53,7 +60,23 @@ export function Modal({ title, children, onClose, size = "medium" }: ModalProps)
             </button>
           )}
         </div>
+        <div className="ui-modal__divider" />
         <div className="ui-modal__body">{children}</div>
+        {actions && (
+          <div className="ui-modal__actions">
+            <button type="button" className="ui-btn ui-btn--medium ui-btn--transparent" onClick={actions.secondary.onClick}>
+              {actions.secondary.label}
+            </button>
+            <button
+              type="button"
+              className="ui-btn ui-btn--medium ui-btn--solid"
+              onClick={actions.primary.onClick}
+              disabled={actions.primary.disabled}
+            >
+              {actions.primary.label}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -114,6 +114,7 @@ pub fn run() {
             import_cmd::parse_subtitle,
             import_cmd::list_characters,
             import_cmd::create_character,
+            import_cmd::allow_preview,
             import_cmd::start_subtitle_import,
             import_cmd::retry_import,
             import_cmd::cancel_import,

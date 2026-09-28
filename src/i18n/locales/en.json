@@ -10,8 +10,13 @@
     "expand": "Expand menu"
   },
   "main": {
-    "fromSubtitle": "Import from video subtitles",
-    "manual": "Import existing audio"
+    "fromSubtitle": "Cut a video into clips along its subtitles",
+    "manual": "Import existing video or audio as is",
+    "title": "Choose how to bring in lines",
+    "subtitleFormats": "ASS and SRT",
+    "mediaFormats": "MKV, MP4, WEBM, OGG, M4A, MP3",
+    "subtitleFilter": "Subtitles",
+    "mediaFilter": "Video and audio"
   },
   "scriptBook": {
     "title": "Script Book"
@@ -21,7 +26,93 @@
   },
   "import": {
     "subtitleTitle": "Import from video subtitles",
-    "manualTitle": "Import existing audio"
+    "manualTitle": "Import existing audio",
+    "dropHere": "Drop a file here",
+    "or": "or",
+    "browse": "Browse files",
+    "back": "Back",
+    "cancel": "Cancel",
+    "home": "Back to home",
+    "retry": "Try again",
+    "oops": "Oops... Something went wrong",
+    "steps": {
+      "label": "Steps",
+      "subtitle": "Subtitles",
+      "select": "Choose lines",
+      "source": "Video"
+    },
+    "reading": {
+      "title": "Reading subtitles",
+      "hint": "Reading the subtitle file"
+    },
+    "readFailed": {
+      "title": "Couldn’t read the file"
+    },
+    "select": {
+      "title": "Step 2. Choose lines",
+      "selectAll": "Select all",
+      "clearAll": "Select none",
+      "assignTo": "Assign to...",
+      "searchCharacter": "Character or title",
+      "unassigned": "Unassigned",
+      "noCharacter": "No matching character",
+      "addCharacter": "Add character",
+      "character": "Character",
+      "time": "Time",
+      "text": "Line",
+      "selectLine": "Select subtitle {{n}}",
+      "pickFor": "Choose a character for line {{n}}",
+      "noCharacterYet": "No character yet",
+      "empty": "No lines to choose from",
+      "total": "All",
+      "lines": "lines",
+      "checked": "Checked",
+      "assigned": "Assigned",
+      "importSource": "Import video",
+      "pickCharacter": "Choose a character",
+      "noCues": "No lines could be read from the subtitle file"
+    },
+    "source": {
+      "title": "Step 3. Import video",
+      "filter": "Video and audio",
+      "formats": "MKV, MP4, WEBM, OGG, M4A, MP3",
+      "unsupported": "That file type isn’t supported"
+    },
+    "cutting": {
+      "title": "Cutting the video",
+      "hint": "Cutting the video along the subtitle timings"
+    },
+    "indexing": {
+      "title": "Importing",
+      "hint": "Building the index"
+    },
+    "complete": {
+      "title": "Import complete",
+      "toScriptBook": "Go to the script book"
+    },
+    "failed": {
+      "title": "Import failed"
+    },
+    "partial": {
+      "title": "Partly done",
+      "hint": "Some lines couldn’t be cut; the rest are in the script book",
+      "count": "{{count}} lines",
+      "count_one": "{{count}} line",
+      "succeeded": "Done",
+      "failed": "Failed",
+      "reasons": "Why they failed"
+    },
+    "reasons": {
+      "zeroLength": "Zero length (starts and ends at the same time)",
+      "outOfRange": "Starts after the end of the video",
+      "decodeFailed": "The audio couldn’t be decoded; check the video’s audio format",
+      "diskFull": "Couldn’t save the clip: the disk is full",
+      "writeFailed": "Couldn’t save the clip",
+      "sidecarUnusable": "The bundled ffmpeg can’t run",
+      "killed": "The cut was interrupted",
+      "other": "The cut failed",
+      "cancelled": "Cancelled"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -126,7 +217,8 @@
   },
   "common": {
     "notImplemented": "Not implemented yet",
-    "close": "Close"
+    "close": "Close",
+    "clearSearch": "Clear search"
   },
   "diagnostics": {
     "title": "Diagnostics",
@@ -151,6 +243,51 @@
       "targetInsideLibrary": "A library can't be moved into its own folder.",
       "busy": "The library is being moved. Please wait.",
       "failed": "Couldn't change the library location."
+    }
+  },
+  "characters": {
+    "add": {
+      "title": "Add character",
+      "cancel": "Cancel",
+      "submit": "Add",
+      "dropHere": "Drop an image here",
+      "or": "or",
+      "browse": "Browse files",
+      "formats": "JPG, PNG, GIF",
+      "pngHint": "A PNG with a transparent background works best",
+      "changePhoto": "Change photo",
+      "removePhoto": "Remove photo",
+      "imageFilter": "Images",
+      "errors": {
+        "generic": "Couldn’t add the character. Please try again.",
+        "Image": {
+          "Unsupported": "Only JPG, PNG and GIF images are supported",
+          "TooLarge": "That image is too large; choose a smaller one",
+          "Io": "Couldn’t read that image"
+        },
+        "Character": {
+          "Invalid": {
+            "name": "Enter a character name",
+            "source": "Enter the anime or show title",
+            "cv": "The voice/cast entry is too long",
+            "category": "Choose a category"
+          }
+        }
+      }
+    },
+    "fields": {
+      "name": "Character name",
+      "namePlaceholder": "Enter a character name",
+      "category": "Category",
+      "source": "Anime / show title",
+      "sourcePlaceholder": "Enter the anime or show title",
+      "cv": "Voice / cast (optional)",
+      "cvPlaceholder": "Enter the voice actor or cast"
+    },
+    "categories": {
+      "anime": "Anime",
+      "movie": "Movie",
+      "tv": "TV series"
     }
   }
 }

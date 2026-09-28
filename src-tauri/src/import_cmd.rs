@@ -64,6 +64,16 @@ pub fn create_character(
     Ok(characters::create(lib.conn(), lib.root(), character)?)
 }
 
+/// Lets the webview show a picked image before it is stored (新增角色's preview). Only that
+/// one file is added to the asset scope.
+#[tauri::command]
+pub fn allow_preview(app: AppHandle, path: PathBuf) -> CommandResult<()> {
+    use tauri::Manager;
+    app.asset_protocol_scope()
+        .allow_file(&path)
+        .map_err(|e| CommandError::new("Internal.AssetScope", e))
+}
+
 /// One Step 2 row that has a character.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]

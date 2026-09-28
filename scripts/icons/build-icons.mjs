@@ -13,6 +13,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const BENTO = [
+  "Bin",
   "ChevronDown",
   "ChevronLeft",
   "ChevronRight",

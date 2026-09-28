@@ -10,8 +10,13 @@
     "expand": "展开菜单"
   },
   "main": {
-    "fromSubtitle": "从视频字幕导入",
-    "manual": "直接导入现有影音"
+    "fromSubtitle": "按字幕时间轴把视频切分成多个片段",
+    "manual": "直接导入现有的视频或音频",
+    "title": "请选择其中一种导入台词的方式",
+    "subtitleFormats": "支持 ASS、SRT",
+    "mediaFormats": "支持 MKV、MP4、WEBM、OGG、M4A、MP3",
+    "subtitleFilter": "字幕文件",
+    "mediaFilter": "音视频文件"
   },
   "scriptBook": {
     "title": "台词本"
@@ -21,7 +26,92 @@
   },
   "import": {
     "subtitleTitle": "从视频字幕导入",
-    "manualTitle": "直接导入现有影音"
+    "manualTitle": "直接导入现有影音",
+    "dropHere": "将文件拖放到这里",
+    "or": "或",
+    "browse": "浏览文件",
+    "back": "返回上一步",
+    "cancel": "取消",
+    "home": "返回主页",
+    "retry": "再试一次",
+    "oops": "Oops... Something went wrong",
+    "steps": {
+      "label": "步骤",
+      "subtitle": "导入字幕",
+      "select": "选择台词",
+      "source": "导入视频"
+    },
+    "reading": {
+      "title": "读取字幕",
+      "hint": "正在读取字幕文件"
+    },
+    "readFailed": {
+      "title": "读取失败"
+    },
+    "select": {
+      "title": "Step 2. 选择台词",
+      "selectAll": "全部选择",
+      "clearAll": "全部不选",
+      "assignTo": "指派给...",
+      "searchCharacter": "角色或作品名称",
+      "unassigned": "未指派",
+      "noCharacter": "找不到符合的角色",
+      "addCharacter": "新增角色",
+      "character": "角色",
+      "time": "时间",
+      "text": "内容",
+      "selectLine": "选择字幕 {{n}}",
+      "pickFor": "为第 {{n}} 句选择角色",
+      "noCharacterYet": "尚未指派角色",
+      "empty": "没有可选择的台词",
+      "total": "全部",
+      "lines": "句台词",
+      "checked": "已勾选",
+      "assigned": "已指派角色",
+      "importSource": "导入视频",
+      "pickCharacter": "选择角色",
+      "noCues": "无法从字幕文件提取任何台词"
+    },
+    "source": {
+      "title": "Step 3. 导入视频",
+      "filter": "音视频文件",
+      "formats": "支持 MKV、MP4、WEBM、OGG、M4A、MP3",
+      "unsupported": "不支持这个文件格式"
+    },
+    "cutting": {
+      "title": "切割视频中",
+      "hint": "正在按字幕时间切分视频"
+    },
+    "indexing": {
+      "title": "导入中",
+      "hint": "正在建立索引"
+    },
+    "complete": {
+      "title": "导入完成",
+      "toScriptBook": "前往台词本"
+    },
+    "failed": {
+      "title": "导入失败"
+    },
+    "partial": {
+      "title": "部分完成",
+      "hint": "部分台词片段切割失败，其余已加入台词本",
+      "count": "{{count}} 句",
+      "succeeded": "成功",
+      "failed": "失败",
+      "reasons": "失败原因"
+    },
+    "reasons": {
+      "zeroLength": "片段长度为 0（开始与结束时间相同）",
+      "outOfRange": "字幕时间超出视频长度",
+      "decodeFailed": "音轨解码失败，请确认视频的音频格式",
+      "diskFull": "写入音频失败：磁盘空间不足",
+      "writeFailed": "写入音频失败",
+      "sidecarUnusable": "内置的 ffmpeg 无法执行",
+      "killed": "切割进程被中断",
+      "other": "切割失败",
+      "cancelled": "已取消"
+    }
   },
   "settings": {
     "title": "设置",
@@ -125,7 +215,8 @@
   },
   "common": {
     "notImplemented": "尚未实现",
-    "close": "关闭"
+    "close": "关闭",
+    "clearSearch": "清除搜索"
   },
   "diagnostics": {
     "title": "诊断",
@@ -150,6 +241,51 @@
       "targetInsideLibrary": "不能把收藏库迁移到它自己的文件夹中",
       "busy": "收藏库正在迁移中，请稍候",
       "failed": "无法更改收藏库位置"
+    }
+  },
+  "characters": {
+    "add": {
+      "title": "新增角色",
+      "cancel": "取消",
+      "submit": "新增",
+      "dropHere": "将图片拖放到这里",
+      "or": "或",
+      "browse": "浏览文件",
+      "formats": "支持JPG、PNG、GIF",
+      "pngHint": "建议上传透明背景的PNG图片",
+      "changePhoto": "更换照片",
+      "removePhoto": "删除照片",
+      "imageFilter": "图片",
+      "errors": {
+        "generic": "无法新增角色，请再试一次",
+        "Image": {
+          "Unsupported": "只支持 JPG、PNG、GIF 图片",
+          "TooLarge": "图片太大，请换一张较小的图片",
+          "Io": "无法读取这张图片"
+        },
+        "Character": {
+          "Invalid": {
+            "name": "请输入角色名称",
+            "source": "请输入动画或剧集名称",
+            "cv": "CV／饰演太长",
+            "category": "请选择类别"
+          }
+        }
+      }
+    },
+    "fields": {
+      "name": "角色名称",
+      "namePlaceholder": "请输入角色名称",
+      "category": "类别",
+      "source": "动画/剧集名称",
+      "sourcePlaceholder": "请输入动画或剧集名称",
+      "cv": "CV/饰演（选填）",
+      "cvPlaceholder": "请输入CV或饰演者"
+    },
+    "categories": {
+      "anime": "动画",
+      "movie": "电影",
+      "tv": "电视剧"
     }
   }
 }
