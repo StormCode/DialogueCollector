@@ -1,0 +1,129 @@
+# T22 (G1 → B): free-tier updater. Pushing a `v*` tag builds every target, signs the updater
+# bundles with the minisign key in the TAURI_SIGNING_PRIVATE_KEY secret, and uploads them with
+# latest.json to a draft release. The last job publishes the draft, so the updater endpoint
+# (releases/latest/download/latest.json) never serves a release missing a platform.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+env:
+  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+  TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # Updater bundles only; the smoke workflow builds without the key.
+  RELEASE_CONFIG: src-tauri/tauri.release.conf.json
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Tag matches the app version
+        run: |
+          app="v$(node -p "require('./src-tauri/tauri.conf.json').version")"
+          [ "$app" = "$GITHUB_REF_NAME" ] || { echo "tag $GITHUB_REF_NAME != tauri.conf.json $app"; exit 1; }
+
+  macos:
+    needs: version
+    strategy:
+      fail-fast: true
+      matrix:
+        arch: [aarch64, x86_64]
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.arch }}-apple-darwin
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Cache ffmpeg sidecar
+        id: ffmpeg-cache
+        uses: actions/cache@v6
+        with:
+          path: |
+            src-tauri/binaries/ffmpeg-${{ matrix.arch }}-apple-darwin
+            src-tauri/binaries/ffprobe-${{ matrix.arch }}-apple-darwin
+          key: ffmpeg-${{ matrix.arch }}-apple-darwin-${{ hashFiles('scripts/ffmpeg/pins.json', 'scripts/ffmpeg/build-macos.sh') }}
+      - name: Build LGPL ffmpeg
+        if: steps.ffmpeg-cache.outputs.cache-hit != 'true'
+        run: |
+          [ "${{ matrix.arch }}" = x86_64 ] && brew install nasm
+          scripts/ffmpeg/build-macos.sh ${{ matrix.arch }}
+
+      - run: npm ci
+      - uses: tauri-apps/tauri-action@v1
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 台詞收藏家 ${{ github.ref_name }}
+          releaseDraft: true
+          args: --target ${{ matrix.arch }}-apple-darwin --config ${{ env.RELEASE_CONFIG }}
+
+  windows:
+    needs: version
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Cache ffmpeg sidecar
+        id: ffmpeg-cache
+        uses: actions/cache@v6
+        with:
+          path: |
+            src-tauri/binaries/ffmpeg-x86_64-pc-windows-msvc.exe
+            src-tauri/binaries/ffprobe-x86_64-pc-windows-msvc.exe
+          key: ffmpeg-x86_64-pc-windows-msvc-${{ hashFiles('scripts/ffmpeg/pins.json', 'scripts/ffmpeg/build-windows.sh') }}
+      - uses: msys2/setup-msys2@v2
+        if: steps.ffmpeg-cache.outputs.cache-hit != 'true'
+        with:
+          msystem: UCRT64
+          path-type: inherit
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-nasm mingw-w64-ucrt-x86_64-pkgconf
+            mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-bzip2 make diffutils tar xz curl
+      - name: Build LGPL ffmpeg
+        if: steps.ffmpeg-cache.outputs.cache-hit != 'true'
+        shell: msys2 {0}
+        run: scripts/ffmpeg/build-windows.sh
+
+      - run: npm ci
+      - name: NSIS template matches the installed Tauri CLI
+        run: node scripts/nsis/check-template.mjs
+      - uses: tauri-apps/tauri-action@v1
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 台詞收藏家 ${{ github.ref_name }}
+          releaseDraft: true
+          args: --bundles nsis --config ${{ env.RELEASE_CONFIG }}
+
+  publish:
+    needs: [macos, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish the draft once every platform is in latest.json
+        run: |
+          gh release download "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" -p latest.json -O - \
+            | jq -e '.platforms | has("darwin-aarch64") and has("darwin-x86_64") and has("windows-x86_64")'
+          gh release edit "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" --draft=false --latest

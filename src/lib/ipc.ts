@@ -11,6 +11,7 @@ import type {
   LibraryStatus,
   Settings,
   SmokeReport,
+  UpdateCheck,
 } from "./types";
 
 export const ipc = {
@@ -24,6 +25,7 @@ export const ipc = {
   cancelExport: () => invoke<void>("cancel_export"),
   inspectBackup: (path: string) => invoke<BackupPreview>("inspect_backup", { path }),
   importBackup: (path: string) => invoke<ImportOutcome>("import_backup", { path }),
+  checkForUpdate: () => invoke<UpdateCheck>("check_for_update"),
   smokeMode: () => invoke<boolean>("smoke_mode"),
   runSmoke: () => invoke<SmokeReport>("run_smoke"),
   smokeFinish: (ok: boolean, detail: string) => invoke<void>("smoke_finish", { ok, detail }),

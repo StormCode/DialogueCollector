@@ -69,6 +69,13 @@
     @keyframes ex-stripe { from { background-position: 0 0; } to { background-position: 28px 0; } }
     .ex-bar-fill { background-image: linear-gradient(45deg, rgba(255,255,255,0.22) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.22) 75%, transparent 75%); background-size: 28px 28px; animation: ex-stripe 0.8s linear infinite; transition: width 200ms ease; }
     @media (prefers-reduced-motion: reduce) { .ex-spin, .ex-bar-fill { animation: none; } }
+    .stat-missing { appearance: none; -webkit-appearance: none; border: none; text-align: left; cursor: pointer; background: var(--bento-negative-1); box-shadow: inset 0 0 0 1px var(--bento-negative-10); transition: box-shadow 120ms ease, background-color 120ms ease; }
+    .stat-missing:hover { background: var(--bento-negative-5); box-shadow: inset 0 0 0 1.5px var(--bento-negative-30); }
+    .stat-missing:focus-visible { outline: 2px solid var(--bento-negative-40); outline-offset: 2px; }
+    .mf-row { display: grid; grid-template-columns: 150px minmax(0, 1fr) auto; column-gap: 16px; align-items: center; padding: 12px 16px; }
+    .mf-row + .mf-row { border-top: 1px solid var(--bento-neutral-5); }
+    .mf-view { display: inline-flex; align-items: center; gap: 4px; box-sizing: border-box; padding: 7px 12px 7px 14px; border-radius: var(--bento-radius-12); border: 1.5px solid var(--accent-40); color: var(--accent-50); background: transparent; font: var(--bento-weight-medium) 13px/16px var(--bento-font-ui); text-decoration: none; white-space: nowrap; }
+    .mf-view:hover { background: var(--accent-5); }
   </style>
 </helmet>
 <div style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 56px 104px; gap: 28px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0; {{themeVars}}">
@@ -187,6 +194,12 @@
               <span class="stat-num">2.36 GB</span>
               <span class="stat-cap">佔用的硬碟空間</span>
             </div>
+            <sc-if value="{{hasMissing}}" hint-placeholder-val="{{false}}">
+              <button type="button" class="stat-box stat-missing" aria-haspopup="dialog" onClick="{{openMissing}}">
+                <span class="stat-num" style="display: inline-flex; align-items: center; gap: 4px; color: var(--bento-negative-60); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px;">{{missingCount}}<span class="material-symbol" aria-hidden="true" style="font-size: 20px; text-decoration: none;">chevron_right</span></span>
+                <span class="stat-cap" style="display: inline-flex; align-items: center; gap: 4px; color: var(--bento-negative-50);"><span class="material-symbol" aria-hidden="true" style="font-size: 16px;">error</span>遺失的檔案數</span>
+              </button>
+            </sc-if>
           </div>
         </div>
       </section>
@@ -222,6 +235,42 @@
 
     </div>
   </div>
+
+  <sc-if value="{{showMissingModal}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center;">
+      <div class="ic-backdrop" onClick="{{closeMissing}}" style="position: absolute; inset: 0; background: rgba(15, 23, 42, 0.48);" aria-hidden="true"></div>
+      <div class="ic-enter" style="position: relative; z-index: 1;">
+        <x-import component-from-global-scope="BentoDS27_65ebe9.Modal" title="遺失的檔案" size="large" on-close="{{closeMissing}}">
+          <div style="display: flex; flex-direction: column; gap: 16px; width: 100%; box-sizing: border-box;">
+            <div style="display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-radius: var(--bento-radius-12); background: var(--bento-bg-negative); color: var(--bento-negative-60); font: var(--bento-weight-regular) 13px/18px var(--bento-font-ui);">
+              <span class="material-symbol" aria-hidden="true" style="font-size: 18px; flex-shrink: 0;">error</span>
+              <span>共 {{missingCount}} 個台詞的音檔已不在收藏庫中。點「查看」前往該角色的台詞頁重新匯入或刪除。</span>
+            </div>
+            <div style="border: 1px solid var(--bento-neutral-10); border-radius: var(--bento-radius-16); overflow: hidden;">
+              <div class="mf-row" style="background: var(--bento-bg-secondary); padding-top: 10px; padding-bottom: 10px; font: var(--bento-weight-medium) 13px/18px var(--bento-font-ui); color: var(--bento-neutral-60);">
+                <span>角色</span><span>台詞</span><span style="width: 72px;"></span>
+              </div>
+              <div class="st-scroll" style="max-height: 300px; overflow-y: auto; overflow-x: hidden;">
+                <sc-for list="{{missingFiles}}" as="mf" hint-placeholder-count="5">
+                  <div class="mf-row">
+                    <span style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+                      <span aria-hidden="true" style="width: 28px; height: 28px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: {{mf.avBg}}; color: {{mf.avFg}}; font: var(--bento-weight-semibold) 12px/1 var(--bento-font-ui);"><sc-if value="{{mf.hasImg}}" hint-placeholder-val="{{false}}"><img src="{{mf.img}}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block; object-position: {{mf.imgPos}};"></sc-if><sc-if value="{{mf.noImg}}" hint-placeholder-val="{{true}}">{{mf.initial}}</sc-if></span>
+                      <span style="font: var(--bento-weight-medium) 14px/20px var(--bento-font-ui); color: var(--bento-content-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{mf.name}}</span>
+                    </span>
+                    <span title="{{mf.text}}" style="min-width: 0; font: var(--bento-weight-regular) 14px/20px var(--bento-font-ui); color: var(--bento-content-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{mf.text}}</span>
+                    <a class="mf-view" href="Lines.dc.html" aria-label="查看{{mf.name}}的台詞">查看<span class="material-symbol" aria-hidden="true" style="font-size: 18px;">chevron_right</span></a>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="button" class="ic-btn ic-btn-neutral" onClick="{{closeMissing}}">關閉</button>
+            </div>
+          </div>
+        </x-import>
+      </div>
+    </div>
+  </sc-if>
 
   <sc-if value="{{showExporting}}" hint-placeholder-val="{{false}}">
     <div style="position: absolute; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center;">
@@ -294,7 +343,7 @@
   </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"toast":{"editor":"enum","options":["none","exportSuccess","exportFailed","importSuccess","importFailed","libraryNotFound","networkDriveDenied"],"default":"none"},"exportTarget":{"editor":"text","default":"~/Downloads"},"updateStatus":{"editor":"enum","options":["none","latest","updating"],"default":"none"},"importConfirm":{"editor":"boolean","default":false},"exporting":{"editor":"boolean","default":false},"exportProgress":{"editor":"range","min":0,"max":100,"step":1,"default":50},"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"toast":{"editor":"enum","options":["none","exportSuccess","exportFailed","importSuccess","importFailed","libraryNotFound","networkDriveDenied"],"default":"none"},"exportTarget":{"editor":"text","default":"~/Downloads"},"updateStatus":{"editor":"enum","options":["none","latest","updating"],"default":"none"},"importConfirm":{"editor":"boolean","default":false},"exporting":{"editor":"boolean","default":false},"missingFiles":{"editor":"boolean","default":false},"initialSection":{"editor":"enum","options":["ui","book","lines","files","version"],"default":"ui"},"missingModal":{"editor":"boolean","default":false},"exportProgress":{"editor":"range","min":0,"max":100,"step":1,"default":50},"$preview":{"width":1280,"height":800}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
@@ -379,6 +428,15 @@ class Component extends DCLogic {
     clearTimeout(this.toastTimer);
     this.setState({ toast: 'none' });
   };
+  componentDidMount() {
+    const sec = this.props.initialSection;
+    if (!sec) return;
+    setTimeout(() => {
+      const card = this.card;
+      const el = card && card.querySelector('[data-sec="' + sec + '"]');
+      if (el) { card.scrollTop = Math.max(0, el.offsetTop - 24); this.lockUntil = Date.now() + 300; this.setState({ active: sec }); }
+    }, 60);
+  }
   componentWillUnmount() { clearTimeout(this.toastTimer); clearInterval(this.exportTimer); }
   // 原型示意：匯出/匯入一律以成功結果呈現；失敗狀態見各自的 Toast 畫板
   // 原型示意：點擊匯出 → 顯示匯出中進度 → 完成後跳出成功 Toast
@@ -396,6 +454,9 @@ class Component extends DCLogic {
       }
     }, 120);
   };
+  openMissing = () => this.setState({ missingOpen: true });
+  closeMissing = () => this.setState({ missingOpen: false });
+
   cancelExport = () => {
     clearInterval(this.exportTimer);
     this.setState({ exporting: false, exportProgress: 0 });
@@ -515,6 +576,34 @@ class Component extends DCLogic {
           exportPctCss: pct + '%',
           exportStepText: pct < 90 ? '正在複製音檔 ' + done.toLocaleString() + ' / ' + total.toLocaleString() : '正在寫入設定與壓縮檔案…',
           cancelExport: this.cancelExport,
+        };
+      })(),
+      ...(() => {
+        const AV = {
+          yuki: { name: '優希', ramp: 'indigo', img: '/_blob/8e7c48a81577b215f6492ed5ac49e399', pos: '50% 45%' },
+          frieren: { name: '芙莉蓮', ramp: 'jade', img: '/_blob/d21b13f3cadc7105e91cae2176052ebd', pos: '47% 45%' },
+          lena: { name: '蕾娜', ramp: 'pink' },
+          okabe: { name: '岡部倫太郎', ramp: 'orange' },
+        };
+        const LIST = [
+          { c: 'okabe', text: '這一切都是命運石之門的選擇。' },
+          { c: 'frieren', text: '人類的壽命真的很短暫呢。' },
+          { c: 'yuki', text: 'おはよう。今日は早いんだね。' },
+          { c: 'lena', text: '我們不會忘記你們的名字。' },
+          { c: 'frieren', text: '那就再去一次吧，這次一起。' },
+        ];
+        const modalOpen = !!(this.state.missingOpen ?? this.props.missingModal ?? false);
+        const has = !!(this.props.missingFiles ?? false) || modalOpen;
+        return {
+          hasMissing: has,
+          missingCount: LIST.length,
+          openMissing: this.openMissing,
+          closeMissing: this.closeMissing,
+          showMissingModal: modalOpen,
+          missingFiles: LIST.map((m) => {
+            const a = AV[m.c];
+            return { name: a.name, text: m.text, avBg: 'var(--bento-dv-' + a.ramp + '-10)', avFg: 'var(--bento-dv-' + a.ramp + '-70)', initial: a.name.charAt(0), img: a.img || '', imgPos: a.pos || '50% 50%', hasImg: !!a.img, noImg: !a.img };
+          }),
         };
       })(),
       showImportConfirm: !!(this.state.importConfirm ?? this.props.importConfirm ?? false),

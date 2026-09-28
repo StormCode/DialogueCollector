@@ -455,3 +455,22 @@
     animation: none;
   }
 }
+
+/* 目前版本: 已是最新版本! / 更新中... beside 檢查更新 (board: Settings.dc.html). */
+.st-update {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.st-update__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: var(--bento-weight-medium) 14px/18px var(--dc-ui-font);
+  color: var(--dc-accent-60);
+}
+
+.st-update__status--latest {
+  color: var(--bento-positive-60);
+}
