@@ -36,7 +36,52 @@
     "deleteFailed": "キャラクターを削除できませんでした。しばらくしてから再度お試しください"
   },
   "lines": {
-    "title": "セリフ"
+    "title": "{{name}}のセリフ",
+    "poster": "バナーポスター",
+    "playAll": "すべて再生",
+    "stopAll": "すべて停止",
+    "playSeq": "順番に再生",
+    "stopSeq": "順番再生を停止",
+    "uploadPoster": "バナーをアップロード",
+    "updatePoster": "バナーを変更",
+    "deletePoster": "バナーを削除",
+    "search": "e.g. El Psy Congroo",
+    "sort": {
+      "label": "並べ替え",
+      "created": "作成日時で並べ替え",
+      "duration": "長さで並べ替え",
+      "asc": "昇順",
+      "desc": "降順",
+      "createdShort": "作成日時",
+      "durationShort": "長さ"
+    },
+    "editMode": "編集モード",
+    "view": {
+      "label": "表示モード",
+      "compact": "簡易",
+      "detail": "詳細"
+    },
+    "summary": "全 {{count}} 件 · {{sort}}",
+    "pinned": "ピン留め",
+    "pinnedLabel": "ピン留めしたセリフ",
+    "check": "このセリフを選択",
+    "play": "再生",
+    "pause": "一時停止",
+    "pin": "ピン留め",
+    "unpin": "ピン留めを外す",
+    "edit": "編集",
+    "delete": "削除",
+    "empty": "ここには何もありません",
+    "import": "セリフをインポート",
+    "noResult": "一致するセリフが見つかりません",
+    "deleteTitle": "このセリフを削除しますか？",
+    "deleteBody": "削除すると、このセリフの音声とテキストがまとめて消え、元に戻せません。",
+    "deleteConfirm": "削除",
+    "deletePosterTitle": "バナーを削除しますか？",
+    "deletePosterBody": "削除すると、ページ上部にバナーが表示されなくなります。あとで再度アップロードできます。",
+    "fileRemovalFailed": "セリフは削除しましたが、音声ファイルを消せませんでした。次にコレクションを開いたときに再試行します",
+    "deleteFailed": "セリフを削除できませんでした。しばらくしてからもう一度お試しください",
+    "saveFailed": "変更を保存できませんでした。しばらくしてからもう一度お試しください"
   },
   "import": {
     "subtitleTitle": "動画の字幕から取り込む",
@@ -321,5 +366,29 @@
     "next": "次のページ",
     "last": "最後のページ",
     "page": "{{n}} ページ"
+  },
+  "editLine": {
+    "title": "セリフを編集",
+    "subtitle": "このセリフのテキストと、対応するキャラクターを変更します",
+    "preview": "再生プレビュー",
+    "text": "セリフ",
+    "textPlaceholder": "このセリフのテキストを入力…",
+    "textRequired": "セリフを入力してください",
+    "translation": "訳文 (optional)",
+    "translationPlaceholder": "このセリフの訳文を入力…",
+    "character": "キャラクター",
+    "characterRequired": "キャラクターを選択してください",
+    "characterSearch": "キャラクター or 作品名",
+    "noCharacter": "一致するキャラクターが見つかりません",
+    "addCharacter": "キャラクターを追加",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "saved": "変更を保存しました",
+    "errors": {
+      "generic": "変更を保存できませんでした。しばらくしてからもう一度お試しください",
+      "Line": {
+        "NotFound": "このセリフはもう存在しません"
+      }
+    }
   }
 }

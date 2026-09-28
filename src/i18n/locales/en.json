@@ -36,7 +36,53 @@
     "deleteFailed": "Couldn’t delete the character. Try again later."
   },
   "lines": {
-    "title": "Lines"
+    "title": "{{name}}'s lines",
+    "poster": "Banner poster",
+    "playAll": "Play all",
+    "stopAll": "Stop all",
+    "playSeq": "Play in order",
+    "stopSeq": "Stop playing",
+    "uploadPoster": "Upload banner",
+    "updatePoster": "Change banner",
+    "deletePoster": "Delete banner",
+    "search": "e.g. El Psy Congroo",
+    "sort": {
+      "label": "Sort",
+      "created": "Sort by date created",
+      "duration": "Sort by length",
+      "asc": "Ascending",
+      "desc": "Descending",
+      "createdShort": "Date created",
+      "durationShort": "Length"
+    },
+    "editMode": "Edit mode",
+    "view": {
+      "label": "View",
+      "compact": "Compact",
+      "detail": "Detailed"
+    },
+    "summary": "{{count}} lines · {{sort}}",
+    "summary_one": "{{count}} line · {{sort}}",
+    "pinned": "Pinned",
+    "pinnedLabel": "Pinned lines",
+    "check": "Select this line",
+    "play": "Play",
+    "pause": "Pause",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "edit": "Edit",
+    "delete": "Delete",
+    "empty": "Nothing here yet",
+    "import": "Import lines",
+    "noResult": "No matching lines",
+    "deleteTitle": "Delete this line?",
+    "deleteBody": "Its audio and text will be removed together. This can't be undone.",
+    "deleteConfirm": "Delete",
+    "deletePosterTitle": "Delete the banner?",
+    "deletePosterBody": "The banner will no longer show at the top of the page. You can upload one again later.",
+    "fileRemovalFailed": "The line was deleted, but its audio file couldn't be removed. It will be retried the next time the library opens.",
+    "deleteFailed": "Couldn't delete the line. Please try again later.",
+    "saveFailed": "Couldn't save the change. Please try again later."
   },
   "import": {
     "subtitleTitle": "Import from video subtitles",
@@ -324,5 +370,29 @@
     "next": "Next page",
     "last": "Last page",
     "page": "Page {{n}}"
+  },
+  "editLine": {
+    "title": "Edit line",
+    "subtitle": "Change this line's text and the character it belongs to",
+    "preview": "Preview",
+    "text": "Line",
+    "textPlaceholder": "Type this line's text…",
+    "textRequired": "Enter the line's text",
+    "translation": "Translation (optional)",
+    "translationPlaceholder": "Type this line's translation…",
+    "character": "Character",
+    "characterRequired": "Choose a character",
+    "characterSearch": "Character or title",
+    "noCharacter": "No matching characters",
+    "addCharacter": "Add character",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saved": "Changes saved",
+    "errors": {
+      "generic": "Couldn't save the change. Please try again later.",
+      "Line": {
+        "NotFound": "This line no longer exists"
+      }
+    }
   }
 }

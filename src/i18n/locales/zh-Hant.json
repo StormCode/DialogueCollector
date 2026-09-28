@@ -36,7 +36,52 @@
     "deleteFailed": "無法刪除角色，請稍後再試"
   },
   "lines": {
-    "title": "台詞"
+    "title": "{{name}}的台詞",
+    "poster": "橫幅海報",
+    "playAll": "全部播放",
+    "stopAll": "全部停止",
+    "playSeq": "依序播放",
+    "stopSeq": "停止依序播放",
+    "uploadPoster": "上傳橫幅海報",
+    "updatePoster": "更新橫幅海報",
+    "deletePoster": "刪除橫幅海報",
+    "search": "e.g. El Psy Congroo",
+    "sort": {
+      "label": "排序",
+      "created": "按建立時間排序",
+      "duration": "按時長排序",
+      "asc": "遞增",
+      "desc": "遞減",
+      "createdShort": "建立時間",
+      "durationShort": "時長"
+    },
+    "editMode": "編輯模式",
+    "view": {
+      "label": "檢視模式",
+      "compact": "簡短",
+      "detail": "詳細"
+    },
+    "summary": "共 {{count}} 句 · {{sort}}",
+    "pinned": "已釘選",
+    "pinnedLabel": "已釘選的台詞",
+    "check": "勾選此句",
+    "play": "播放",
+    "pause": "暫停",
+    "pin": "釘選",
+    "unpin": "取消釘選",
+    "edit": "編輯",
+    "delete": "刪除",
+    "empty": "這裡什麼都沒有",
+    "import": "匯入台詞",
+    "noResult": "找不到符合的台詞",
+    "deleteTitle": "確定要刪除台詞嗎？",
+    "deleteBody": "刪除後，這段台詞的音訊與文字將一併移除，且無法復原。",
+    "deleteConfirm": "刪除",
+    "deletePosterTitle": "確定要刪除橫幅海報嗎？",
+    "deletePosterBody": "刪除後，頁面頂部將不再顯示海報，之後仍可重新上傳。",
+    "fileRemovalFailed": "台詞已刪除，但音訊檔無法移除，之後開啟收藏庫時會再試一次",
+    "deleteFailed": "無法刪除台詞，請稍後再試",
+    "saveFailed": "無法儲存變更，請稍後再試"
   },
   "import": {
     "subtitleTitle": "從影片字幕匯入",
@@ -321,5 +366,29 @@
     "next": "下一頁",
     "last": "最後一頁",
     "page": "第 {{n}} 頁"
+  },
+  "editLine": {
+    "title": "編輯台詞",
+    "subtitle": "修改這段台詞的文字內容與對應的角色",
+    "preview": "播放預覽",
+    "text": "台詞內容",
+    "textPlaceholder": "請輸入這段台詞的文字…",
+    "textRequired": "請輸入台詞內容",
+    "translation": "台詞譯文 (optional)",
+    "translationPlaceholder": "請輸入這段台詞的翻譯文字…",
+    "character": "角色",
+    "characterRequired": "請選擇角色",
+    "characterSearch": "角色 or 作品名稱",
+    "noCharacter": "找不到符合的角色",
+    "addCharacter": "新增角色",
+    "cancel": "取消",
+    "save": "儲存",
+    "saved": "已儲存變更",
+    "errors": {
+      "generic": "無法儲存變更，請稍後再試",
+      "Line": {
+        "NotFound": "這段台詞已不存在"
+      }
+    }
   }
 }

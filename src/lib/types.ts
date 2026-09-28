@@ -239,3 +239,29 @@ export interface CharacterEdit {
   cv: string | null;
   portrait: PortraitChange;
 }
+
+// ---------------------------------------------------------------- 台詞 page
+
+export interface Line {
+  id: number;
+  characterId: number;
+  text: string;
+  translation: string | null;
+  audioPath: string;
+  durationMs: number;
+  createdAt: number;
+  pinnedAt: number | null;
+}
+
+export interface LinesPageData {
+  character: Character;
+  posterPath: string | null;
+  lines: Line[];
+}
+
+/** EditLine's form. */
+export interface LineEdit {
+  text: string;
+  translation: string | null;
+  characterId: number;
+}
