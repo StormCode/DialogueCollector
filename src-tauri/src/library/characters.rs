@@ -500,4 +500,15 @@ mod tests {
             .unwrap();
         assert_eq!(queued, 1);
     }
+
+    #[test]
+    fn the_renderer_s_portrait_change_shape_deserializes() {
+        let keep: PortraitChange = serde_json::from_str(r#"{"kind":"keep"}"#).unwrap();
+        assert!(matches!(keep, PortraitChange::Keep));
+        let remove: PortraitChange = serde_json::from_str(r#"{"kind":"remove"}"#).unwrap();
+        assert!(matches!(remove, PortraitChange::Remove));
+        let replace: PortraitChange =
+            serde_json::from_str(r#"{"kind":"replace","path":"/p/a.png"}"#).unwrap();
+        assert!(matches!(replace, PortraitChange::Replace(p) if p == Path::new("/p/a.png")));
+    }
 }

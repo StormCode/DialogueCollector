@@ -450,3 +450,145 @@
   font: var(--bento-weight-regular) 16px/20px var(--dc-ui-font);
   color: var(--bento-content-primary);
 }
+
+/* ---- confirmation dialogs (DeleteConfirm, DeleteLine, SettingsImportConfirm, …) ---- */
+.modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--bento-neutral-10);
+}
+
+.confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.confirm__icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--bento-negative-1);
+  color: var(--bento-content-negative);
+}
+
+.confirm__title {
+  font: var(--bento-weight-semibold) 18px/24px var(--dc-ui-font);
+  color: var(--bento-content-primary);
+}
+
+.confirm__body,
+.confirm__counts {
+  font: var(--bento-weight-regular) 14px/20px var(--dc-ui-font);
+  color: var(--bento-content-secondary);
+}
+
+.confirm__body strong {
+  font-weight: 600;
+  color: var(--bento-content-negative);
+}
+
+.confirm__counts {
+  color: var(--bento-content-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ---- Bento Chip ---- */
+.ui-chip {
+  box-sizing: border-box;
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 13px;
+  background: var(--dc-accent-10);
+}
+
+.ui-chip__label {
+  white-space: nowrap;
+  font: var(--bento-weight-medium) 11px/14px var(--dc-ui-font);
+  color: var(--bento-content-primary);
+}
+
+.ui-chip__remove {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: var(--bento-radius-full);
+  background: transparent;
+  color: var(--bento-action-transparent-secondary-fg);
+  cursor: pointer;
+}
+
+.ui-chip__remove:hover {
+  background: var(--bento-action-transparent-secondary-bg-hover);
+}
+
+/* ---- pagination (.sb-pagination) ---- */
+.ui-pages {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.ui-page {
+  appearance: none;
+  box-sizing: border-box;
+  min-width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  border: 1px solid var(--bento-neutral-10);
+  border-radius: var(--bento-radius-8);
+  background: var(--bento-bg-primary);
+  color: var(--bento-content-secondary);
+  font: var(--bento-weight-medium) 14px/18px var(--dc-ui-font);
+  cursor: pointer;
+}
+
+.ui-page:hover:not(:disabled) {
+  background: var(--bento-bg-secondary);
+}
+
+.ui-page:disabled {
+  opacity: 0.5;
+  color: var(--bento-action-disabled-fg);
+  cursor: not-allowed;
+}
+
+.ui-page.is-current {
+  border-color: var(--dc-accent-40);
+  background: var(--dc-accent-40);
+  color: var(--bento-action-solid-primary-fg);
+}
+
+.ui-page-gap {
+  min-width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bento-neutral-40);
+  font: var(--bento-weight-medium) 14px/18px var(--dc-ui-font);
+}

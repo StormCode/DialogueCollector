@@ -19,7 +19,21 @@
     "mediaFilter": "影音檔"
   },
   "scriptBook": {
-    "title": "台詞本"
+    "title": "台詞本",
+    "search": "角色名稱 or CV/飾演",
+    "filter": "篩選",
+    "category": "類別",
+    "source": "動畫/電影/電視劇名稱",
+    "removeFilter": "移除「{{name}}」",
+    "add": "新增角色",
+    "empty": "這裡什麼都沒有",
+    "noResult": "找不到符合的角色",
+    "edit": "編輯{{name}}",
+    "deleteTitle": "確定要刪除角色嗎？",
+    "deleteBody": "刪除「{{name}}」後，此角色的所有台詞資料將一併移除，且無法復原。",
+    "deleteConfirm": "刪除",
+    "fileRemovalFailed": "角色已刪除，但有部分檔案無法移除，之後開啟收藏庫時會再試一次",
+    "deleteFailed": "無法刪除角色，請稍後再試"
   },
   "lines": {
     "title": "台詞"
@@ -220,7 +234,9 @@
   "common": {
     "notImplemented": "尚未實作",
     "close": "關閉",
-    "clearSearch": "清除搜尋"
+    "clearSearch": "清除搜尋",
+    "confirm": "確認",
+    "cancel": "取消"
   },
   "diagnostics": {
     "title": "診斷",
@@ -290,6 +306,20 @@
       "anime": "動畫",
       "movie": "電影",
       "tv": "電視劇"
+    },
+    "edit": {
+      "title": "編輯角色",
+      "submit": "編輯",
+      "delete": "刪除角色",
+      "pngHint": "建議上傳透明背景的png"
     }
+  },
+  "pagination": {
+    "label": "分頁",
+    "first": "第一頁",
+    "prev": "上一頁",
+    "next": "下一頁",
+    "last": "最後一頁",
+    "page": "第 {{n}} 頁"
   }
 }

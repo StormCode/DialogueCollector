@@ -227,3 +227,15 @@ export interface JobOutcome {
   lost: number[];
   changedSources: string[];
 }
+
+/** 編輯角色's photo control (`characters::PortraitChange`). */
+export type PortraitChange = { kind: "keep" } | { kind: "remove" } | { kind: "replace"; path: string };
+
+/** 編輯角色's form. */
+export interface CharacterEdit {
+  name: string;
+  category: Category;
+  source: string;
+  cv: string | null;
+  portrait: PortraitChange;
+}
