@@ -178,7 +178,11 @@
         "character": "角色",
         "line": "台词",
         "view": "查看",
-        "viewLabel": "查看{{name}}的台词"
+        "viewLabel": "查看{{name}}的台词",
+        "deleteAll": "全部删除",
+        "deleteAllTitle": "确定要删除全部 {{count}} 句台词吗？",
+        "deleteAllBody": "这些台词的音频已丢失，删除后将从各角色的台词页一并移除，且无法恢复。",
+        "deleteFailed": "无法删除，请稍后再试"
       }
     },
     "toc": "设置目录",

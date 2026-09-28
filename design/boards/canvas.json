@@ -368,6 +368,24 @@
       "w": 1280,
       "x": 0,
       "y": 920
+    },
+    "LinesMissing.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "台詞（遺失的檔案）",
+      "w": 1280,
+      "x": 5440,
+      "y": 4600
+    },
+    "SettingsMissingDeleteAll.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-5",
+      "title": "遺失的檔案－全部刪除確認",
+      "w": 1280,
+      "x": 14960,
+      "y": 0
     }
   },
   "createdOnFiles": {
@@ -416,6 +434,7 @@
     "LinesPoster.dc.html",
     "LinesEmpty.dc.html",
     "LinesNoResult.dc.html",
+    "LinesMissing.dc.html",
     "DeletePoster.dc.html",
     "Settings.dc.html",
     "SettingsDark.dc.html",
@@ -428,7 +447,8 @@
     "SettingsLibraryNotFound.dc.html",
     "SettingsNetworkDrive.dc.html",
     "SettingsMissingFiles.dc.html",
-    "SettingsMissingModal.dc.html"
+    "SettingsMissingModal.dc.html",
+    "SettingsMissingDeleteAll.dc.html"
   ],
   "pages": [
     {

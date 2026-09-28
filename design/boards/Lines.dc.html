@@ -70,6 +70,8 @@
     @media (prefers-reduced-motion: reduce) { .ln-card { animation: none; } }
     .ln-card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
     .ln-card.is-active { border-color: var(--bento-dv-indigo-40); background: var(--bento-dv-indigo-5); }
+    .ln-card.is-missing { border-color: var(--bento-negative-40); box-shadow: inset 0 0 0 1px var(--bento-negative-40); }
+    .ln-card.is-missing:hover { box-shadow: inset 0 0 0 1px var(--bento-negative-40), 0 4px 8px rgba(0,0,0,0.08); }
     .ln-check { display: inline-flex; flex-shrink: 0; opacity: 0; transition: opacity 120ms ease; --bento-bg-interactive: var(--bento-dv-indigo-40); --bento-border-input-enabled: var(--bento-dv-indigo-20); --bento-border-input-hover: var(--bento-dv-indigo-40); }
     .ln-card:hover .ln-check, .ln-check:focus-within, .ln-list.has-checked .ln-check { opacity: 1; }
     .ln-play {appearance: none; -webkit-appearance: none; flex-shrink: 0; margin-right: 12px; width: 48px; height: 48px; border-radius: 50%; border: none; display: inline-flex; align-items: center; justify-content: center; background: var(--bento-dv-indigo-40); color: var(--bento-white); cursor: pointer; transition: background-color 120ms ease; }
@@ -236,6 +238,7 @@
       <div style="flex: 1 0 auto; min-height: 360px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center;">
         <img src="/_blob/a41f06bab49514a736e15468dc1a8344" alt="" aria-hidden="true" style="width: 320px; height: 320px; object-fit: contain; mix-blend-mode: multiply; margin: -40px 0 -44px;">
         <p style="margin: 0; font: var(--bento-weight-medium) 18px/26px var(--bento-font-ui); color: var(--bento-content-secondary);">這裡什麼都沒有</p>
+        <a class="ln-btn ln-btn-primary" href="Main.dc.html" style="margin-top: 28px; text-decoration: none;"><span class="material-symbol" aria-hidden="true">add</span>匯入台詞</a>
       </div>
     </sc-if>
 
@@ -245,7 +248,7 @@
         <sc-if value="{{pinExpanded}}" hint-placeholder-val="{{true}}">
         <div class="ln-list {{listClass}} {{viewClass}}">
           <sc-for list="{{pinnedLines}}" as="item" hint-placeholder-count="2">
-          <div class="ln-card {{item.activeClass}}" style="animation-delay: {{item.delay}};">
+          <div class="ln-card {{item.activeClass}} {{item.missingClass}}" style="animation-delay: {{item.delay}};">
             <span class="ln-check"><x-import component-from-global-scope="BentoDS27_65ebe9.Checkbox" checked="{{item.checked}}" onChange="{{item.toggleCheck}}" aria-label="勾選此句"></x-import></span>
             <sc-if value="{{item.showPlay}}" hint-placeholder-val="{{true}}">
               <button type="button" class="ln-play" aria-label="{{item.playLabel}}" onClick="{{item.togglePlay}}">
@@ -273,14 +276,14 @@
           </sc-for>
         </div>
         </sc-if>
-        <div aria-hidden="true" style="height: 1px; flex-shrink: 0; width: 20vw; align-self: center; margin: 12px 0 0; background: var(--bento-dv-indigo-20);"></div>
+        <div aria-hidden="true" style="box-sizing: border-box; height: 5px; flex-shrink: 0; width: 20vw; align-self: center; margin: 12px 0 0; border-top: 1px solid var(--bento-dv-indigo-20); border-bottom: 1px solid var(--bento-dv-indigo-20);"></div>
       </section>
     </sc-if>
 
     <sc-if value="{{hasLines}}" hint-placeholder-val="{{true}}">
     <div class="ln-list {{listClass}} {{viewClass}}">
       <sc-for list="{{lines}}" as="item" hint-placeholder-count="10">
-        <div class="ln-card {{item.activeClass}}" style="animation-delay: {{item.delay}};">
+        <div class="ln-card {{item.activeClass}} {{item.missingClass}}" style="animation-delay: {{item.delay}};">
           <span class="ln-check"><x-import component-from-global-scope="BentoDS27_65ebe9.Checkbox" checked="{{item.checked}}" onChange="{{item.toggleCheck}}" aria-label="勾選此句"></x-import></span>
           <sc-if value="{{item.showPlay}}" hint-placeholder-val="{{true}}">
             <button type="button" class="ln-play" aria-label="{{item.playLabel}}" onClick="{{item.togglePlay}}">
@@ -314,6 +317,7 @@
       </sc-if>
     </div>
 
+    <sc-if value="{{showPagination}}" hint-placeholder-val="{{true}}">
     <div class="ln-pagination">
       <button type="button" class="ln-page-btn" aria-label="第一頁" disabled="{{isFirstPage}}" onClick="{{goFirst}}">
         <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">first_page</span>
@@ -337,11 +341,12 @@
       </button>
     </div>
     </sc-if>
+    </sc-if>
 
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"empty":{"editor":"boolean","default":false,"tsType":"boolean"},"searchQuery":{"editor":"text","default":""},"showPosterPreview":{"editor":"boolean","default":false,"tsType":"boolean"},"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"empty":{"editor":"boolean","default":false,"tsType":"boolean"},"searchQuery":{"editor":"text","default":""},"showPosterPreview":{"editor":"boolean","default":false,"tsType":"boolean"},"missingLine":{"editor":"text","default":""},"$preview":{"width":1280,"height":800}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
@@ -589,8 +594,10 @@ class Component extends DCLogic {
 
     const editMode = !!this.state.editMode;
     const pinnedIds = this.state.pinned || [];
+    const missingLine = (this.props.missingLine ?? '').trim();
     const buildItem = (l, idx) => {
       const isCur = l.id === curId;
+      const isMissing = !!missingLine && l.text === missingLine;
       const isPlaying = isCur && !paused;
       const isPinned = pinnedIds.includes(l.id);
       return {
@@ -605,6 +612,7 @@ class Component extends DCLogic {
         playIcon: isPlaying ? 'pause' : 'play_arrow',
         playLabel: isPlaying ? '暫停' : '播放',
         activeClass: isCur ? 'is-active' : '',
+        missingClass: isMissing ? 'is-missing' : '',
         showProgress: isCur,
         progressPct: Math.round((isCur ? this.state.progress : 0) * 1000) / 10 + '%',
         showPlay: !editMode,
@@ -704,6 +712,7 @@ class Component extends DCLogic {
       lines,
       listClass: checked.length ? 'has-checked' : '',
       isEmpty: visible.length === 0 && pinnedList.length === 0,
+      showPagination: !(visible.length === 0 && pinnedList.length === 0),
       pageItems: this.buildPageItems(page, total),
       isFirstPage: page <= 1,
       isLastPage: page >= total,
