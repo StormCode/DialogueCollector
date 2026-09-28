@@ -4,7 +4,8 @@ import { SelectField } from "../../components/ui/SelectField";
 import { LOCALES, THEMES, type Locale, type Theme } from "../../lib/types";
 import { useSettingsStore } from "../../stores/settingsStore";
 
-// Swatch colour per theme: step 40 of its ramp, 80 for the neutral one (Settings board).
+// Swatch colour per theme: step 40 of its ramp (Settings board). 夜光黑 is a literal because
+// the dark theme remaps the neutral ramp; its selection ring is light so it shows on dark.
 const SWATCH: Record<Theme, string> = {
   indigo: "var(--bento-dv-indigo-40)",
   lightBlue: "var(--bento-dv-blue-40)",
@@ -12,8 +13,10 @@ const SWATCH: Record<Theme, string> = {
   emerald: "var(--bento-dv-jade-40)",
   sunset: "var(--bento-dv-orange-40)",
   lipstick: "var(--bento-dv-pink-40)",
-  midnight: "var(--bento-neutral-80)",
+  midnight: "#27313f",
 };
+
+const RING: Partial<Record<Theme, string>> = { midnight: "#dee4ed" };
 
 export function InterfaceSection() {
   const { t } = useTranslation();
@@ -52,7 +55,7 @@ export function InterfaceSection() {
                   aria-checked={selected}
                   aria-label={t(`settings.themes.${theme}`)}
                   onClick={() => void update({ theme })}
-                  style={{ background: SWATCH[theme], outlineColor: selected ? SWATCH[theme] : "transparent" }}
+                  style={{ background: SWATCH[theme], outlineColor: selected ? (RING[theme] ?? SWATCH[theme]) : "transparent" }}
                 />
                 <span className={`swatch-name${selected ? " is-active" : ""}`}>
                   {t(`settings.themes.${theme}`)}

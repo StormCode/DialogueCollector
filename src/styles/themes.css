@@ -8,7 +8,7 @@
 
    Binding rule: when a board is translated into a component, every `--bento-dv-indigo-*`
    reference becomes one of these variables. `--bento-dv-*` is left to data visualisation.
-   夜光黑 is a neutral accent, not a dark mode: the board keeps light surfaces for every theme.
+   夜光黑 is the dark theme: it also remaps Bento's neutral and semantic tokens (see below).
 
    gstack-shortcut: completeness 7/10, accepted in the design review (D7 → B). Upgrade
    trigger: the first new board drawn in the canvas after that decision — it will copy
@@ -58,12 +58,76 @@
   --dc-ramp-60: var(--bento-dv-pink-60);
 }
 
-/* The neutral ramp is shifted two steps darker, as on the board (40→80, 50→80, 60→90). */
-[data-theme="midnight"] {
-  --dc-ramp-5: var(--bento-neutral-5);
-  --dc-ramp-40: var(--bento-neutral-80);
-  --dc-ramp-50: var(--bento-neutral-80);
-  --dc-ramp-60: var(--bento-neutral-90);
+/* 夜光黑 is the dark theme (SettingsDark board): it remaps Bento's neutral ramp and semantic
+   tokens so surfaces go dark and text light, and the primary action becomes light-on-dark.
+   `:root[data-theme]` outranks both Bento's `:root` tokens and the accent block below. */
+:root[data-theme="midnight"] {
+  color-scheme: dark;
+
+  --dc-ramp-5: #2a3340;
+  --dc-ramp-40: #cbd4e1;
+  --dc-ramp-50: #dee4ed;
+  --dc-ramp-60: #eef1f6;
+
+  --bento-neutral-1: #1b222c;
+  --bento-neutral-5: #242c37;
+  --bento-neutral-10: #2e3743;
+  --bento-neutral-20: #3d4756;
+  --bento-neutral-30: #566273;
+  --bento-neutral-40: #76849a;
+  --bento-neutral-50: #9aa8bc;
+  --bento-neutral-60: #b6c2d3;
+  --bento-neutral-70: #cbd4e1;
+  --bento-neutral-80: #dee4ed;
+  --bento-neutral-90: #eef1f6;
+
+  --bento-bg-primary: #1f2630;
+  --bento-bg-secondary: #141a22;
+  --bento-bg-overlay: rgba(255, 255, 255, 0.06);
+  --bento-bg-interactive-overlay: rgba(255, 255, 255, 0.08);
+  --bento-content-primary: #eef1f6;
+  --bento-content-secondary: #9aa8bc;
+  --bento-content-disabled: rgba(255, 255, 255, 0.3);
+  --bento-icon-primary: #eef1f6;
+  --bento-icon-secondary: #9aa8bc;
+  --bento-border-decorative: #3d4756;
+  --bento-border-container: rgba(255, 255, 255, 0.08);
+  --bento-border-input-enabled: #566273;
+  --bento-border-input-hover: #76849a;
+  --bento-border-input-disabled: rgba(255, 255, 255, 0.12);
+  --bento-action-disabled-bg: rgba(255, 255, 255, 0.1);
+  --bento-action-disabled-fg: #76849a;
+
+  --bento-bg-negative: rgba(241, 74, 88, 0.16);
+  --bento-negative-1: rgba(241, 74, 88, 0.12);
+  --bento-negative-5: rgba(241, 74, 88, 0.2);
+  --bento-negative-10: rgba(241, 74, 88, 0.32);
+  --bento-content-negative: #fa7d87;
+  --bento-negative-50: #fa7d87;
+  --bento-negative-60: #ffb6bc;
+  --bento-icon-negative: #fa7d87;
+  --bento-bg-positive: rgba(66, 215, 91, 0.16);
+  --bento-content-positive: #7eeb83;
+  --bento-icon-positive: #7eeb83;
+  --bento-positive-60: #7eeb83;
+  --bento-bg-warning: rgba(252, 179, 59, 0.16);
+  --bento-warning-70: #ffcf73;
+
+  --bento-elevation-sm: 0 4px 8px rgba(0, 0, 0, 0.4);
+  --bento-elevation-md: 0 8px 16px rgba(0, 0, 0, 0.45);
+  --bento-elevation-lg: 0 16px 32px rgba(0, 0, 0, 0.5);
+
+  --bento-bg-interactive: #76849a;
+  --bento-border-input-focus: #cbd4e1;
+  --bento-action-outline-primary-outline: #cbd4e1;
+  --bento-action-outline-primary-outline-hover: #eef1f6;
+  --bento-action-transparent-primary-fg: #dee4ed;
+  --bento-action-transparent-primary-fg-hover: #ffffff;
+  --bento-action-transparent-primary-bg-hover: rgba(255, 255, 255, 0.08);
+  --bento-action-solid-primary-bg: #dee4ed;
+  --bento-action-solid-primary-bg-hover: #ffffff;
+  --bento-action-solid-primary-fg: #141a22;
+  --bento-action-solid-primary-fg-hover: #141a22;
 }
 
 :root {

@@ -196,7 +196,7 @@
             </div>
             <sc-if value="{{hasMissing}}" hint-placeholder-val="{{false}}">
               <button type="button" class="stat-box stat-missing" aria-haspopup="dialog" onClick="{{openMissing}}">
-                <span class="stat-num" style="display: inline-flex; align-items: center; gap: 4px; color: var(--bento-negative-60); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px;">{{missingCount}}<span class="material-symbol" aria-hidden="true" style="font-size: 20px; text-decoration: none;">chevron_right</span></span>
+                <span class="stat-num" style="display: inline-flex; align-items: center; gap: 4px; color: var(--bento-negative-60); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1.5px;">{{missingCount}}</span>
                 <span class="stat-cap" style="display: inline-flex; align-items: center; gap: 4px; color: var(--bento-negative-50);"><span class="material-symbol" aria-hidden="true" style="font-size: 16px;">error</span>遺失的檔案數</span>
               </button>
             </sc-if>
@@ -343,7 +343,7 @@
   </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"toast":{"editor":"enum","options":["none","exportSuccess","exportFailed","importSuccess","importFailed","libraryNotFound","networkDriveDenied"],"default":"none"},"exportTarget":{"editor":"text","default":"~/Downloads"},"updateStatus":{"editor":"enum","options":["none","latest","updating"],"default":"none"},"importConfirm":{"editor":"boolean","default":false},"exporting":{"editor":"boolean","default":false},"missingFiles":{"editor":"boolean","default":false},"initialSection":{"editor":"enum","options":["ui","book","lines","files","version"],"default":"ui"},"missingModal":{"editor":"boolean","default":false},"exportProgress":{"editor":"range","min":0,"max":100,"step":1,"default":50},"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"toast":{"editor":"enum","options":["none","exportSuccess","exportFailed","importSuccess","importFailed","libraryNotFound","networkDriveDenied"],"default":"none"},"exportTarget":{"editor":"text","default":"~/Downloads"},"updateStatus":{"editor":"enum","options":["none","latest","updating"],"default":"none"},"importConfirm":{"editor":"boolean","default":false},"exporting":{"editor":"boolean","default":false},"missingFiles":{"editor":"boolean","default":false},"theme":{"editor":"enum","options":["indigo","blue","red","jade","orange","pink","neutral"],"default":"indigo"},"initialSection":{"editor":"enum","options":["ui","book","lines","files","version"],"default":"ui"},"missingModal":{"editor":"boolean","default":false},"exportProgress":{"editor":"range","min":0,"max":100,"step":1,"default":50},"$preview":{"width":1280,"height":800}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
@@ -351,7 +351,7 @@ class Component extends DCLogic {
       expanded: true,
       active: 'ui',
       lang: 'zh-Hant',
-      theme: 'indigo',
+      theme: props.theme ?? 'indigo',
       bookPageSize: '8',
       linesPageSize: '10',
       playGap: '2',
@@ -497,6 +497,35 @@ class Component extends DCLogic {
       '--bento-action-solid-primary-bg-hover: ' + (r === 'neutral' ? v(r, 90) : v(r, 60)),
     ].join('; ') + ';';
 
+    // 夜光黑：深色主題。直接覆寫 Bento 的中性色階與語意 token（背景變深、文字變淺）
+    const DARK = {
+      'color-scheme': 'dark',
+      '--bento-neutral-1': '#1b222c', '--bento-neutral-5': '#242c37', '--bento-neutral-10': '#2e3743',
+      '--bento-neutral-20': '#3d4756', '--bento-neutral-30': '#566273', '--bento-neutral-40': '#76849a',
+      '--bento-neutral-50': '#9aa8bc', '--bento-neutral-60': '#b6c2d3', '--bento-neutral-70': '#cbd4e1',
+      '--bento-neutral-80': '#dee4ed', '--bento-neutral-90': '#eef1f6',
+      '--bento-bg-primary': '#1f2630', '--bento-bg-secondary': '#141a22',
+      '--bento-bg-overlay': 'rgba(255, 255, 255, 0.06)', '--bento-bg-interactive-overlay': 'rgba(255, 255, 255, 0.08)',
+      '--bento-content-primary': '#eef1f6', '--bento-content-secondary': '#9aa8bc',
+      '--bento-icon-primary': '#eef1f6', '--bento-icon-secondary': '#9aa8bc',
+      '--bento-border-decorative': '#3d4756', '--bento-border-container': 'rgba(255, 255, 255, 0.08)',
+      '--bento-border-input-enabled': '#566273', '--bento-border-input-hover': '#76849a', '--bento-border-input-disabled': 'rgba(255, 255, 255, 0.12)',
+      '--bento-action-disabled-bg': 'rgba(255, 255, 255, 0.1)', '--bento-action-disabled-fg': '#76849a',
+      '--bento-content-disabled': 'rgba(255, 255, 255, 0.3)',
+      '--bento-bg-negative': 'rgba(241, 74, 88, 0.16)', '--bento-negative-1': 'rgba(241, 74, 88, 0.12)', '--bento-negative-5': 'rgba(241, 74, 88, 0.2)', '--bento-negative-10': 'rgba(241, 74, 88, 0.32)',
+      '--bento-content-negative': '#fa7d87', '--bento-negative-50': '#fa7d87', '--bento-negative-60': '#ffb6bc', '--bento-icon-negative': '#fa7d87',
+      '--bento-bg-positive': 'rgba(66, 215, 91, 0.16)', '--bento-content-positive': '#7eeb83', '--bento-icon-positive': '#7eeb83', '--bento-positive-60': '#7eeb83',
+      '--bento-bg-warning': 'rgba(252, 179, 59, 0.16)', '--bento-warning-70': '#ffcf73',
+      '--bento-elevation-sm': '0 4px 8px rgba(0, 0, 0, 0.4)', '--bento-elevation-md': '0 8px 16px rgba(0, 0, 0, 0.45)', '--bento-elevation-lg': '0 16px 32px rgba(0, 0, 0, 0.5)',
+      '--accent-5': '#2a3340', '--accent-40': '#cbd4e1', '--accent-50': '#dee4ed', '--accent-60': '#eef1f6',
+      '--bento-bg-interactive': '#76849a', '--bento-border-input-focus': '#cbd4e1',
+      '--bento-action-outline-primary-outline': '#cbd4e1', '--bento-action-outline-primary-outline-hover': '#eef1f6',
+      '--bento-action-transparent-primary-fg': '#dee4ed', '--bento-action-transparent-primary-fg-hover': '#ffffff', '--bento-action-transparent-primary-bg-hover': 'rgba(255, 255, 255, 0.08)',
+      '--bento-action-solid-primary-bg': '#dee4ed', '--bento-action-solid-primary-bg-hover': '#ffffff', '--bento-action-solid-primary-fg': '#141a22', '--bento-action-solid-primary-fg-hover': '#141a22',
+    };
+    const isDark = r === 'neutral';
+    const darkVars = isDark ? ' ' + Object.keys(DARK).map((k) => k + ': ' + DARK[k]).join('; ') + ';' : '';
+
     const toastKey = this.state.toast ?? this.props.toast ?? 'none';
     const target = this.props.exportTarget ?? '~/Downloads';
     const TOASTS = {
@@ -519,7 +548,7 @@ class Component extends DCLogic {
       toggleExpand: this.toggleExpand,
       chevronName: expanded ? 'ChevronRight' : 'ChevronLeft',
       toggleLabel: expanded ? '收合選單' : '展開選單',
-      themeVars,
+      themeVars: themeVars + darkVars,
       setCardRef: this.setCardRef,
       handleScroll: this.handleScroll,
       toc: this.SECTIONS.map((s) => ({
@@ -538,12 +567,12 @@ class Component extends DCLogic {
       lang: this.state.lang,
       handleLangChange: this.handleLangChange,
       themes: this.THEMES.map((t) => {
-        const color = t.ramp === 'neutral' ? v(t.ramp, 80) : v(t.ramp, 40);
+        const color = t.ramp === 'neutral' ? '#27313f' : v(t.ramp, 40);
         const selected = t.id === themeId;
         return {
           name: t.name,
           color,
-          ring: selected ? color : 'transparent',
+          ring: selected ? (t.ramp === 'neutral' && isDark ? '#dee4ed' : color) : 'transparent',
           selected: selected ? 'true' : 'false',
           nameCls: selected ? 'is-active' : '',
           pick: () => this.setState({ theme: t.id }),

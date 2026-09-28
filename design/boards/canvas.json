@@ -359,6 +359,33 @@
       "w": 1280,
       "x": 1360,
       "y": 0
+    },
+    "SettingsMissingFiles.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-5",
+      "title": "遺失的檔案數",
+      "w": 1280,
+      "x": 12240,
+      "y": 0
+    },
+    "SettingsMissingModal.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-5",
+      "title": "遺失的檔案明細",
+      "w": 1280,
+      "x": 13600,
+      "y": 0
+    },
+    "SettingsDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-5",
+      "title": "設定（夜光黑）",
+      "w": 1280,
+      "x": 0,
+      "y": 920
     }
   },
   "createdOnFiles": {
@@ -411,6 +438,7 @@
     "LinesNoResult.dc.html",
     "DeletePoster.dc.html",
     "Settings.dc.html",
+    "SettingsDark.dc.html",
     "SettingsExporting.dc.html",
     "SettingsExportSuccess.dc.html",
     "SettingsExportFailed.dc.html",
@@ -418,7 +446,9 @@
     "SettingsImportSuccess.dc.html",
     "SettingsImportFailed.dc.html",
     "SettingsLibraryNotFound.dc.html",
-    "SettingsNetworkDrive.dc.html"
+    "SettingsNetworkDrive.dc.html",
+    "SettingsMissingFiles.dc.html",
+    "SettingsMissingModal.dc.html"
   ],
   "pages": [
     {

@@ -18,12 +18,28 @@ function token(name: string): string {
   return match[1];
 }
 
-function rampStep(theme: string, step: number): string {
+function themeBlock(theme: string): string {
   const block = themes.match(new RegExp(`\\[data-theme="${theme}"\\]\\s*\\{([^}]*)\\}`));
   if (!block) throw new Error(`theme ${theme} not found`);
-  const ref = block[1].match(new RegExp(`--dc-ramp-${step}:\\s*var\\(--([\\w-]+)\\)`));
-  if (!ref) throw new Error(`${theme} has no step ${step}`);
-  return token(ref[1]);
+  return block[1];
+}
+
+/** A variable set in the theme's block, as a token reference or (夜光黑) a literal. */
+function themeValue(theme: string, name: string): string | null {
+  const m = themeBlock(theme).match(new RegExp(`--${name}:\\s*(?:var\\(--([\\w-]+)\\)|(#[0-9a-fA-F]{6}))`));
+  if (!m) return null;
+  return m[1] ? token(m[1]) : m[2];
+}
+
+function rampStep(theme: string, step: number): string {
+  const value = themeValue(theme, `dc-ramp-${step}`);
+  if (!value) throw new Error(`${theme} has no step ${step}`);
+  return value;
+}
+
+/** Primary button text: white unless the theme overrides it (夜光黑 is dark-on-light). */
+function buttonText(theme: string): string {
+  return themeValue(theme, "bento-action-solid-primary-fg") ?? "#ffffff";
 }
 
 function luminance(hex: string): number {
@@ -40,8 +56,8 @@ function contrast(a: string, b: string): number {
 }
 
 describe("theme contrast (T16)", () => {
-  it.each(THEMES)("%s: white on the primary button", (theme) => {
-    const ratio = contrast("#ffffff", rampStep(theme, 50));
+  it.each(THEMES)("%s: text on the primary button", (theme) => {
+    const ratio = contrast(buttonText(theme), rampStep(theme, 50));
     if (KNOWN_AA_FAILURES.has(theme)) {
       expect(ratio, `${theme} now passes AA; drop it from KNOWN_AA_FAILURES`).toBeLessThan(4.5);
     } else {

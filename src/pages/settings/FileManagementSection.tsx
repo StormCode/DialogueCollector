@@ -232,7 +232,6 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
             >
               <span className="stat-num">
                 {formatCount(missing.length, i18n.language)}
-                <Icon name="chevronRight" size={20} />
               </span>
               <span className="stat-cap">
                 <Icon name="error" size={16} />
