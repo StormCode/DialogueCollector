@@ -41,7 +41,7 @@ export function MissingFilesModal({ files, onClose }: { files: MissingFile[]; on
                 <span role="cell">
                   <Link
                     className="mf-view"
-                    to={`/characters/${file.characterId}`}
+                    to={`/characters/${file.characterId}?missing=${file.lineId}`}
                     aria-label={t("settings.files.missing.viewLabel", { name: file.characterName })}
                   >
                     {t("settings.files.missing.view")}
