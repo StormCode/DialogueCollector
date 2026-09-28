@@ -216,7 +216,7 @@ fn process(pass: &Pass<'_>, job: &PlannedCue) -> Outcome {
     let line = NewLine {
         character_id: job.character_id,
         text: cue.text.clone(),
-        translation: None,
+        translation: cue.translation.clone(),
         duration_ms: (cue.end_ms - cue.start_ms) as i64,
     };
     let committed = match commit_cue(pass.library, pass.writer, &tmp, line) {

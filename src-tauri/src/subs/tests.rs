@@ -29,11 +29,28 @@ fn ass_keeps_dialogue_and_skips_comments() {
         [
             "最早的一句",
             "人類的壽命真的很短暫呢。",
-            "第一行\n第二行，有逗號, 也沒關係",
-            "那就 再去一次吧",
+            "第一行",
+            "那就 再去一次吧"
         ]
     );
     assert!(!texts.iter().any(|t| t.contains("註解")));
+}
+
+/// 原文／譯文 follow the file's own lines: `\N` splits, the soft `\n` does not.
+#[test]
+fn ass_hard_breaks_split_text_from_translation() {
+    let cues = parse_ass(ASS).unwrap();
+    let split = cues.iter().find(|c| c.text == "第一行").unwrap();
+    assert_eq!(
+        split.translation.as_deref(),
+        Some("第二行，有逗號, 也沒關係")
+    );
+    assert_eq!(cues[0].translation, None);
+
+    let soft = "[Events]\nFormat: Start, End, Text\nDialogue: 0:00:01.00,0:00:02.00,おはよう\\n今日は\\N早安，今天\\N真早呢\n";
+    let cue = &parse_ass(soft).unwrap()[0];
+    assert_eq!(cue.text, "おはよう 今日は");
+    assert_eq!(cue.translation.as_deref(), Some("早安，今天\n真早呢"));
 }
 
 #[test]
@@ -96,13 +113,13 @@ const SRT: &str = "1\r
 ";
 
 #[test]
-fn srt_strips_tags_and_keeps_line_breaks() {
+fn srt_strips_tags_and_splits_lines_into_text_and_translation() {
     let cues = parse_srt(SRT).unwrap();
     let texts: Vec<&str> = cues.iter().map(|c| c.text.as_str()).collect();
-    assert_eq!(
-        texts,
-        ["這一切都是\n命運石之門的選擇。", "畫面上方的字", "最後一句"]
-    );
+    assert_eq!(texts, ["這一切都是", "畫面上方的字", "最後一句"]);
+    // SRT follows the same rule: the first line is 原文, the rest 譯文.
+    assert_eq!(cues[0].translation.as_deref(), Some("命運石之門的選擇。"));
+    assert_eq!(cues[1].translation, None);
     assert_eq!((cues[0].start_ms, cues[0].end_ms), (1000, 2500));
     assert_eq!(cues[2].start_ms, 3_600_250);
 }
