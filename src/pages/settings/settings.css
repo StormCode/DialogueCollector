@@ -636,3 +636,76 @@
   display: flex;
   justify-content: flex-end;
 }
+
+/* ---- entrance (Settings board): ① the title fades in, then ② the index slides in from the
+   left item by item while the sections rise in one after another. ---- */
+@keyframes st-in-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes st-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes st-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.st-anim-title {
+  animation: st-in-fade 450ms ease-out backwards;
+}
+
+.st-anim-toc {
+  animation: st-in-left 420ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.settings-card > .st-section {
+  animation: st-in-up 520ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.settings-card > .st-section[data-sec="ui"] {
+  animation-delay: 450ms;
+}
+
+.settings-card > .st-section[data-sec="book"] {
+  animation-delay: 560ms;
+}
+
+.settings-card > .st-section[data-sec="lines"] {
+  animation-delay: 670ms;
+}
+
+.settings-card > .st-section[data-sec="files"] {
+  animation-delay: 780ms;
+}
+
+.settings-card > .st-section[data-sec="version"] {
+  animation-delay: 890ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-anim-title,
+  .st-anim-toc,
+  .settings-card > .st-section {
+    animation: none;
+  }
+}

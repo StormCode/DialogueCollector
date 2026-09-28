@@ -76,6 +76,14 @@
     .mf-row + .mf-row { border-top: 1px solid var(--bento-neutral-5); }
     .mf-view { display: inline-flex; align-items: center; gap: 4px; box-sizing: border-box; padding: 7px 12px 7px 14px; border-radius: var(--bento-radius-12); border: 1.5px solid var(--accent-40); color: var(--accent-50); background: transparent; font: var(--bento-weight-medium) 13px/16px var(--bento-font-ui); text-decoration: none; white-space: nowrap; }
     .mf-view:hover { background: var(--accent-5); }
+    /* 進場動畫：①標題淡入 → ②左側選單逐項由左滑入＋淡入，同時右側各區塊逐項由下往上＋淡入 */
+    @keyframes st-in-fade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes st-in-left { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes st-in-up { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+    .st-anim-title { animation: st-in-fade 450ms ease-out backwards; }
+    .st-anim-toc { animation: st-in-left 420ms cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+    .st-anim-sec { animation: st-in-up 520ms cubic-bezier(0.22, 1, 0.36, 1) backwards; }
+    @media (prefers-reduced-motion: reduce) { .st-anim-title, .st-anim-toc, .st-anim-sec { animation: none; } }
   </style>
 </helmet>
 <div style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 56px 104px; gap: 28px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0; {{themeVars}}">
@@ -102,13 +110,13 @@
     </button>
   </div>
 
-  <h1 style="margin: 0; flex-shrink: 0; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">設定</h1>
+  <h1 class="st-anim-title" style="margin: 0; flex-shrink: 0; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">設定</h1>
 
   <div style="flex: 1 1 0; min-height: 0; display: flex; gap: 32px; align-items: stretch;">
 
     <nav aria-label="設定目錄" style="width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 4px;">
       <sc-for list="{{toc}}" as="t" hint-placeholder-count="5">
-        <button type="button" class="toc-item {{t.cls}}" aria-current="{{t.current}}" onClick="{{t.go}}">
+        <button type="button" class="toc-item st-anim-toc {{t.cls}}" style="animation-delay: {{t.delay}};" aria-current="{{t.current}}" onClick="{{t.go}}">
           <span class="material-symbol" aria-hidden="true">{{t.icon}}</span>
           <span>{{t.label}}</span>
         </button>
@@ -117,7 +125,7 @@
 
     <div ref="{{setCardRef}}" onScroll="{{handleScroll}}" class="st-scroll" style="flex: 1 1 0; min-width: 0; max-height: 100%; overflow-y: auto; overflow-x: hidden; position: relative; box-sizing: border-box; padding: 32px 40px 16px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-10); border-radius: 24px; box-shadow: var(--bento-elevation-sm);">
 
-      <section class="st-section" data-sec="ui" aria-labelledby="st-h-ui">
+      <section class="st-section st-anim-sec" style="animation-delay: 450ms;" data-sec="ui" aria-labelledby="st-h-ui">
         <h2 class="st-h2" id="st-h-ui">介面</h2>
         <div class="st-row">
           <div class="st-label">語系</div>
@@ -136,7 +144,7 @@
         </div>
       </section>
 
-      <section class="st-section" data-sec="book" aria-labelledby="st-h-book">
+      <section class="st-section st-anim-sec" style="animation-delay: 560ms;" data-sec="book" aria-labelledby="st-h-book">
         <h2 class="st-h2" id="st-h-book">角色簿</h2>
         <div class="st-row">
           <div class="st-label">每頁筆數</div>
@@ -144,7 +152,7 @@
         </div>
       </section>
 
-      <section class="st-section" data-sec="lines" aria-labelledby="st-h-lines">
+      <section class="st-section st-anim-sec" style="animation-delay: 670ms;" data-sec="lines" aria-labelledby="st-h-lines">
         <h2 class="st-h2" id="st-h-lines">台詞頁</h2>
         <div class="st-row">
           <div class="st-label">每頁筆數</div>
@@ -163,7 +171,7 @@
         </div>
       </section>
 
-      <section class="st-section" data-sec="files" aria-labelledby="st-h-files">
+      <section class="st-section st-anim-sec" style="animation-delay: 780ms;" data-sec="files" aria-labelledby="st-h-files">
         <h2 class="st-h2" id="st-h-files">檔案管理</h2>
         <div class="st-row">
           <label class="st-label" for="st-audio-path">台詞音檔的預設存放位置</label>
@@ -204,7 +212,7 @@
         </div>
       </section>
 
-      <section class="st-section" data-sec="version" aria-labelledby="st-h-version">
+      <section class="st-section st-anim-sec" style="animation-delay: 890ms;" data-sec="version" aria-labelledby="st-h-version">
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
           <h2 class="st-h2" id="st-h-version">目前版本</h2>
           <div style="display: flex; align-items: center; gap: 12px;">
@@ -551,7 +559,8 @@ class Component extends DCLogic {
       themeVars: themeVars + darkVars,
       setCardRef: this.setCardRef,
       handleScroll: this.handleScroll,
-      toc: this.SECTIONS.map((s) => ({
+      toc: this.SECTIONS.map((s, i) => ({
+        delay: (450 + i * 90) + 'ms',
         label: s.label,
         icon: s.icon,
         cls: s.id === active ? 'is-active' : '',
