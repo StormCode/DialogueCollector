@@ -14,6 +14,16 @@ use crate::store;
 /// OS clutter that does not make a folder "non-empty" for our purposes.
 const IGNORABLE: &[&str] = &[".DS_Store", "Thumbs.db", "desktop.ini", ".localized"];
 
+/// `<12 × A-Z0-9>.m4a`, the only files `import::commit_cue` puts in the library root.
+fn is_clip_name(name: &str) -> bool {
+    name.strip_suffix(".m4a").is_some_and(|stem| {
+        stem.len() == 12
+            && stem
+                .bytes()
+                .all(|b| b.is_ascii_uppercase() || b.is_ascii_digit())
+    })
+}
+
 /// A line whose clip is gone from disk (T20), with what 遺失的檔案 shows for it.
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -138,6 +148,31 @@ impl Library {
             )
             .map_err(store::StoreError::from)?;
         Ok(stats)
+    }
+
+    /// 驗證收藏庫 (ENG2): clips in the folder that no row points at — what a crash between
+    /// the rename and the commit in `import::commit_cue` leaves behind. Sorted by name.
+    pub fn orphan_files(&self) -> Result<Vec<String>, LibraryError> {
+        let mut known = std::collections::HashSet::new();
+        let mut stmt = self
+            .conn
+            .prepare("SELECT audio_filename FROM lines")
+            .map_err(store::StoreError::from)?;
+        for name in stmt
+            .query_map([], |r| r.get::<_, String>(0))
+            .map_err(store::StoreError::from)?
+        {
+            known.insert(name.map_err(store::StoreError::from)?);
+        }
+        let mut orphans: Vec<String> = fs::read_dir(&self.root)
+            .map_err(|e| LibraryError::io(&self.root, e))?
+            .flatten()
+            .filter(|e| e.file_type().is_ok_and(|t| t.is_file()))
+            .filter_map(|e| e.file_name().into_string().ok())
+            .filter(|name| is_clip_name(name) && !known.contains(name))
+            .collect();
+        orphans.sort();
+        Ok(orphans)
     }
 
     /// 驗證收藏庫 (T20): lines whose audio file is no longer in the folder, grouped by

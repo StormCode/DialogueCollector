@@ -127,17 +127,20 @@ describe("SettingsPage", () => {
   });
 
   it("hides 遺失的檔案數 while every clip is on disk", async () => {
-    const verify = vi.spyOn(ipc, "verifyLibrary").mockResolvedValue([]);
+    const verify = vi.spyOn(ipc, "verifyLibrary").mockResolvedValue({ missing: [], orphans: [] });
     renderPage();
     await vi.waitFor(() => expect(verify).toHaveBeenCalled());
     expect(screen.queryByRole("button", { name: /遺失的檔案數/ })).not.toBeInTheDocument();
   });
 
   it("lists missing clips and links each to its character's 台詞頁 (T20)", async () => {
-    vi.spyOn(ipc, "verifyLibrary").mockResolvedValue([
-      { lineId: 3, characterId: 7, characterName: "岡部倫太郎", portraitPath: null, text: "這一切都是命運石之門的選擇。" },
-      { lineId: 1, characterId: 2, characterName: "芙莉蓮", portraitPath: null, text: "人類的壽命真的很短暫呢。" },
-    ]);
+    vi.spyOn(ipc, "verifyLibrary").mockResolvedValue({
+      missing: [
+        { lineId: 3, characterId: 7, characterName: "岡部倫太郎", portraitPath: null, text: "這一切都是命運石之門的選擇。" },
+        { lineId: 1, characterId: 2, characterName: "芙莉蓮", portraitPath: null, text: "人類的壽命真的很短暫呢。" },
+      ],
+      orphans: [],
+    });
     render(
       <MemoryRouter initialEntries={["/settings"]}>
         <Routes>

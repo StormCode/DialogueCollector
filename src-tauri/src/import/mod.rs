@@ -13,6 +13,10 @@
 //! OPEN DECISION R8: what the 索引中 state does. Must be defined or cut before the final
 //! state of the import flow is built.
 
+pub mod commit;
+
+use std::path::{Path, PathBuf};
+
 use crate::media::MediaError;
 use crate::store::StoreError;
 use crate::subs::SubsError;
@@ -36,4 +40,20 @@ pub enum ImportError {
 
     #[error("source file is missing: {0}")]
     SourceMissing(std::path::PathBuf),
+
+    #[error("{path}: {source}")]
+    Io {
+        path: PathBuf,
+        #[source]
+        source: std::io::Error,
+    },
+}
+
+impl ImportError {
+    pub fn io(path: &Path, source: std::io::Error) -> Self {
+        Self::Io {
+            path: path.to_owned(),
+            source,
+        }
+    }
 }

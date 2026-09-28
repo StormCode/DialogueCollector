@@ -9,10 +9,10 @@ import type {
   BackupPreview,
   ImportOutcome,
   LibraryStatus,
-  MissingFile,
   Settings,
   SmokeReport,
   UpdateCheck,
+  VerifyReport,
 } from "./types";
 
 export const ipc = {
@@ -26,7 +26,7 @@ export const ipc = {
   cancelExport: () => invoke<void>("cancel_export"),
   inspectBackup: (path: string) => invoke<BackupPreview>("inspect_backup", { path }),
   importBackup: (path: string) => invoke<ImportOutcome>("import_backup", { path }),
-  verifyLibrary: () => invoke<MissingFile[]>("verify_library"),
+  verifyLibrary: () => invoke<VerifyReport>("verify_library"),
   checkForUpdate: () => invoke<UpdateCheck>("check_for_update"),
   smokeMode: () => invoke<boolean>("smoke_mode"),
   runSmoke: () => invoke<SmokeReport>("run_smoke"),

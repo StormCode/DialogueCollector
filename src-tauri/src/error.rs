@@ -48,6 +48,8 @@ impl From<crate::store::StoreError> for CommandError {
             StoreError::Sqlite(_) => "Store.Sqlite",
             StoreError::SchemaTooNew { .. } => "Store.SchemaTooNew",
             StoreError::Migration { .. } => "Store.Migration",
+            StoreError::WriterSpawn(_) => "Store.WriterSpawn",
+            StoreError::WriterClosed => "Store.WriterClosed",
         };
         Self::new(kind, e)
     }
