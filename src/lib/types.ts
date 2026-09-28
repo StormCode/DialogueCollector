@@ -25,6 +25,8 @@ export interface Settings {
   charactersPerPage: number;
   linesPerPage: number;
   lineFont: LineFont;
+  /** 全部播放每句切換秒數, 0–30 in 0.5 steps. */
+  playAllGapSeconds: number;
   autoUpdate: boolean;
 }
 
@@ -34,6 +36,7 @@ export const DEFAULT_SETTINGS: Settings = {
   charactersPerPage: 8,
   linesPerPage: 10,
   lineFont: "ChironGoRoundTC",
+  playAllGapSeconds: 2,
   autoUpdate: false,
 };
 
@@ -87,4 +90,35 @@ export interface LibraryStatus {
 export interface MoveProgress {
   done: number;
   total: number;
+}
+
+// ---------- backup (T10), mirrors src-tauri/src/library/backup.rs ----------
+
+export interface BackupManifest {
+  format: string;
+  formatVersion: number;
+  schemaVersion: number;
+  appVersion: string;
+  createdAt: number;
+  clipCount: number;
+  characterCount: number;
+  bytes: number;
+}
+
+export interface BackupPreview {
+  archive: BackupManifest;
+  currentCharacters: number;
+  currentClips: number;
+  currentBytes: number;
+}
+
+export interface ExportProgress {
+  done: number;
+  total: number;
+  finishing: boolean;
+}
+
+export interface ImportOutcome {
+  status: LibraryStatus;
+  settings: Settings;
 }

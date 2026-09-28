@@ -16,6 +16,7 @@
 //! path is the pointer to the folder itself, in `machine.json`, which never leaves this
 //! machine — so moving or copying the whole folder keeps every internal reference valid.
 
+pub mod backup;
 pub mod folder;
 pub mod paths;
 pub mod relocate;
@@ -188,6 +189,7 @@ impl LibraryState {
                 reason: UnavailableReason::NoPointer,
             };
         };
+        backup::recover_interrupted_import(path);
         let create_default = path == default_dir
             && matches!(
                 folder::classify_dir(path),

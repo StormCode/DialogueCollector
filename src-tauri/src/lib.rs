@@ -36,8 +36,11 @@ pub struct AppState {
     pub settings: Mutex<Settings>,
     pub machine: Mutex<MachineSettings>,
     pub library: Mutex<LibraryState>,
-    /// Set while a relocation runs, so a second one cannot start underneath it.
+    /// Set while a relocation, export or import runs, so no two overlap and the library does
+    /// not change underneath an export (ExportError::Concurrent).
     pub library_busy: AtomicBool,
+    /// Set by `cancel_export`; checked between files by the running export.
+    pub export_cancel: std::sync::Arc<AtomicBool>,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -80,6 +83,7 @@ pub fn run() {
                 machine: Mutex::new(loaded.machine),
                 library: Mutex::new(library),
                 library_busy: AtomicBool::new(false),
+                export_cancel: std::sync::Arc::new(AtomicBool::new(false)),
             });
             Ok(())
         })
@@ -89,6 +93,10 @@ pub fn run() {
             commands::save_settings,
             commands::library_status,
             commands::choose_library_location,
+            commands::export_library,
+            commands::cancel_export,
+            commands::inspect_backup,
+            commands::import_backup,
             smoke::smoke_mode,
             smoke::run_smoke,
             smoke::smoke_finish,

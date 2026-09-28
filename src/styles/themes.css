@@ -1,69 +1,91 @@
-/* Product theme layer (DD6 → B).
+/* Product theme layer (DD6 → B), with values taken from the canvas Settings board's
+   `themeVars`: each theme picks one Bento ramp and exposes four steps of it.
+
+     --dc-accent-5    soft fills (active nav item, stat and TOC highlights)
+     --dc-accent-40   swatches, focus rings, progress fills
+     --dc-accent-50   primary buttons and interactive text
+     --dc-accent-60   hover, and text on --dc-accent-5
+
    Binding rule: when a board is translated into a component, every `--bento-dv-indigo-*`
-   reference becomes one of the `--dc-*` variables below. Seven themes are seven sets of
-   these values; `--bento-dv-*` is left to its data-visualisation purpose.
+   reference becomes one of these variables. `--bento-dv-*` is left to data visualisation.
+   夜光黑 is a neutral accent, not a dark mode: the board keeps light surfaces for every theme.
 
    gstack-shortcut: completeness 7/10, accepted in the design review (D7 → B). Upgrade
    trigger: the first new board drawn in the canvas after that decision — it will copy
-   `dv-indigo` from the boards beside it and widen the gap.
-
-   Only `indigo` is taken from the boards. The other six map onto the matching Bento ramp and
-   are PROVISIONAL until T16 verifies every text/background pair at 4.5:1 (3:1 at 24px+). */
+   `dv-indigo` from the boards beside it and widen the gap. Contrast per theme is checked by
+   src/styles/themes.test.ts (T16). */
 
 :root,
 [data-theme="indigo"] {
-  --dc-accent: var(--bento-dv-indigo-40);
-  --dc-accent-hover: var(--bento-dv-indigo-50);
-  --dc-accent-strong: var(--bento-dv-indigo-30);
-  --dc-accent-soft: var(--bento-dv-indigo-5);
+  --dc-ramp-5: var(--bento-dv-indigo-5);
+  --dc-ramp-40: var(--bento-dv-indigo-40);
+  --dc-ramp-50: var(--bento-dv-indigo-50);
+  --dc-ramp-60: var(--bento-dv-indigo-60);
 }
 
 [data-theme="lightBlue"] {
-  --dc-accent: var(--bento-dv-blue-50);
-  --dc-accent-hover: var(--bento-dv-blue-60);
-  --dc-accent-strong: var(--bento-dv-blue-40);
-  --dc-accent-soft: var(--bento-dv-blue-5);
+  --dc-ramp-5: var(--bento-dv-blue-5);
+  --dc-ramp-40: var(--bento-dv-blue-40);
+  --dc-ramp-50: var(--bento-dv-blue-50);
+  --dc-ramp-60: var(--bento-dv-blue-60);
 }
 
 [data-theme="ruby"] {
-  --dc-accent: var(--bento-dv-red-40);
-  --dc-accent-hover: var(--bento-dv-red-50);
-  --dc-accent-strong: var(--bento-dv-red-30);
-  --dc-accent-soft: var(--bento-dv-red-5);
+  --dc-ramp-5: var(--bento-dv-red-5);
+  --dc-ramp-40: var(--bento-dv-red-40);
+  --dc-ramp-50: var(--bento-dv-red-50);
+  --dc-ramp-60: var(--bento-dv-red-60);
 }
 
 [data-theme="emerald"] {
-  --dc-accent: var(--bento-dv-jade-60);
-  --dc-accent-hover: var(--bento-dv-jade-70);
-  --dc-accent-strong: var(--bento-dv-jade-50);
-  --dc-accent-soft: var(--bento-dv-jade-5);
+  --dc-ramp-5: var(--bento-dv-jade-5);
+  --dc-ramp-40: var(--bento-dv-jade-40);
+  --dc-ramp-50: var(--bento-dv-jade-50);
+  --dc-ramp-60: var(--bento-dv-jade-60);
 }
 
 [data-theme="sunset"] {
-  --dc-accent: var(--bento-dv-orange-40);
-  --dc-accent-hover: var(--bento-dv-orange-50);
-  --dc-accent-strong: var(--bento-dv-orange-30);
-  --dc-accent-soft: var(--bento-dv-orange-5);
+  --dc-ramp-5: var(--bento-dv-orange-5);
+  --dc-ramp-40: var(--bento-dv-orange-40);
+  --dc-ramp-50: var(--bento-dv-orange-50);
+  --dc-ramp-60: var(--bento-dv-orange-60);
 }
 
 [data-theme="lipstick"] {
-  --dc-accent: var(--bento-dv-pink-40);
-  --dc-accent-hover: var(--bento-dv-pink-50);
-  --dc-accent-strong: var(--bento-dv-pink-30);
-  --dc-accent-soft: var(--bento-dv-pink-5);
+  --dc-ramp-5: var(--bento-dv-pink-5);
+  --dc-ramp-40: var(--bento-dv-pink-40);
+  --dc-ramp-50: var(--bento-dv-pink-50);
+  --dc-ramp-60: var(--bento-dv-pink-60);
 }
 
-/* The one dark theme: repoints the Bento semantic surfaces as well as the accent. */
+/* The neutral ramp is shifted two steps darker, as on the board (40→80, 50→80, 60→90). */
 [data-theme="midnight"] {
-  color-scheme: dark;
-  --dc-accent: var(--bento-dv-indigo-20);
-  --dc-accent-hover: var(--bento-dv-indigo-10);
-  --dc-accent-strong: var(--bento-dv-indigo-10);
-  --dc-accent-soft: var(--bento-neutral-80);
-  --bento-bg-primary: var(--bento-neutral-80);
-  --bento-bg-secondary: var(--bento-neutral-90);
-  --bento-content-primary: var(--bento-neutral-1);
-  --bento-content-secondary: var(--bento-neutral-30);
-  --bento-icon-secondary: var(--bento-neutral-30);
-  --bento-neutral-5: var(--bento-neutral-70);
+  --dc-ramp-5: var(--bento-neutral-5);
+  --dc-ramp-40: var(--bento-neutral-80);
+  --dc-ramp-50: var(--bento-neutral-80);
+  --dc-ramp-60: var(--bento-neutral-90);
+}
+
+:root {
+  --dc-accent-5: var(--dc-ramp-5);
+  --dc-accent-40: var(--dc-ramp-40);
+  --dc-accent-50: var(--dc-ramp-50);
+  --dc-accent-60: var(--dc-ramp-60);
+
+  /* Short names used across components. */
+  --dc-accent: var(--dc-accent-50);
+  --dc-accent-hover: var(--dc-accent-60);
+  --dc-accent-strong: var(--dc-accent-60);
+  --dc-accent-soft: var(--dc-accent-5);
+
+  /* Bento's interactive tokens follow the theme too (board `themeVars`). */
+  --bento-bg-interactive: var(--dc-accent-50);
+  --bento-border-input-focus: var(--dc-accent-50);
+  --bento-action-solid-primary-bg: var(--dc-accent-50);
+  --bento-action-solid-primary-bg-hover: var(--dc-accent-60);
+  --bento-action-outline-primary-outline: var(--dc-accent-50);
+  --bento-action-outline-primary-outline-hover: var(--dc-accent-60);
+  --bento-action-transparent-primary-fg: var(--dc-accent-50);
+  --bento-action-transparent-primary-fg-hover: var(--dc-accent-60);
+  --bento-action-transparent-primary-bg-hover: var(--dc-accent-5);
 }
