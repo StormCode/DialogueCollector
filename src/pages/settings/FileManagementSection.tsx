@@ -1,6 +1,6 @@
 import { downloadDir, join } from "@tauri-apps/api/path";
 import { open, save } from "@tauri-apps/plugin-dialog";
-import { forwardRef, useCallback, useState } from "react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { unavailableMessageKey } from "../../components/LibraryUnavailableToast";
@@ -8,11 +8,12 @@ import { Toast } from "../../components/feedback/Toast";
 import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";
 import { formatBytes, formatCount } from "../../lib/format";
-import { errorKind } from "../../lib/ipc";
-import type { BackupPreview } from "../../lib/types";
+import { errorKind, ipc } from "../../lib/ipc";
+import type { BackupPreview, MissingFile } from "../../lib/types";
 import { useBackupStore } from "../../stores/backupStore";
 import { useLibraryStore } from "../../stores/libraryStore";
 import { Icon } from "./icons";
+import { MissingFilesModal } from "./MissingFilesModal";
 
 type ToastState = { tone: "positive" | "negative" | "informative"; text: string } | null;
 
@@ -86,8 +87,26 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
   const [toast, setToast] = useState<ToastState>(null);
   const [unavailableDismissed, setUnavailableDismissed] = useState(false);
   const [pendingImport, setPendingImport] = useState<{ path: string; preview: BackupPreview } | null>(null);
+  const [missing, setMissing] = useState<MissingFile[]>([]);
+  const [missingOpen, setMissingOpen] = useState(false);
   const dismissToast = useCallback(() => setToast(null), []);
   const busy = relocating || exporting || importing;
+
+  // 驗證收藏庫 (T20): re-run whenever the library or its contents change (move, import).
+  useEffect(() => {
+    if (!status?.ready) {
+      setMissing([]);
+      return;
+    }
+    let live = true;
+    ipc
+      .verifyLibrary()
+      .then((files) => live && setMissing(files))
+      .catch(() => live && setMissing([]));
+    return () => {
+      live = false;
+    };
+  }, [status]);
 
   const browse = async () => {
     const picked = await open({ directory: true, multiple: false, defaultPath: status?.path ?? undefined });
@@ -204,8 +223,27 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
             <span className="stat-num">{status?.stats ? formatBytes(status.stats.bytes, i18n.language) : "—"}</span>
             <span className="stat-cap">{t("settings.files.diskUsage")}</span>
           </div>
+          {missing.length > 0 && (
+            <button
+              type="button"
+              className="stat-box stat-missing"
+              aria-haspopup="dialog"
+              onClick={() => setMissingOpen(true)}
+            >
+              <span className="stat-num">
+                {formatCount(missing.length, i18n.language)}
+                <Icon name="chevronRight" size={20} />
+              </span>
+              <span className="stat-cap">
+                <Icon name="error" size={16} />
+                {t("settings.files.missing.count")}
+              </span>
+            </button>
+          )}
         </div>
       </div>
+
+      {missingOpen && <MissingFilesModal files={missing} onClose={() => setMissingOpen(false)} />}
 
       {exporting && (
         <Modal title={t("settings.files.export")}>

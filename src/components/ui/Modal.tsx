@@ -8,7 +8,7 @@ interface ModalProps {
   children: ReactNode;
   /** Omit to make the modal non-dismissable (e.g. while an export runs). */
   onClose?: () => void;
-  size?: "small" | "medium";
+  size?: "small" | "medium" | "large";
 }
 
 // Bento Modal as drawn on the boards: scrim, drop-in card, title bar. Focus moves into the

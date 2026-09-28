@@ -135,3 +135,12 @@ export interface UpdateCheck {
   status: "upToDate";
   version: string;
 }
+
+/** A line whose clip is gone from the library folder (T20, `verify_library`). */
+export interface MissingFile {
+  lineId: number;
+  characterId: number;
+  characterName: string;
+  portraitPath: string | null;
+  text: string;
+}
