@@ -587,8 +587,24 @@ fn real_ffmpeg_cuts_a_generated_video() {
     // 5 s of test tone behind a black picture, like the smoke test's source.
     let video = f.root.parent().unwrap().join("tone.mp4");
     let status = std::process::Command::new(&ffmpeg)
-        .args(["-v", "error", "-f", "lavfi", "-i", "sine=frequency=440:duration=5"])
-        .args(["-f", "lavfi", "-i", "color=c=black:s=64x64:d=5", "-c:a", "aac", "-c:v", "mpeg4"])
+        .args([
+            "-v",
+            "error",
+            "-f",
+            "lavfi",
+            "-i",
+            "sine=frequency=440:duration=5",
+        ])
+        .args([
+            "-f",
+            "lavfi",
+            "-i",
+            "color=c=black:s=64x64:d=5",
+            "-c:a",
+            "aac",
+            "-c:v",
+            "mpeg4",
+        ])
         .args(["-shortest", "-y"])
         .arg(&video)
         .status()
