@@ -90,6 +90,8 @@ impl From<crate::library::characters::CharacterError> for CommandError {
         use crate::library::characters::CharacterError;
         match e {
             CharacterError::Invalid { field } => Self::new(format!("Character.Invalid.{field}"), e),
+            CharacterError::NotFound(_) => Self::new("Character.NotFound", e),
+            CharacterError::FileRemovalFailed(_) => Self::new("Library.FileRemovalFailed", e),
             CharacterError::Image(inner) => inner.into(),
             CharacterError::Store(inner) => inner.into(),
         }

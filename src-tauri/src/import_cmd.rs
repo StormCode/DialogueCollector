@@ -64,6 +64,29 @@ pub fn create_character(
     Ok(characters::create(lib.conn(), lib.root(), character)?)
 }
 
+/// 編輯角色.
+#[tauri::command]
+pub fn update_character(
+    state: State<'_, AppState>,
+    id: i64,
+    character: characters::CharacterEdit,
+) -> CommandResult<Character> {
+    let mut library = lock(&state.library)?;
+    let lib = library.library_mut().ok_or(LibraryError::NotReady)?;
+    let root = lib.root().to_owned();
+    Ok(characters::update(lib.conn_mut(), &root, id, character)?)
+}
+
+/// 刪除角色 (ET3). Holds the library-busy guard: never beside an import of its lines.
+#[tauri::command]
+pub fn delete_character(state: State<'_, AppState>, id: i64) -> CommandResult<()> {
+    let _busy = BusyGuard::acquire(&state.library_busy)?;
+    let mut library = lock(&state.library)?;
+    let lib = library.library_mut().ok_or(LibraryError::NotReady)?;
+    let root = lib.root().to_owned();
+    Ok(characters::delete(lib.conn_mut(), &root, id)?)
+}
+
 /// Lets the webview show a picked image before it is stored (新增角色's preview). Only that
 /// one file is added to the asset scope.
 #[tauri::command]
