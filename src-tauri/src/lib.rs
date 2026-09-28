@@ -67,8 +67,10 @@ pub fn run() {
                 files.dir().display(),
                 loaded.first_run
             );
-            let library =
-                LibraryState::at_startup(loaded.machine.library_path.as_deref(), loaded.first_run);
+            let library = LibraryState::at_startup(
+                loaded.machine.library_path.as_deref(),
+                &library::paths::default_library_dir()?,
+            );
             if let Some(ready) = library.library() {
                 commands::grant_asset_scope(app.handle(), ready.root());
             }
