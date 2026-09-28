@@ -12,6 +12,7 @@
 
 mod commands;
 mod error;
+mod import_cmd;
 mod library;
 mod smoke;
 mod updater;
@@ -43,6 +44,8 @@ pub struct AppState {
     pub library_busy: AtomicBool,
     /// Set by `cancel_export`; checked between files by the running export.
     pub export_cancel: std::sync::Arc<AtomicBool>,
+    /// Set by `cancel_import` (and on quit); kills the running import's encodes (ENG6).
+    pub import_cancel: std::sync::Arc<AtomicBool>,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -89,6 +92,7 @@ pub fn run() {
                 library: Mutex::new(library),
                 library_busy: AtomicBool::new(false),
                 export_cancel: std::sync::Arc::new(AtomicBool::new(false)),
+                import_cancel: std::sync::Arc::new(AtomicBool::new(false)),
             });
             if auto_update && !app.state::<smoke::SmokeMode>().enabled {
                 tauri::async_runtime::spawn(updater::stage_in_background(app.handle().clone()));
@@ -107,15 +111,55 @@ pub fn run() {
             commands::import_backup,
             commands::check_for_update,
             commands::verify_library,
+            import_cmd::parse_subtitle,
+            import_cmd::list_characters,
+            import_cmd::create_character,
+            import_cmd::start_subtitle_import,
+            import_cmd::retry_import,
+            import_cmd::cancel_import,
             smoke::smoke_mode,
             smoke::run_smoke,
             smoke::smoke_finish,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
-        .run(|app, event| {
-            if let tauri::RunEvent::Exit = event {
-                updater::install_staged_on_exit(app);
+        .run(|app, event| match event {
+            tauri::RunEvent::ExitRequested { api, code, .. } => {
+                // Quitting mid-import cancels it first (ENG6): its ffmpeg children would
+                // otherwise outlive the app on macOS and Linux, and its .tmp files linger.
+                // A programmatic exit (`code` set) is the one issued below, once work is done.
+                if code.is_none() && stop_work_before_exit(app) {
+                    api.prevent_exit();
+                }
             }
+            tauri::RunEvent::Exit => updater::install_staged_on_exit(app),
+            _ => {}
         });
+}
+
+/// If a library operation is running, cancels what can be cancelled, waits for it to wind
+/// down on a helper thread, then exits. Returns whether the exit must wait.
+fn stop_work_before_exit(app: &tauri::AppHandle) -> bool {
+    use std::sync::atomic::Ordering;
+    use tauri::Manager;
+
+    let Some(state) = app.try_state::<AppState>() else {
+        return false;
+    };
+    if !state.library_busy.load(Ordering::SeqCst) {
+        return false;
+    }
+    state.import_cancel.store(true, Ordering::SeqCst);
+    state.export_cancel.store(true, Ordering::SeqCst);
+    log::info!("quit requested during a library operation; cancelling before exit");
+    let app = app.clone();
+    std::thread::spawn(move || {
+        // A library move cannot be cancelled and is waited out; imports and exports stop
+        // within a poll interval.
+        while app.state::<AppState>().library_busy.load(Ordering::SeqCst) {
+            std::thread::sleep(std::time::Duration::from_millis(20));
+        }
+        app.exit(0);
+    });
+    true
 }

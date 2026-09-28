@@ -1,0 +1,184 @@
+//! Commands behind the subtitle import flow: Step 1 parses, Step 2 assigns characters (and may
+//! add one), Step 3 starts the engine; 取消 and 再試一次 act on the running or finished run.
+
+use std::path::{Path, PathBuf};
+use std::sync::atomic::Ordering;
+use std::sync::Mutex;
+
+use serde::{Deserialize, Serialize};
+use tauri::{AppHandle, Emitter, State};
+
+use crate::commands::{lock, BusyGuard};
+use crate::error::{CommandError, CommandResult};
+use crate::import::job::{self, Engine, FfprobeProber, JobOutcome};
+use crate::import::run::{default_workers, Event, FfmpegEncoder, PlannedCue, Progress};
+use crate::library::characters::{self, Character, NewCharacter};
+use crate::library::paths::DB_FILE;
+use crate::library::LibraryError;
+use crate::media::process::sidecar;
+use crate::store::writer::Writer;
+use crate::subs::{self, Cue};
+use crate::AppState;
+
+/// Carries `ImportProgress` while an import runs.
+pub const IMPORT_PROGRESS_EVENT: &str = "import-progress";
+
+#[derive(Debug, Clone, Copy, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub enum Phase {
+    /// 切割影片中: cues are being cut and encoded.
+    Cutting,
+    /// 建立索引: only the last writes remain (R8).
+    Indexing,
+}
+
+#[derive(Debug, Clone, Copy, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ImportProgress {
+    pub phase: Phase,
+    #[serde(flatten)]
+    pub counts: Progress,
+}
+
+/// Step 1: read the subtitle file.
+#[tauri::command]
+pub fn parse_subtitle(path: PathBuf) -> CommandResult<Vec<Cue>> {
+    Ok(subs::parse_file(&path)?)
+}
+
+#[tauri::command]
+pub fn list_characters(state: State<'_, AppState>) -> CommandResult<Vec<Character>> {
+    let library = lock(&state.library)?;
+    let lib = library.library().ok_or(LibraryError::NotReady)?;
+    Ok(characters::list(lib.conn(), lib.root())?)
+}
+
+/// 新增角色.
+#[tauri::command]
+pub fn create_character(
+    state: State<'_, AppState>,
+    character: NewCharacter,
+) -> CommandResult<Character> {
+    let library = lock(&state.library)?;
+    let lib = library.library().ok_or(LibraryError::NotReady)?;
+    Ok(characters::create(lib.conn(), lib.root(), character)?)
+}
+
+/// One Step 2 row that has a character.
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Assignment {
+    pub cue: Cue,
+    pub character_id: i64,
+}
+
+/// Step 3: cut `source` along the assigned cues. Resolves when the run ends (完成, 部分完成,
+/// cancelled); progress arrives on `import-progress`.
+#[tauri::command]
+pub async fn start_subtitle_import(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    subtitle: PathBuf,
+    source: PathBuf,
+    assignments: Vec<Assignment>,
+) -> CommandResult<JobOutcome> {
+    let cues = assignments
+        .into_iter()
+        .map(|a| PlannedCue {
+            cue: a.cue,
+            character_id: a.character_id,
+        })
+        .collect();
+    run_job(app, &state, move |engine| {
+        job::import_subtitle(engine, &subtitle, &source, cues)
+    })
+    .await
+}
+
+/// 再試一次 on 部分完成 / 匯入失敗.
+#[tauri::command]
+pub async fn retry_import(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    run_id: i64,
+) -> CommandResult<JobOutcome> {
+    run_job(app, &state, move |engine| job::retry(engine, run_id)).await
+}
+
+/// 取消: kills the in-flight encodes at once (ENG6).
+#[tauri::command]
+pub fn cancel_import(state: State<'_, AppState>) {
+    state.import_cancel.store(true, Ordering::SeqCst);
+}
+
+async fn run_job<F>(
+    app: AppHandle,
+    state: &State<'_, AppState>,
+    work: F,
+) -> CommandResult<JobOutcome>
+where
+    F: FnOnce(&Engine<'_>) -> Result<JobOutcome, crate::import::ImportError> + Send + 'static,
+{
+    // One library operation at a time: no import alongside a move, export or backup import.
+    let _busy = BusyGuard::acquire(&state.library_busy)?;
+    let root = {
+        let library = lock(&state.library)?;
+        library
+            .library()
+            .ok_or(LibraryError::NotReady)?
+            .root()
+            .to_owned()
+    };
+    let ffmpeg = sidecar("ffmpeg").map_err(CommandError::from)?;
+    let ffprobe = sidecar("ffprobe").map_err(CommandError::from)?;
+    let cancel = std::sync::Arc::clone(&state.import_cancel);
+    cancel.store(false, Ordering::SeqCst);
+
+    tauri::async_runtime::spawn_blocking(move || {
+        let writer = Writer::open(&root.join(DB_FILE))?;
+        let last = Mutex::new(None::<Progress>);
+        let emit = |phase, counts| {
+            let _ = app.emit(IMPORT_PROGRESS_EVENT, ImportProgress { phase, counts });
+        };
+        let on_event = |event: Event| match event {
+            Event::Progress(p) => {
+                *last.lock().unwrap() = Some(p);
+                emit(Phase::Cutting, p);
+            }
+            Event::Indexing => {
+                if let Some(p) = *last.lock().unwrap() {
+                    emit(Phase::Indexing, p);
+                }
+            }
+            Event::Committed { .. } => {}
+        };
+        let engine = Engine {
+            library: &root,
+            writer: &writer,
+            encoder: &FfmpegEncoder { ffmpeg },
+            prober: &FfprobeProber { ffprobe },
+            workers: default_workers(),
+            cancel: &cancel,
+            on_event: &on_event,
+        };
+        let outcome = work(&engine);
+        log_outcome(&root, &outcome);
+        outcome.map_err(CommandError::from)
+    })
+    .await
+    .map_err(|e| CommandError::new("Internal.Join", e))?
+}
+
+fn log_outcome(root: &Path, outcome: &Result<JobOutcome, crate::import::ImportError>) {
+    match outcome {
+        Ok(o) => log::info!(
+            "import run {} into {}: {:?}, {} imported, {} not imported",
+            o.run_id,
+            root.display(),
+            o.status,
+            o.imported,
+            o.failures.len()
+        ),
+        Err(e) => log::warn!("import into {} failed: {e}", root.display()),
+    }
+}

@@ -73,4 +73,45 @@ impl From<crate::updater::UpdateError> for CommandError {
     }
 }
 
+impl From<crate::subs::SubsError> for CommandError {
+    fn from(e: crate::subs::SubsError) -> Self {
+        Self::new(format!("Subs.{}", e.kind()), e)
+    }
+}
+
+impl From<crate::library::images::ImageError> for CommandError {
+    fn from(e: crate::library::images::ImageError) -> Self {
+        Self::new(format!("Image.{}", e.kind()), e)
+    }
+}
+
+impl From<crate::library::characters::CharacterError> for CommandError {
+    fn from(e: crate::library::characters::CharacterError) -> Self {
+        use crate::library::characters::CharacterError;
+        match e {
+            CharacterError::Invalid { field } => Self::new(format!("Character.Invalid.{field}"), e),
+            CharacterError::Image(inner) => inner.into(),
+            CharacterError::Store(inner) => inner.into(),
+        }
+    }
+}
+
+impl From<crate::import::ImportError> for CommandError {
+    fn from(e: crate::import::ImportError) -> Self {
+        use crate::import::ImportError;
+        match e {
+            // The underlying module names the failure; the renderer handles them uniformly.
+            ImportError::Subs(inner) => inner.into(),
+            ImportError::Media(inner) => inner.into(),
+            ImportError::Store(inner) => inner.into(),
+            ImportError::AlreadyRunning => Self::new("Import.AlreadyRunning", e),
+            ImportError::SourceChanged(_) => Self::new("Import.SourceChanged", e),
+            ImportError::SourceMissing(_) => Self::new("Import.SourceMissing", e),
+            ImportError::NoAudio(_) => Self::new("Import.NoAudio", e),
+            ImportError::RunNotFound(_) => Self::new("Import.RunNotFound", e),
+            ImportError::Io { .. } => Self::new("Import.Io", e),
+        }
+    }
+}
+
 pub type CommandResult<T> = Result<T, CommandError>;
