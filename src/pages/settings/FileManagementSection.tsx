@@ -12,7 +12,7 @@ import { errorKind, ipc } from "../../lib/ipc";
 import type { BackupPreview, MissingFile } from "../../lib/types";
 import { useBackupStore } from "../../stores/backupStore";
 import { useLibraryStore } from "../../stores/libraryStore";
-import { Icon } from "./icons";
+import { MaterialIcon } from "../../components/icons/Icon";
 import { MissingFilesModal } from "./MissingFilesModal";
 
 type ToastState = { tone: "positive" | "negative" | "informative"; text: string } | null;
@@ -234,7 +234,7 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
                 {formatCount(missing.length, i18n.language)}
               </span>
               <span className="stat-cap">
-                <Icon name="error" size={16} />
+                <MaterialIcon name="error" size={16} />
                 {t("settings.files.missing.count")}
               </span>
             </button>
@@ -291,7 +291,7 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
         <Modal title={t("settings.files.confirm")} onClose={() => setPendingImport(null)}>
           <div className="confirm">
             <div className="confirm__icon" aria-hidden="true">
-              <Icon name="restore" size={32} />
+              <MaterialIcon name="settings_backup_restore" size={32} />
             </div>
             <div className="confirm__title">{t("settings.files.importConfirmTitle")}</div>
             <div className="confirm__body">
@@ -308,7 +308,7 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
               })}
             </div>
             <div className="confirm__tip">
-              <Icon name="lightbulb" size={18} />
+              <MaterialIcon name="lightbulb" size={18} />
               <span>{t("settings.files.importConfirmTip")}</span>
             </div>
           </div>
@@ -361,7 +361,7 @@ function ProgressBody({
     <div className="progress-body" role="status" aria-live="polite">
       <div className="progress-body__icon" aria-hidden="true">
         <span className="spin">
-          <Icon name={icon} size={36} />
+          <MaterialIcon name={icon} size={36} />
         </span>
       </div>
       <div className="progress-body__title">{title}</div>

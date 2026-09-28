@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import type { UnavailableReason } from "../lib/types";
 import { useLibraryStore } from "../stores/libraryStore";
 import { Toast } from "./feedback/Toast";
+import { BentoIcon } from "./icons/Icon";
 
 /** Navigation state that makes 設定頁 scroll 檔案管理 into view and focus it (DD3). */
 export const FOCUS_FILES_STATE = { focus: "files" } as const;
@@ -40,6 +41,7 @@ export function LibraryUnavailableToast() {
       onDismiss={() => setDismissed(true)}
       action={
         <Link className="toast__action" to="/settings" state={FOCUS_FILES_STATE}>
+          <BentoIcon name="GearWeightRegular" size={18} />
           {t("nav.settings")}
         </Link>
       }

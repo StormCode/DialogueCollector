@@ -9,7 +9,7 @@ import { Checkbox } from "../../components/ui/Checkbox";
 import { errorKind, inTauri, ipc } from "../../lib/ipc";
 import type { UpdateProgress } from "../../lib/types";
 import { useSettingsStore } from "../../stores/settingsStore";
-import { Icon } from "./icons";
+import { BentoIcon, MaterialIcon } from "../../components/icons/Icon";
 
 /** Must match `UPDATE_PROGRESS_EVENT` in src-tauri/src/updater.rs. */
 const UPDATE_PROGRESS_EVENT = "update-progress";
@@ -80,14 +80,14 @@ export function VersionSection() {
         <div className="st-update">
           {status === "latest" && (
             <span className="st-update__status st-update__status--latest" role="status">
-              <Icon name="check" size={18} />
+              <BentoIcon name="PositiveCircle" size={18} />
               {t("settings.update.latest")}
             </span>
           )}
           {status === "updating" && (
             <span className="st-update__status" role="status">
               <span className="spin">
-                <Icon name="progress" size={18} />
+                <MaterialIcon name="progress_activity" size={18} />
               </span>
               {t("settings.update.updating")}
               {percent !== null && ` ${percent}%`}

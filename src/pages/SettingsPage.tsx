@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useRevealScrollbar } from "../components/ui/useRevealScrollbar";
 import { useLibraryStore } from "../stores/libraryStore";
 import { FileManagementSection } from "./settings/FileManagementSection";
-import { Icon, type IconName } from "./settings/icons";
+import { MaterialIcon, type MaterialIconName } from "../components/icons/Icon";
 import { InterfaceSection } from "./settings/InterfaceSection";
 import { LinesSection, ScriptBookSection } from "./settings/ListSections";
 import { VersionSection } from "./settings/VersionSection";
@@ -13,11 +13,11 @@ import "./settings/settings.css";
 
 type SectionId = "ui" | "book" | "lines" | "files" | "version";
 
-const SECTIONS: { id: SectionId; labelKey: string; icon: IconName }[] = [
+const SECTIONS: { id: SectionId; labelKey: string; icon: MaterialIconName }[] = [
   { id: "ui", labelKey: "settings.interface", icon: "palette" },
-  { id: "book", labelKey: "settings.book.title", icon: "book" },
+  { id: "book", labelKey: "settings.book.title", icon: "book_2" },
   { id: "lines", labelKey: "settings.lines.title", icon: "chat" },
-  { id: "files", labelKey: "settings.files.title", icon: "folder" },
+  { id: "files", labelKey: "settings.files.title", icon: "folder_open" },
   { id: "version", labelKey: "settings.version", icon: "info" },
 ];
 
@@ -80,7 +80,7 @@ export function SettingsPage() {
               aria-current={active === s.id ? "true" : undefined}
               onClick={() => goTo(s.id)}
             >
-              <Icon name={s.icon} />
+              <MaterialIcon name={s.icon} size={22} />
               <span>{t(s.labelKey)}</span>
             </button>
           ))}
