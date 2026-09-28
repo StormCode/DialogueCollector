@@ -20,20 +20,24 @@ mod smoke;
 mod import;
 #[allow(dead_code)]
 mod media;
-#[allow(dead_code)]
 mod store;
 #[allow(dead_code)]
 mod subs;
 
+use std::sync::atomic::AtomicBool;
 use std::sync::Mutex;
 
 use library::settings::{MachineSettings, Settings, SettingsFiles};
+use library::LibraryState;
 
 /// Process-wide state shared by the Tauri commands.
 pub struct AppState {
     pub settings_files: SettingsFiles,
     pub settings: Mutex<Settings>,
     pub machine: Mutex<MachineSettings>,
+    pub library: Mutex<LibraryState>,
+    /// Set while a relocation runs, so a second one cannot start underneath it.
+    pub library_busy: AtomicBool,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -63,10 +67,17 @@ pub fn run() {
                 files.dir().display(),
                 loaded.first_run
             );
+            let library =
+                LibraryState::at_startup(loaded.machine.library_path.as_deref(), loaded.first_run);
+            if let Some(ready) = library.library() {
+                commands::grant_asset_scope(app.handle(), ready.root());
+            }
             app.manage(AppState {
                 settings_files: files,
                 settings: Mutex::new(loaded.settings),
                 machine: Mutex::new(loaded.machine),
+                library: Mutex::new(library),
+                library_busy: AtomicBool::new(false),
             });
             Ok(())
         })
@@ -74,6 +85,8 @@ pub fn run() {
             commands::app_info,
             commands::get_settings,
             commands::save_settings,
+            commands::library_status,
+            commands::choose_library_location,
             smoke::smoke_mode,
             smoke::run_smoke,
             smoke::smoke_finish,

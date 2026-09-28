@@ -16,12 +16,8 @@ pub const APP_DIR_NAME: &str = "DialogueCollector";
 pub const SETTINGS_FILE: &str = "settings.json";
 pub const MACHINE_FILE: &str = "machine.json";
 
-// Library-folder entries; used once `library::open` lands (T9).
-#[allow(dead_code)]
 pub const DB_FILE: &str = "library.sqlite";
-#[allow(dead_code)]
 pub const IMAGES_DIR: &str = "images";
-#[allow(dead_code)]
 pub const TMP_DIR: &str = ".tmp";
 
 pub fn settings_dir() -> Result<PathBuf, LibraryError> {

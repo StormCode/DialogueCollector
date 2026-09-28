@@ -37,10 +37,23 @@
       "lipstick": "口红粉",
       "midnight": "夜光黑"
     },
-    "version": "当前版本"
+    "version": "当前版本",
+    "versionLabel": "版本",
+    "files": {
+      "title": "文件管理",
+      "location": "台词音频的默认存放位置",
+      "noLocation": "尚未指定",
+      "browse": "浏览",
+      "storage": "存储空间",
+      "clipCount": "台词音频总数",
+      "diskUsage": "占用的硬盘空间",
+      "moving": "迁移中…",
+      "movingHint": "正在迁移收藏库，请勿关闭应用程序"
+    }
   },
   "common": {
-    "notImplemented": "尚未实现"
+    "notImplemented": "尚未实现",
+    "close": "关闭"
   },
   "diagnostics": {
     "title": "诊断",
@@ -49,5 +62,22 @@
     "passed": "通过",
     "failed": "失败",
     "link": "诊断工具"
+  },
+  "library": {
+    "unavailable": {
+      "notFound": "找不到收藏库，请前往「设置 → 文件管理」指定收藏库位置",
+      "network": "收藏库位于网络磁盘，无法打开，请前往「设置 → 文件管理」改选本地文件夹",
+      "cloudSync": "收藏库位于云同步文件夹，无法打开，请前往「设置 → 文件管理」改选本地文件夹",
+      "schemaTooNew": "收藏库由较新版本的 App 创建（v{{found}}），当前版本仅支持到 v{{supported}}，请更新 App"
+    },
+    "choose": {
+      "libraryNotFound": "找不到收藏库，请重新指定台词音频的存放位置",
+      "networkDriveDenied": "收藏库无法存放在网络磁盘，请改选本地文件夹",
+      "cloudSyncDenied": "收藏库无法存放在云同步文件夹，请改选本地文件夹",
+      "targetNotEmpty": "该文件夹中已有其他文件，无法创建收藏库",
+      "targetInsideLibrary": "不能把收藏库迁移到它自己的文件夹中",
+      "busy": "收藏库正在迁移中，请稍候",
+      "failed": "无法更改收藏库位置"
+    }
   }
 }

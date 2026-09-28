@@ -37,10 +37,23 @@
       "lipstick": "Lipstick",
       "midnight": "Midnight"
     },
-    "version": "Version"
+    "version": "Version",
+    "versionLabel": "Version",
+    "files": {
+      "title": "File management",
+      "location": "Where dialogue audio is stored",
+      "noLocation": "Not set",
+      "browse": "Browse",
+      "storage": "Storage",
+      "clipCount": "Audio clips",
+      "diskUsage": "Disk space used",
+      "moving": "Moving…",
+      "movingHint": "Moving your library. Please don't close the app."
+    }
   },
   "common": {
-    "notImplemented": "Not implemented yet"
+    "notImplemented": "Not implemented yet",
+    "close": "Close"
   },
   "diagnostics": {
     "title": "Diagnostics",
@@ -49,5 +62,22 @@
     "passed": "Passed",
     "failed": "Failed",
     "link": "Diagnostics"
+  },
+  "library": {
+    "unavailable": {
+      "notFound": "Library not found. Choose its location in Settings → File management.",
+      "network": "The library is on a network drive and can't be opened. Choose a local folder in Settings → File management.",
+      "cloudSync": "The library is in a cloud-sync folder and can't be opened. Choose a local folder in Settings → File management.",
+      "schemaTooNew": "This library was created by a newer version of the app (v{{found}}). This version supports up to v{{supported}}. Please update the app."
+    },
+    "choose": {
+      "libraryNotFound": "Library not found. Choose where dialogue audio is stored.",
+      "networkDriveDenied": "A library can't be stored on a network drive. Choose a local folder.",
+      "cloudSyncDenied": "A library can't be stored in a cloud-sync folder. Choose a local folder.",
+      "targetNotEmpty": "This folder already has other files, so a library can't be created here.",
+      "targetInsideLibrary": "A library can't be moved into its own folder.",
+      "busy": "The library is being moved. Please wait.",
+      "failed": "Couldn't change the library location."
+    }
   }
 }
