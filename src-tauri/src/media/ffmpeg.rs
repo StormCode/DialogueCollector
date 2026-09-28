@@ -1,18 +1,16 @@
 //! Invoking the ffmpeg sidecar.
 
 use std::path::Path;
+use std::sync::atomic::AtomicBool;
 use std::time::{Duration, Instant};
 
 use tauri::AppHandle;
 use tauri_plugin_shell::ShellExt;
 
-use super::MediaError;
+use super::{process, MediaError};
 
 /// Sidecar name: the file stem registered under `bundle.externalBin` (`binaries/ffmpeg`).
 const FFMPEG: &str = "ffmpeg";
-
-/// Bytes of stderr kept for error reports and logs (T19 wants the last line).
-const STDERR_TAIL: usize = 600;
 
 /// One cue: `[start_ms, end_ms)` of `source`'s first audio stream, encoded to AAC in an m4a
 /// container at `out`. Input-side `-ss` is fast and, because the audio is re-encoded,
@@ -63,6 +61,80 @@ pub(crate) fn cut_cue_args(source: &Path, start_ms: u64, end_ms: u64, out: &Path
     .collect()
 }
 
+/// Imports: encode one cue with the sidecar at `ffmpeg`, killed at once if `cancel` is set.
+pub fn encode_cue(
+    ffmpeg: &Path,
+    source: &Path,
+    start_ms: u64,
+    end_ms: u64,
+    out: &Path,
+    cancel: &AtomicBool,
+) -> Result<Duration, MediaError> {
+    let args = cut_cue_args(source, start_ms, end_ms, out);
+    Ok(process::run(process::command(ffmpeg, &args), cancel)?.elapsed)
+}
+
+/// What an import needs to know about a video before cutting it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Probe {
+    /// `None` when the container does not state one.
+    pub duration_ms: Option<u64>,
+    pub has_audio: bool,
+}
+
+/// Reads the container duration and whether any audio stream exists, with ffprobe.
+pub fn probe(ffprobe: &Path, source: &Path, cancel: &AtomicBool) -> Result<Probe, MediaError> {
+    let args: Vec<String> = [
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration:stream=codec_type",
+        "-of",
+        "json",
+    ]
+    .into_iter()
+    .map(str::to_owned)
+    .chain([source.to_string_lossy().into_owned()])
+    .collect();
+    let out = process::run(process::command(ffprobe, &args), cancel)?;
+    parse_probe(&out.stdout)
+}
+
+pub(crate) fn parse_probe(json: &[u8]) -> Result<Probe, MediaError> {
+    #[derive(serde::Deserialize)]
+    struct Raw {
+        #[serde(default)]
+        streams: Vec<Stream>,
+        format: Option<Format>,
+    }
+    #[derive(serde::Deserialize)]
+    struct Stream {
+        codec_type: Option<String>,
+    }
+    #[derive(serde::Deserialize)]
+    struct Format {
+        duration: Option<String>,
+    }
+    let raw: Raw = serde_json::from_slice(json).map_err(|e| MediaError::Exit {
+        code: None,
+        stderr_tail: format!("unreadable ffprobe output: {e}"),
+    })?;
+    let duration_ms = raw
+        .format
+        .and_then(|f| f.duration)
+        .and_then(|d| d.parse::<f64>().ok())
+        .filter(|d| d.is_finite() && *d > 0.0)
+        .map(|d| (d * 1000.0).round() as u64);
+    let has_audio = raw
+        .streams
+        .iter()
+        .any(|s| s.codec_type.as_deref() == Some("audio"));
+    Ok(Probe {
+        duration_ms,
+        has_audio,
+    })
+}
+
 /// Run the sidecar to completion and map its outcome onto `MediaError`.
 pub async fn run(app: &AppHandle, args: &[String]) -> Result<Duration, MediaError> {
     let started = Instant::now();
@@ -79,7 +151,7 @@ pub async fn run(app: &AppHandle, args: &[String]) -> Result<Duration, MediaErro
         return Ok(started.elapsed());
     }
     let stderr = String::from_utf8_lossy(&output.stderr);
-    let tail = stderr_tail(&stderr);
+    let tail = super::process::stderr_tail(&stderr);
     match output.status.code() {
         // No exit code: terminated by a signal.
         None => Err(MediaError::Killed),
@@ -88,16 +160,6 @@ pub async fn run(app: &AppHandle, args: &[String]) -> Result<Duration, MediaErro
             stderr_tail: tail,
         }),
     }
-}
-
-fn stderr_tail(stderr: &str) -> String {
-    let trimmed = stderr.trim_end();
-    let start = trimmed
-        .char_indices()
-        .rev()
-        .nth(STDERR_TAIL)
-        .map_or(0, |(i, _)| i);
-    trimmed[start..].to_owned()
 }
 
 #[cfg(test)]
@@ -123,10 +185,23 @@ mod tests {
     }
 
     #[test]
-    fn stderr_tail_keeps_the_end() {
-        let long = "x".repeat(2000) + "last line";
-        let tail = stderr_tail(&long);
-        assert!(tail.ends_with("last line"));
-        assert!(tail.chars().count() <= STDERR_TAIL + 1);
+    fn probe_reads_duration_and_audio() {
+        let json = br#"{"streams":[{"codec_type":"video"},{"codec_type":"audio"}],
+                        "format":{"duration":"1441.458000"}}"#;
+        assert_eq!(
+            parse_probe(json).unwrap(),
+            Probe {
+                duration_ms: Some(1_441_458),
+                has_audio: true
+            }
+        );
+        let silent = br#"{"streams":[{"codec_type":"video"}],"format":{}}"#;
+        assert_eq!(
+            parse_probe(silent).unwrap(),
+            Probe {
+                duration_ms: None,
+                has_audio: false
+            }
+        );
     }
 }

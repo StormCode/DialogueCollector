@@ -17,6 +17,7 @@
 //! machine — so moving or copying the whole folder keeps every internal reference valid.
 
 pub mod backup;
+pub mod deletion;
 pub mod folder;
 pub mod paths;
 pub mod relocate;

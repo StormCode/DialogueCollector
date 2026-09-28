@@ -7,6 +7,7 @@
 //! with many `-ss`/`-to` outputs, chunked under Windows' 32767-char argv limit.
 
 pub mod ffmpeg;
+pub mod process;
 
 use rand::Rng;
 
