@@ -38,7 +38,8 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
   const [menuQuery, setMenuQuery] = useState("");
   const [picker, setPicker] = useState<{ index: number; left: number; top: number } | null>(null);
   const [pickQuery, setPickQuery] = useState("");
-  const [adding, setAdding] = useState(false);
+  /** 新增角色 opened from the menu (assign the checked rows) or a row's picker (that row). */
+  const [adding, setAdding] = useState<"selected" | number | null>(null);
   const [toastDismissed, setToastDismissed] = useState(false);
 
   useEffect(() => {
@@ -155,7 +156,7 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
                     className="sel-menu__item sel-menu__add"
                     onClick={() => {
                       setMenuOpen(false);
-                      setAdding(true);
+                      setAdding("selected");
                     }}
                   >
                     <BoardArt name="plus" style={{ width: 16, height: 16 }} />
@@ -281,7 +282,7 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
                 {!pickQuery.trim() && (
                   <button
                     type="button"
-                    className={`sel-pick${s.assigned[picker.index] === undefined ? " is-current" : ""}`}
+                    className={`sel-pick sel-pick--wide${s.assigned[picker.index] === undefined ? " is-current" : ""}`}
                     aria-pressed={s.assigned[picker.index] === undefined}
                     onClick={() => pick(null)}
                   >
@@ -307,7 +308,21 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
                   );
                 })}
               </div>
-              {pickChars.length === 0 && <div className="sel-noresult">{t("import.select.noCharacter")}</div>}
+              {pickChars.length === 0 && pickQuery.trim() && (
+                <div className="sel-noresult">{t("import.select.noCharacter")}</div>
+              )}
+              <div className="sel-menu__divider" />
+              <button
+                type="button"
+                className="sel-menu__item sel-menu__add"
+                onClick={() => {
+                  setAdding(picker.index);
+                  setPicker(null);
+                }}
+              >
+                <BoardArt name="plus" style={{ width: 16, height: 16 }} />
+                <span>{t("import.select.addCharacter")}</span>
+              </button>
             </div>
           </>
         )}
@@ -318,13 +333,14 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
           {t("import.select.noCues")}
         </Toast>
       )}
-      {adding && (
+      {adding !== null && (
         <AddCharacterModal
-          onClose={() => setAdding(false)}
+          onClose={() => setAdding(null)}
           onCreate={async (form) => {
             const created = await s.addCharacter(form);
-            s.assignSelected(created.id);
-            setAdding(false);
+            if (adding === "selected") s.assignSelected(created.id);
+            else s.assignOne(adding, created.id);
+            setAdding(null);
           }}
         />
       )}
