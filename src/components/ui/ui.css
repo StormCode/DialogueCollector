@@ -186,9 +186,11 @@
   color: transparent;
 }
 
+/* As Bento's Checkbox: the theme maps --bento-bg-interactive to the accent, and 夜光黑 to a
+   mid grey so the white tick stays visible on its light accent. */
 .ui-checkbox input:checked + .ui-checkbox__box {
-  border-color: var(--dc-accent-50);
-  background: var(--dc-accent-50);
+  border-color: var(--bento-bg-interactive);
+  background: var(--bento-bg-interactive);
   color: var(--bento-white);
 }
 

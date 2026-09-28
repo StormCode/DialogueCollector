@@ -80,9 +80,12 @@
   box-shadow: var(--bento-elevation-sm);
 }
 
-/* Scrollbar only on hover, as the board themes it. */
+/* Scrollbar shown only on hover, as the board themes it. Only its colour changes on hover:
+   classic (non-overlay) scrollbars on Windows take layout width, so toggling the width
+   reflowed the content. The gutter is always reserved for the same reason. */
 .st-scroll {
-  scrollbar-width: none;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
   scrollbar-color: transparent transparent;
 }
 
@@ -96,7 +99,6 @@
 }
 
 .st-scroll:hover {
-  scrollbar-width: thin;
   scrollbar-color: var(--bento-neutral-20) transparent;
 }
 
@@ -563,6 +565,7 @@
 
 .mf-scroll {
   max-height: 300px;
+  scrollbar-gutter: stable;
   overflow-x: hidden;
   overflow-y: auto;
 }
