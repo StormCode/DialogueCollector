@@ -26,3 +26,20 @@ describe("locales", () => {
     });
   }
 });
+
+// Theme names sit under 64px swatch columns at 12px: 64 / 12 ≈ 5.3 full-width characters.
+// Latin characters average about 0.55 em in the UI font.
+describe("theme names", () => {
+  const COLUMN_EM = 64 / 12;
+  const width = (text: string) =>
+    Array.from(text).reduce((sum, ch) => sum + (/[\u0000-\u024f]/.test(ch) ? 0.55 : 1), 0);
+
+  for (const [locale, { translation }] of Object.entries(resources)) {
+    it(`${locale} theme names fit under their swatch`, () => {
+      const themes = (translation as { settings: { themes: Record<string, string> } }).settings.themes;
+      for (const [theme, name] of Object.entries(themes)) {
+        expect(width(name), `${locale} ${theme}: ${name}`).toBeLessThanOrEqual(COLUMN_EM);
+      }
+    });
+  }
+});

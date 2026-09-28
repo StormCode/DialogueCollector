@@ -1,9 +1,11 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";
+import { useRevealScrollbar } from "../../components/ui/useRevealScrollbar";
 import { inTauri } from "../../lib/ipc";
 import type { MissingFile } from "../../lib/types";
 import { Icon } from "./icons";
@@ -32,6 +34,8 @@ function Avatar({ file }: { file: MissingFile }) {
 // character's 台詞頁, where the line can be re-imported or deleted.
 export function MissingFilesModal({ files, onClose }: { files: MissingFile[]; onClose: () => void }) {
   const { t } = useTranslation();
+  const list = useRef<HTMLDivElement>(null);
+  useRevealScrollbar(list);
   return (
     <Modal title={t("settings.files.missing.title")} size="large" onClose={onClose}>
       <div className="mf-body">
@@ -45,7 +49,7 @@ export function MissingFilesModal({ files, onClose }: { files: MissingFile[]; on
             <span role="columnheader">{t("settings.files.missing.line")}</span>
             <span role="columnheader" aria-hidden="true" />
           </div>
-          <div className="mf-scroll st-scroll" role="rowgroup">
+          <div className="mf-scroll st-scroll" role="rowgroup" ref={list}>
             {files.map((file) => (
               <div className="mf-row" role="row" key={file.lineId}>
                 <span className="mf-who" role="cell">
