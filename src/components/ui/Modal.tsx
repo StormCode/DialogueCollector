@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import { BentoIcon } from "../icons/Icon";
@@ -26,7 +26,9 @@ export function Modal({ title, children, onClose, size = "medium", actions, clas
   const { t } = useTranslation();
   const dialog = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  // A layout effect, so focus is in the dialog before it first paints — never on the page
+  // behind it, however slow the machine (DT2).
+  useLayoutEffect(() => {
     const el = dialog.current;
     const target = el?.querySelector<HTMLElement>("[data-autofocus]") ?? el;
     target?.focus();
