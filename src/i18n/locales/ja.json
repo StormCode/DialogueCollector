@@ -30,12 +30,12 @@
     "theme": "テーマ",
     "themes": {
       "indigo": "インディゴ",
-      "lightBlue": "ライトブルー",
-      "ruby": "ルビーレッド",
+      "lightBlue": "スカイ",
+      "ruby": "ルビー",
       "emerald": "エメラルド",
-      "sunset": "サンセットオレンジ",
-      "lipstick": "リップピンク",
-      "midnight": "ミッドナイト"
+      "sunset": "サンセット",
+      "lipstick": "ルージュ",
+      "midnight": "漆黒"
     },
     "version": "現在のバージョン",
     "versionLabel": "バージョン",

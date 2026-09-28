@@ -81,14 +81,30 @@
   box-shadow: var(--bento-elevation-sm);
 }
 
-/* Scrollbar shown only on hover, as the board themes it. Windows' classic scrollbars take
-   layout width, so the scrollbar is a fixed-width ::-webkit-scrollbar (WebView2 and WebKit
-   both honour it; setting `scrollbar-width` would make Chromium ignore it), its gutter is
-   always reserved, and containers give that width back from their right padding: content
-   keeps the board's width and nothing moves on hover. */
+/* Scrollbar: shown while the container scrolls or the pointer moves over it, fading out a
+   second after the last of either (useRevealScrollbar toggles .is-scrollbar-visible).
+   Windows' classic scrollbars take layout width, so the scrollbar is a fixed-width
+   ::-webkit-scrollbar (WebView2 and WebKit both honour it; setting `scrollbar-width` would
+   make Chromium ignore it), its gutter is always reserved, and containers give that width
+   back from their right padding: content keeps the board's width and never moves.
+   The thumb colour is a registered property so it can transition; where scrollbars do not
+   repaint mid-transition the thumb simply appears and disappears. */
+@property --st-thumb {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
 .st-scroll {
   --st-scrollbar: 8px;
+  --st-thumb: transparent;
   scrollbar-gutter: stable;
+  transition: --st-thumb 300ms ease;
+}
+
+.st-scroll.is-scrollbar-visible {
+  --st-thumb: var(--bento-neutral-20);
+  transition-duration: 100ms;
 }
 
 .st-scroll::-webkit-scrollbar {
@@ -100,12 +116,8 @@
 }
 
 .st-scroll::-webkit-scrollbar-thumb {
-  background: transparent;
+  background: var(--st-thumb);
   border-radius: 999px;
-}
-
-.st-scroll:hover::-webkit-scrollbar-thumb {
-  background: var(--bento-neutral-20);
 }
 
 .st-section {
@@ -229,10 +241,15 @@
   outline-color: var(--bento-content-primary) !important;
 }
 
+/* Names must fit the 64px column (about five full-width characters at 12px; locales.test.ts
+   checks it). The ellipsis only guards a future long name from overlapping its neighbour. */
 .swatch-name {
+  max-width: 100%;
+  overflow: hidden;
   font: var(--bento-weight-regular) 12px/16px var(--dc-ui-font);
   color: var(--bento-content-secondary);
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .swatch-name.is-active {

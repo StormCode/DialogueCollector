@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 
+import { useRevealScrollbar } from "../components/ui/useRevealScrollbar";
 import { useLibraryStore } from "../stores/libraryStore";
 import { FileManagementSection } from "./settings/FileManagementSection";
 import { Icon, type IconName } from "./settings/icons";
@@ -30,6 +31,7 @@ export function SettingsPage() {
   const filesHeading = useRef<HTMLHeadingElement>(null);
   const lockUntil = useRef(0);
   const [active, setActive] = useState<SectionId>("ui");
+  useRevealScrollbar(card);
 
   useEffect(() => {
     void loadLibrary();
