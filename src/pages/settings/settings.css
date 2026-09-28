@@ -1,0 +1,173 @@
+/* Board: Settings.dc.html. Section card, label/control rows, stat boxes. */
+.settings-page {
+  max-width: 880px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bento-space-24);
+  padding-right: var(--bento-space-80);
+}
+
+.settings-page .page__title {
+  margin-bottom: 0;
+}
+
+.st-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bento-space-16);
+  padding: var(--bento-space-24) var(--bento-space-32);
+  border-radius: var(--bento-radius-24);
+  background: var(--bento-bg-primary);
+  box-shadow: var(--bento-elevation-sm);
+}
+
+.st-h2 {
+  margin: 0;
+  font: var(--bento-weight-semibold) 18px/24px var(--dc-ui-font);
+  color: var(--bento-content-primary);
+  scroll-margin-top: var(--bento-space-24);
+}
+
+.st-h2:focus-visible {
+  outline: 2px solid var(--dc-accent);
+  outline-offset: 4px;
+  border-radius: var(--bento-radius-4);
+}
+
+.st-row {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--bento-space-24);
+}
+
+.st-label {
+  font: var(--bento-weight-medium) 14px/20px var(--dc-ui-font);
+  color: var(--bento-content-primary);
+}
+
+.st-select,
+.ro-input {
+  box-sizing: border-box;
+  height: 40px;
+  padding: 0 var(--bento-space-12);
+  border: 1px solid var(--bento-border-input-enabled);
+  border-radius: var(--bento-radius-12);
+  background: var(--bento-bg-primary);
+  color: var(--bento-content-primary);
+  font: var(--bento-weight-regular) 14px/20px var(--dc-ui-font);
+}
+
+.st-select {
+  justify-self: start;
+  min-width: 220px;
+}
+
+.ro-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: var(--bento-bg-secondary);
+  color: var(--bento-content-secondary);
+}
+
+.st-control {
+  display: flex;
+  align-items: center;
+  gap: var(--bento-space-12);
+}
+
+.btn {
+  appearance: none;
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 var(--bento-space-16);
+  border-radius: var(--bento-radius-16);
+  font: var(--bento-weight-medium) 14px/18px var(--dc-ui-font);
+  cursor: pointer;
+}
+
+.btn--outline {
+  border: 1.5px solid var(--dc-accent);
+  background: transparent;
+  color: var(--dc-accent);
+}
+
+.btn--outline:hover:not(:disabled) {
+  background: var(--dc-accent-soft);
+}
+
+.btn:disabled {
+  border-color: var(--bento-action-disabled-bg);
+  color: var(--bento-action-disabled-fg);
+  cursor: not-allowed;
+}
+
+.stat-box {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bento-space-4);
+  padding: var(--bento-space-16);
+  border-radius: var(--bento-radius-16);
+  background: var(--dc-accent-soft);
+}
+
+.stat-num {
+  font: var(--bento-weight-semibold) 24px/32px var(--dc-ui-font);
+  color: var(--bento-content-primary);
+}
+
+.stat-cap {
+  font: var(--bento-weight-regular) 13px/18px var(--dc-ui-font);
+  color: var(--bento-content-secondary);
+}
+
+/* 搬移中 modal: the same shape as the board's 匯出中 (SettingsExporting). */
+.modal-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--bento-bg-scrim-dark);
+}
+
+.modal-card {
+  position: relative;
+  width: min(440px, calc(100vw - 2 * var(--bento-space-24)));
+  display: flex;
+  flex-direction: column;
+  gap: var(--bento-space-12);
+  padding: var(--bento-space-32);
+  border-radius: var(--bento-radius-24);
+  background: var(--bento-bg-primary);
+  box-shadow: var(--bento-elevation-lg);
+}
+
+.modal-card__title {
+  font: var(--bento-weight-semibold) 18px/24px var(--dc-ui-font);
+}
+
+.modal-card__body {
+  font: var(--bento-weight-regular) 14px/20px var(--dc-ui-font);
+  color: var(--bento-content-secondary);
+}
+
+.progress {
+  height: 8px;
+  border-radius: var(--bento-radius-full);
+  background: var(--bento-neutral-10);
+  overflow: hidden;
+}
+
+.progress__bar {
+  height: 100%;
+  background: var(--dc-accent);
+  transition: width 200ms ease-out;
+}

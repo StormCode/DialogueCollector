@@ -12,17 +12,20 @@ import { ManualImportPage } from "./pages/import/ManualImportPage";
 import { SubtitleImportPage } from "./pages/import/SubtitleImportPage";
 import { inTauri } from "./lib/ipc";
 import { runHeadlessSmokeIfRequested } from "./lib/smoke";
+import { useLibraryStore } from "./stores/libraryStore";
 import { useSettingsStore } from "./stores/settingsStore";
 
 /** Applies portable settings that live on the document root: theme, locale, 台詞 font. */
 function useApplySettings() {
   const load = useSettingsStore((s) => s.load);
+  const loadLibrary = useLibraryStore((s) => s.load);
   const { theme, locale, lineFont } = useSettingsStore((s) => s.settings);
 
   useEffect(() => {
     void load();
+    void loadLibrary();
     if (inTauri()) void runHeadlessSmokeIfRequested();
-  }, [load]);
+  }, [load, loadLibrary]);
 
   useEffect(() => {
     const root = document.documentElement;

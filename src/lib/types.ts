@@ -55,3 +55,36 @@ export interface SmokeReport {
   rowId: number;
   cutMs: number;
 }
+
+// ---------- library (T9), mirrors src-tauri/src/library ----------
+
+export type VolumeKind =
+  | { kind: "local" }
+  | { kind: "network"; detail: string }
+  | { kind: "cloudSync"; provider: string };
+
+export type UnavailableReason =
+  | { code: "noPointer" }
+  | { code: "notFound" }
+  | { code: "notALibrary" }
+  | { code: "unsupportedVolume"; volume: VolumeKind }
+  | { code: "schemaTooNew"; found: number; supported: number }
+  | { code: "moving" }
+  | { code: "error"; message: string };
+
+export interface LibraryStats {
+  clipCount: number;
+  bytes: number;
+}
+
+export interface LibraryStatus {
+  ready: boolean;
+  path: string | null;
+  reason: UnavailableReason | null;
+  stats: LibraryStats | null;
+}
+
+export interface MoveProgress {
+  done: number;
+  total: number;
+}

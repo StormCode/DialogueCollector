@@ -37,10 +37,23 @@
       "lipstick": "口紅粉",
       "midnight": "夜光黑"
     },
-    "version": "目前版本"
+    "version": "目前版本",
+    "versionLabel": "版本",
+    "files": {
+      "title": "檔案管理",
+      "location": "台詞音檔的預設存放位置",
+      "noLocation": "尚未指定",
+      "browse": "瀏覽",
+      "storage": "儲存空間",
+      "clipCount": "台詞音檔總數",
+      "diskUsage": "佔用的硬碟空間",
+      "moving": "搬移中…",
+      "movingHint": "正在搬移收藏庫，請勿關閉應用程式"
+    }
   },
   "common": {
-    "notImplemented": "尚未實作"
+    "notImplemented": "尚未實作",
+    "close": "關閉"
   },
   "diagnostics": {
     "title": "診斷",
@@ -49,5 +62,22 @@
     "passed": "通過",
     "failed": "失敗",
     "link": "診斷工具"
+  },
+  "library": {
+    "unavailable": {
+      "notFound": "找不到收藏庫，請至「設定 → 檔案管理」指定收藏庫位置",
+      "network": "收藏庫位於網路磁碟，無法開啟，請至「設定 → 檔案管理」改選本機資料夾",
+      "cloudSync": "收藏庫位於雲端同步資料夾，無法開啟，請至「設定 → 檔案管理」改選本機資料夾",
+      "schemaTooNew": "收藏庫由較新版本的 App 建立（v{{found}}），目前版本只支援到 v{{supported}}，請更新 App"
+    },
+    "choose": {
+      "libraryNotFound": "找不到收藏庫，請重新指定台詞音檔的存放位置",
+      "networkDriveDenied": "收藏庫無法存放在網路磁碟，請改選本機資料夾",
+      "cloudSyncDenied": "收藏庫無法存放在雲端同步資料夾，請改選本機資料夾",
+      "targetNotEmpty": "這個資料夾裡已有其他檔案，無法建立收藏庫",
+      "targetInsideLibrary": "不能把收藏庫搬到它自己的資料夾裡",
+      "busy": "收藏庫正在搬移中，請稍候",
+      "failed": "無法變更收藏庫位置"
+    }
   }
 }
