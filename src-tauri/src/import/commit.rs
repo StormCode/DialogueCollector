@@ -69,7 +69,11 @@ pub(crate) fn commit_cue_with(
     line: NewLine,
     probe: Probe,
 ) -> Result<CommittedCue, ImportError> {
-    let audio_bytes = File::open(staged)
+    // Opened for writing: Windows' FlushFileBuffers needs write access (a read-only handle is
+    // "Access is denied"); Unix fsyncs either way.
+    let audio_bytes = fs::OpenOptions::new()
+        .write(true)
+        .open(staged)
         .and_then(|f| {
             f.sync_all()?;
             Ok(f.metadata()?.len())
