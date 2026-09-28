@@ -28,5 +28,6 @@ src-tauri/binaries/ffmpeg-*
 src-tauri/binaries/ffprobe-*
 coverage
 
-# Working plan and review record: kept locally, never pushed
+# Working plan (Chinese) and its English original: kept locally, never pushed
 PLAN.md
+PLAN.en.md
