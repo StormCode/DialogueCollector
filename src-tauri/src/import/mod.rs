@@ -14,6 +14,9 @@
 //! name and writing its row. It is real work, normally quick, and builds no search index.
 
 pub mod commit;
+pub mod job;
+pub mod run;
+pub mod runs;
 
 use std::path::{Path, PathBuf};
 
@@ -41,6 +44,13 @@ pub enum ImportError {
     #[error("source file is missing: {0}")]
     SourceMissing(std::path::PathBuf),
 
+    /// The video has no audio stream to cut from (the 匯入失敗 screen).
+    #[error("the video has no audio stream: {0}")]
+    NoAudio(PathBuf),
+
+    #[error("import run {0} not found")]
+    RunNotFound(i64),
+
     #[error("{path}: {source}")]
     Io {
         path: PathBuf,
@@ -57,3 +67,6 @@ impl ImportError {
         }
     }
 }
+
+#[cfg(test)]
+mod tests;

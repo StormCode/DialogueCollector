@@ -116,6 +116,16 @@ impl Library {
         }
         sweep_tmp(&root.join(TMP_DIR));
         let conn = store::open(&root.join(DB_FILE))?;
+        // Finish deletions a crash interrupted (ENG3). TODO(ET10): bound this so a long queue
+        // cannot delay the first paint.
+        let drained = super::deletion::drain(&conn, root)?;
+        if drained.removed > 0 || !drained.failed.is_empty() {
+            log::info!(
+                "pending deletions: {} removed, {} still queued",
+                drained.removed,
+                drained.failed.len()
+            );
+        }
         log::info!("library opened at {}", root.display());
         Ok(Self {
             root: root.to_owned(),
@@ -129,6 +139,10 @@ impl Library {
 
     pub fn conn(&self) -> &Connection {
         &self.conn
+    }
+
+    pub fn conn_mut(&mut self) -> &mut Connection {
+        &mut self.conn
     }
 
     pub fn stats(&self) -> Result<LibraryStats, LibraryError> {
