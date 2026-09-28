@@ -193,6 +193,32 @@ mod tests {
         );
     }
 
+    /// Needs a real network mount, so it only runs when one is named:
+    /// `DC_NETWORK_PATH=/Volumes/Share cargo test -- --ignored network`
+    /// Read-only: nothing is created or written on the share.
+    #[test]
+    #[ignore]
+    fn network_mount_is_refused_before_anything_is_written() {
+        let share = PathBuf::from(
+            std::env::var_os("DC_NETWORK_PATH").expect("set DC_NETWORK_PATH to a network mount"),
+        );
+        let kind = classify(&share.join("DialogueCollector"));
+        assert!(matches!(kind, VolumeKind::Network { .. }), "{kind:?}");
+
+        let target = share.join("DialogueCollector-never-created");
+        let err = super::super::relocate::plan(&target, None).unwrap_err();
+        assert!(matches!(
+            err,
+            super::super::LibraryError::UnsupportedVolume { .. }
+        ));
+        let err = super::super::folder::Library::open(&target).err().unwrap();
+        assert!(matches!(
+            err,
+            super::super::LibraryError::UnsupportedVolume { .. }
+        ));
+        assert!(!target.exists(), "the refusal must not touch the share");
+    }
+
     #[test]
     fn a_local_temp_dir_is_supported_even_before_it_exists() {
         let dir = tempfile::tempdir().unwrap();
