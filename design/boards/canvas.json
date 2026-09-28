@@ -8,7 +8,7 @@
       "page": "page-2",
       "title": "匯入完成",
       "w": 1280,
-      "x": 4080,
+      "x": 2720,
       "y": 0
     },
     "Failed.dc.html": {
@@ -17,16 +17,7 @@
       "page": "page-2",
       "title": "匯入失敗",
       "w": 1280,
-      "x": 5440,
-      "y": 0
-    },
-    "Importing.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-2",
-      "title": "匯入中",
-      "w": 1280,
-      "x": 1360,
+      "x": 4080,
       "y": 0
     },
     "ImportingIndex.dc.html": {
@@ -35,7 +26,7 @@
       "page": "page-2",
       "title": "匯入中",
       "w": 1280,
-      "x": 2720,
+      "x": 1360,
       "y": 0
     },
     "InputLine.dc.html": {
@@ -73,7 +64,7 @@
       "x": 4080,
       "y": 0
     },
-    "VideoImporting.dc.html": {
+    "VideoImportingIndex.dc.html": {
       "h": 800,
       "is_interactive": true,
       "page": "page-3",
@@ -82,22 +73,13 @@
       "x": 6800,
       "y": 0
     },
-    "VideoImportingIndex.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-3",
-      "title": "匯入中",
-      "w": 1280,
-      "x": 8160,
-      "y": 0
-    },
     "VideoComplete.dc.html": {
       "h": 800,
       "is_interactive": true,
       "page": "page-3",
       "title": "匯入完成",
       "w": 1280,
-      "x": 9520,
+      "x": 8160,
       "y": 0
     },
     "VideoFailed.dc.html": {
@@ -106,7 +88,7 @@
       "page": "page-3",
       "title": "匯入失敗",
       "w": 1280,
-      "x": 12240,
+      "x": 10880,
       "y": 0
     },
     "SubtitleSelect.dc.html": {
@@ -277,7 +259,7 @@
       "page": "page-3",
       "title": "部分完成",
       "w": 1280,
-      "x": 10880,
+      "x": 9520,
       "y": 0
     },
     "SettingsExporting.dc.html": {
@@ -409,7 +391,6 @@
     "Main.dc.html",
     "MainLibraryNotFound.dc.html",
     "InputLine.dc.html",
-    "Importing.dc.html",
     "ImportingIndex.dc.html",
     "Complete.dc.html",
     "Failed.dc.html",
@@ -419,7 +400,6 @@
     "SubtitleSelectEmpty.dc.html",
     "VideoSelect.dc.html",
     "VideoCutting.dc.html",
-    "VideoImporting.dc.html",
     "VideoImportingIndex.dc.html",
     "VideoComplete.dc.html",
     "VideoPartial.dc.html",
