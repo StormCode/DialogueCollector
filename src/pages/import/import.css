@@ -888,11 +888,6 @@
   background: var(--bento-bg-interactive-overlay);
 }
 
-/* 未指派 takes a row of its own above the characters. */
-.sel-pick--wide {
-  grid-column: 1 / -1;
-}
-
 .sel-pick.is-current {
   background: var(--dc-accent-5);
   box-shadow: inset 0 0 0 1.5px var(--dc-accent-40);

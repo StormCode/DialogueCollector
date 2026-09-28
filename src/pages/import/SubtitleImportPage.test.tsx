@@ -75,7 +75,7 @@ describe("subtitle import flow", () => {
     expect(screen.queryByRole("dialog", { name: "選擇角色" })).not.toBeInTheDocument();
   });
 
-  it("offers 未指派 on its own row and 新增角色 in the picker, and assigns a new character to that row", async () => {
+  it("offers 未指派 and 新增角色 in the picker, and assigns a new character to that row", async () => {
     vi.spyOn(ipc, "parseSubtitle").mockResolvedValue(CUES);
     vi.spyOn(ipc, "listCharacters").mockResolvedValue([]);
     const created: Character = { id: 9, name: "壹原侑子", category: "anime", source: "×××HOLiC", cv: null, portraitPath: null, lineCount: 0 };
@@ -84,7 +84,7 @@ describe("subtitle import flow", () => {
 
     fireEvent.click(await screen.findByRole("button", { name: "為第 2 句選擇角色" }));
     const picker = screen.getByRole("dialog", { name: "選擇角色" });
-    expect(within(picker).getByRole("button", { name: /未指派/ })).toHaveClass("sel-pick--wide");
+    expect(within(picker).getByRole("button", { name: /未指派/ })).toBeInTheDocument();
     expect(within(picker).queryByText("找不到符合的角色")).not.toBeInTheDocument();
 
     fireEvent.click(within(picker).getByRole("button", { name: "新增角色" }));
