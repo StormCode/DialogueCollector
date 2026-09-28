@@ -1,34 +1,13 @@
-import { convertFileSrc } from "@tauri-apps/api/core";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
+import { CharacterAvatar } from "../../components/characters/CharacterAvatar";
 import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";
 import { useRevealScrollbar } from "../../components/ui/useRevealScrollbar";
-import { inTauri } from "../../lib/ipc";
 import type { MissingFile } from "../../lib/types";
 import { MaterialIcon } from "../../components/icons/Icon";
-
-// Avatar fallback colours: one data-vis ramp per character, stable across sessions.
-const RAMPS = ["indigo", "jade", "pink", "orange", "blue", "violet", "red", "green"] as const;
-
-function Avatar({ file }: { file: MissingFile }) {
-  const ramp = RAMPS[file.characterId % RAMPS.length];
-  return (
-    <span
-      className="mf-avatar"
-      aria-hidden="true"
-      style={{ background: `var(--bento-dv-${ramp}-10)`, color: `var(--bento-dv-${ramp}-70)` }}
-    >
-      {file.portraitPath && inTauri() ? (
-        <img src={convertFileSrc(file.portraitPath)} alt="" />
-      ) : (
-        Array.from(file.characterName)[0]
-      )}
-    </span>
-  );
-}
 
 // 遺失的檔案 (T20, board Settings.dc.html): which lines lost their clip, each with 查看 to that
 // character's 台詞頁, where the line can be re-imported or deleted.
@@ -53,7 +32,7 @@ export function MissingFilesModal({ files, onClose }: { files: MissingFile[]; on
             {files.map((file) => (
               <div className="mf-row" role="row" key={file.lineId}>
                 <span className="mf-who" role="cell">
-                  <Avatar file={file} />
+                  <CharacterAvatar id={file.characterId} name={file.characterName} portraitPath={file.portraitPath} size={28} />
                   <span className="mf-name">{file.characterName}</span>
                 </span>
                 <span className="mf-text" role="cell" title={file.text}>

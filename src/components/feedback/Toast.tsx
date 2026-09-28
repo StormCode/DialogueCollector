@@ -12,6 +12,8 @@ interface ToastProps {
   action?: ReactNode;
   /** Milliseconds before auto-dismiss; omit to stay until closed. */
   autoDismissMs?: number;
+  /** Boards that set the Bento Toast's width (e.g. 360 on SubtitleSelect). */
+  width?: number;
 }
 
 // Bento Toast's leading glyph per tone.
@@ -22,7 +24,7 @@ const GLYPH: Record<ToastProps["tone"], BentoIconName> = {
 };
 
 // Boards: Main.dc.html (.lib-toast) and the Settings toasts (Bento Toast).
-export function Toast({ tone, children, onDismiss, action, autoDismissMs }: ToastProps) {
+export function Toast({ tone, children, onDismiss, action, autoDismissMs, width }: ToastProps) {
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -32,7 +34,11 @@ export function Toast({ tone, children, onDismiss, action, autoDismissMs }: Toas
   }, [autoDismissMs, onDismiss]);
 
   return (
-    <div className={`toast toast--${tone}`} role={tone === "negative" ? "alert" : "status"}>
+    <div
+      className={`toast toast--${tone}`}
+      role={tone === "negative" ? "alert" : "status"}
+      style={width ? { width: `min(${width}px, calc(100vw - 48px))` } : undefined}
+    >
       <span className="toast__icon">
         <BentoIcon name={GLYPH[tone]} size={16} />
       </span>
