@@ -75,6 +75,28 @@ describe("subtitle import flow", () => {
     expect(screen.queryByRole("dialog", { name: "選擇角色" })).not.toBeInTheDocument();
   });
 
+  it("offers 未指派 on its own row and 新增角色 in the picker, and assigns a new character to that row", async () => {
+    vi.spyOn(ipc, "parseSubtitle").mockResolvedValue(CUES);
+    vi.spyOn(ipc, "listCharacters").mockResolvedValue([]);
+    const created: Character = { id: 9, name: "壹原侑子", category: "anime", source: "×××HOLiC", cv: null, portraitPath: null, lineCount: 0 };
+    vi.spyOn(ipc, "createCharacter").mockResolvedValue(created);
+    renderFlow();
+
+    fireEvent.click(await screen.findByRole("button", { name: "為第 2 句選擇角色" }));
+    const picker = screen.getByRole("dialog", { name: "選擇角色" });
+    expect(within(picker).getByRole("button", { name: /未指派/ })).toHaveClass("sel-pick--wide");
+    expect(within(picker).queryByText("找不到符合的角色")).not.toBeInTheDocument();
+
+    fireEvent.click(within(picker).getByRole("button", { name: "新增角色" }));
+    const modal = await screen.findByRole("dialog", { name: "新增角色" });
+    fireEvent.change(within(modal).getByLabelText("角色名稱 *"), { target: { value: "壹原侑子" } });
+    fireEvent.change(within(modal).getByLabelText("動畫/戲劇名稱 *"), { target: { value: "×××HOLiC" } });
+    fireEvent.click(within(modal).getByRole("button", { name: "新增" }));
+
+    expect(await screen.findByRole("img", { name: "壹原侑子" })).toBeInTheDocument();
+    expect(useSubtitleImportStore.getState().assigned).toEqual({ 1: 9 });
+  });
+
   it("imports only the assigned lines and shows 部分完成 with cancelled ones apart", async () => {
     vi.spyOn(ipc, "parseSubtitle").mockResolvedValue(CUES);
     const outcome: JobOutcome = {
