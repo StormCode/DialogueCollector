@@ -58,6 +58,7 @@ pub enum LineFont {
 }
 
 pub const PER_PAGE_RANGE: std::ops::RangeInclusive<u32> = 1..=100;
+pub const PLAY_GAP_RANGE: std::ops::RangeInclusive<f64> = 0.0..=30.0;
 
 /// Portable settings: travel inside the export zip and are overwritten by import (D10).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -68,6 +69,8 @@ pub struct Settings {
     pub characters_per_page: u32,
     pub lines_per_page: u32,
     pub line_font: LineFont,
+    /// 全部播放每句切換秒數: pause between clips when playing a list (canvas Settings board).
+    pub play_all_gap_seconds: f64,
     pub auto_update: bool,
 }
 
@@ -79,6 +82,7 @@ impl Default for Settings {
             characters_per_page: 8,
             lines_per_page: 10,
             line_font: LineFont::ChironGoRoundTC,
+            play_all_gap_seconds: 2.0,
             auto_update: false,
         }
     }
@@ -100,6 +104,14 @@ impl Settings {
                     ),
                 });
             }
+        }
+        let gap = self.play_all_gap_seconds;
+        // Half-second steps, as the board's number field allows.
+        if !PLAY_GAP_RANGE.contains(&gap) || (gap * 2.0).fract() != 0.0 {
+            return Err(LibraryError::InvalidSetting {
+                field: "playAllGapSeconds",
+                reason: format!("{gap} is not a multiple of 0.5 within 0..=30"),
+            });
         }
         Ok(self)
     }
@@ -306,6 +318,24 @@ mod tests {
         let loaded = f.load_or_init().unwrap();
         assert_eq!(loaded.settings.locale, Locale::Ja);
         assert_eq!(loaded.settings.characters_per_page, 8);
+    }
+
+    #[test]
+    fn play_gap_must_be_half_second_steps_within_range() {
+        for bad in [-0.5, 30.5, 1.25, f64::NAN] {
+            let s = Settings {
+                play_all_gap_seconds: bad,
+                ..Default::default()
+            };
+            assert!(s.validated().is_err(), "{bad} accepted");
+        }
+        for ok in [0.0, 0.5, 2.0, 30.0] {
+            let s = Settings {
+                play_all_gap_seconds: ok,
+                ..Default::default()
+            };
+            assert!(s.validated().is_ok(), "{ok} rejected");
+        }
     }
 
     #[test]

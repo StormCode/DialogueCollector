@@ -1,0 +1,287 @@
+/* Bento DS primitives, sized and coloured as on the canvas boards. */
+
+.ui-btn {
+  appearance: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--bento-radius-16);
+  font: var(--bento-weight-medium) 14px/18px var(--dc-ui-font);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.ui-btn--medium {
+  min-height: 44px;
+  padding: 12px 20px;
+}
+
+.ui-btn--small {
+  min-height: 36px;
+  padding: 8px 14px;
+}
+
+.ui-btn--full {
+  width: 100%;
+}
+
+.ui-btn--solid {
+  border: none;
+  background: var(--bento-action-solid-primary-bg);
+  color: var(--bento-action-solid-primary-fg);
+}
+
+.ui-btn--solid:hover:not(:disabled) {
+  background: var(--bento-action-solid-primary-bg-hover);
+}
+
+.ui-btn--outline {
+  border: 1.5px solid var(--bento-action-outline-primary-outline);
+  background: transparent;
+  color: var(--bento-action-transparent-primary-fg);
+}
+
+.ui-btn--outline:hover:not(:disabled) {
+  border-color: var(--bento-action-outline-primary-outline-hover);
+  background: var(--bento-action-transparent-primary-bg-hover);
+  color: var(--bento-action-transparent-primary-fg-hover);
+}
+
+.ui-btn--neutral {
+  border: 1.5px solid var(--bento-neutral-60);
+  background: transparent;
+  color: var(--bento-neutral-60);
+}
+
+.ui-btn--neutral:hover:not(:disabled) {
+  background: var(--bento-bg-secondary);
+}
+
+.ui-btn--danger {
+  border: none;
+  background: var(--bento-negative-40);
+  color: var(--bento-white);
+}
+
+.ui-btn--danger:hover:not(:disabled) {
+  background: var(--bento-negative-50);
+}
+
+.ui-btn:disabled {
+  border-color: transparent;
+  background: var(--bento-action-disabled-bg);
+  color: var(--bento-action-disabled-fg);
+  cursor: not-allowed;
+}
+
+/* ---- select ---- */
+.ui-select {
+  position: relative;
+  display: inline-flex;
+  width: 280px;
+  max-width: 100%;
+  color: var(--bento-icon-secondary);
+}
+
+.ui-select select {
+  appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 44px;
+  padding: 0 40px 0 16px;
+  border: 1px solid var(--bento-border-input-enabled);
+  border-radius: var(--bento-radius-16);
+  background: var(--bento-bg-primary);
+  color: var(--bento-content-primary);
+  font: var(--bento-weight-regular) 14px/20px var(--dc-ui-font);
+  cursor: pointer;
+}
+
+.ui-select select:hover {
+  border-color: var(--bento-border-input-hover);
+}
+
+.ui-select select:focus-visible {
+  outline: none;
+  border-color: var(--bento-border-input-focus);
+  box-shadow: 0 0 0 1px var(--bento-border-input-focus);
+}
+
+.ui-select svg {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* ---- number ---- */
+.ui-number {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 160px;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--bento-border-input-enabled);
+  border-radius: var(--bento-radius-16);
+  background: var(--bento-bg-primary);
+}
+
+.ui-number:hover {
+  border-color: var(--bento-border-input-hover);
+}
+
+.ui-number:focus-within {
+  border-color: var(--bento-border-input-focus);
+  box-shadow: 0 0 0 1px var(--bento-border-input-focus);
+}
+
+.ui-number input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--bento-content-primary);
+  font: var(--bento-weight-regular) 14px/20px var(--dc-ui-font);
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-number__unit {
+  flex-shrink: 0;
+  color: var(--bento-content-secondary);
+  font: var(--bento-weight-regular) 14px/20px var(--dc-ui-font);
+}
+
+/* ---- checkbox ---- */
+.ui-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font: var(--bento-weight-regular) 14px/20px var(--dc-ui-font);
+  color: var(--bento-content-primary);
+}
+
+.ui-checkbox input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.ui-checkbox__box {
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--bento-border-input-enabled);
+  border-radius: 6px;
+  background: var(--bento-bg-primary);
+  color: transparent;
+}
+
+.ui-checkbox input:checked + .ui-checkbox__box {
+  border-color: var(--dc-accent-50);
+  background: var(--dc-accent-50);
+  color: var(--bento-white);
+}
+
+.ui-checkbox input:focus-visible + .ui-checkbox__box {
+  outline: 2px solid var(--dc-accent-40);
+  outline-offset: 2px;
+}
+
+/* ---- modal (DT4: scrim and elevation come from tokens, not hardcoded values) ---- */
+.ui-modal-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ui-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--bento-bg-scrim-dark);
+  animation: ui-fade-in 300ms ease-out both;
+}
+
+.ui-modal {
+  position: relative;
+  box-sizing: border-box;
+  max-width: calc(100vw - 48px);
+  border-radius: var(--bento-radius-24);
+  background: var(--bento-bg-primary);
+  box-shadow: var(--bento-elevation-lg);
+  animation: ui-drop-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ui-modal:focus {
+  outline: none;
+}
+
+.ui-modal--small {
+  width: 420px;
+}
+
+.ui-modal--medium {
+  width: 520px;
+}
+
+.ui-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0;
+}
+
+.ui-modal__title {
+  font: var(--bento-weight-semibold) 16px/22px var(--dc-ui-font);
+  color: var(--bento-content-primary);
+}
+
+.ui-modal__close {
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--bento-radius-8);
+  background: transparent;
+  color: var(--bento-icon-secondary);
+  cursor: pointer;
+}
+
+.ui-modal__body {
+  padding: 20px 24px 24px;
+}
+
+@keyframes ui-drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ui-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

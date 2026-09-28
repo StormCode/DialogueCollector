@@ -3,7 +3,15 @@
 
 import { invoke } from "@tauri-apps/api/core";
 
-import type { AppInfo, LibraryStatus, Settings, SmokeReport } from "./types";
+import type {
+  AppInfo,
+  BackupManifest,
+  BackupPreview,
+  ImportOutcome,
+  LibraryStatus,
+  Settings,
+  SmokeReport,
+} from "./types";
 
 export const ipc = {
   appInfo: () => invoke<AppInfo>("app_info"),
@@ -12,6 +20,10 @@ export const ipc = {
   libraryStatus: () => invoke<LibraryStatus>("library_status"),
   chooseLibraryLocation: (path: string) =>
     invoke<LibraryStatus>("choose_library_location", { path }),
+  exportLibrary: (dest: string) => invoke<BackupManifest>("export_library", { dest }),
+  cancelExport: () => invoke<void>("cancel_export"),
+  inspectBackup: (path: string) => invoke<BackupPreview>("inspect_backup", { path }),
+  importBackup: (path: string) => invoke<ImportOutcome>("import_backup", { path }),
   smokeMode: () => invoke<boolean>("smoke_mode"),
   runSmoke: () => invoke<SmokeReport>("run_smoke"),
   smokeFinish: (ok: boolean, detail: string) => invoke<void>("smoke_finish", { ok, detail }),

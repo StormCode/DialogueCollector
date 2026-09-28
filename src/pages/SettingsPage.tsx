@@ -1,96 +1,96 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 
-import { LOCALE_NAMES } from "../i18n";
-import { inTauri, ipc } from "../lib/ipc";
-import { LOCALES, THEMES, type Locale, type Theme } from "../lib/types";
 import { useLibraryStore } from "../stores/libraryStore";
-import { useSettingsStore } from "../stores/settingsStore";
 import { FileManagementSection } from "./settings/FileManagementSection";
+import { Icon, type IconName } from "./settings/icons";
+import { InterfaceSection } from "./settings/InterfaceSection";
+import { LinesSection, ScriptBookSection } from "./settings/ListSections";
+import { VersionSection } from "./settings/VersionSection";
 import "./settings/settings.css";
 
-// Board: design/boards/Settings.dc.html. Wired so far: 介面 (language, theme), 檔案管理
-// (location, storage) and 目前版本. 角色簿 / 台詞頁 and the section index come with S12.
+type SectionId = "ui" | "book" | "lines" | "files" | "version";
+
+const SECTIONS: { id: SectionId; labelKey: string; icon: IconName }[] = [
+  { id: "ui", labelKey: "settings.interface", icon: "palette" },
+  { id: "book", labelKey: "settings.book.title", icon: "book" },
+  { id: "lines", labelKey: "settings.lines.title", icon: "chat" },
+  { id: "files", labelKey: "settings.files.title", icon: "folder" },
+  { id: "version", labelKey: "settings.version", icon: "info" },
+];
+
+// Board: design/boards/Settings.dc.html — a section index on the left and one scrolling card,
+// with the index following the scroll position.
 export function SettingsPage() {
   const { t } = useTranslation();
   const location = useLocation();
-  const settings = useSettingsStore((s) => s.settings);
-  const update = useSettingsStore((s) => s.update);
   const loadLibrary = useLibraryStore((s) => s.load);
-  const [version, setVersion] = useState("—");
+  const card = useRef<HTMLDivElement>(null);
   const filesHeading = useRef<HTMLHeadingElement>(null);
+  const lockUntil = useRef(0);
+  const [active, setActive] = useState<SectionId>("ui");
 
   useEffect(() => {
-    if (inTauri()) void ipc.appInfo().then((info) => setVersion(info.version));
     void loadLibrary();
   }, [loadLibrary]);
 
-  // Arriving from the 找不到收藏庫 toast: bring 檔案管理 into view and move focus to it (DD3).
+  const goTo = useCallback((id: SectionId, focus = false) => {
+    const el = card.current?.querySelector<HTMLElement>(`[data-sec="${id}"]`);
+    if (!card.current || !el) return;
+    // Suppress scroll-spy while the smooth scroll runs, so the index does not flicker.
+    lockUntil.current = Date.now() + 700;
+    setActive(id);
+    card.current.scrollTo?.({ top: Math.max(0, el.offsetTop - 24), behavior: "smooth" });
+    if (focus) el.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
+  }, []);
+
+  const onScroll = useCallback(() => {
+    const el = card.current;
+    if (!el || Date.now() < lockUntil.current) return;
+    let current: SectionId = SECTIONS[0].id;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 2) {
+      current = SECTIONS[SECTIONS.length - 1].id;
+    } else {
+      for (const s of SECTIONS) {
+        const sec = el.querySelector<HTMLElement>(`[data-sec="${s.id}"]`);
+        if (sec && sec.offsetTop - 60 <= el.scrollTop) current = s.id;
+      }
+    }
+    setActive(current);
+  }, []);
+
+  // Arriving from the 找不到收藏庫 toast: bring 檔案管理 into view and focus it (DD3).
   useEffect(() => {
-    if ((location.state as { focus?: string } | null)?.focus !== "files") return;
-    const heading = filesHeading.current;
-    heading?.scrollIntoView({ behavior: "smooth", block: "start" });
-    heading?.focus({ preventScroll: true });
-  }, [location.state]);
+    if ((location.state as { focus?: string } | null)?.focus === "files") goTo("files", true);
+  }, [location.state, goTo]);
 
   return (
-    <div className="page settings-page">
-      <h1 className="page__title">{t("settings.title")}</h1>
-
-      <section className="st-section" aria-labelledby="st-h-ui">
-        <h2 className="st-h2" id="st-h-ui">
-          {t("settings.interface")}
-        </h2>
-        <div className="st-row">
-          <label className="st-label" htmlFor="st-locale">
-            {t("settings.language")}
-          </label>
-          <select
-            id="st-locale"
-            className="st-select"
-            value={settings.locale}
-            onChange={(e) => void update({ locale: e.target.value as Locale })}
-          >
-            {LOCALES.map((l) => (
-              <option key={l} value={l}>
-                {LOCALE_NAMES[l]}
-              </option>
-            ))}
-          </select>
+    <div className="settings-page">
+      <h1 className="settings-page__title">{t("settings.title")}</h1>
+      <div className="settings-page__body">
+        <nav className="settings-toc" aria-label={t("settings.toc")}>
+          {SECTIONS.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              className={`toc-item${active === s.id ? " is-active" : ""}`}
+              aria-current={active === s.id ? "true" : undefined}
+              onClick={() => goTo(s.id)}
+            >
+              <Icon name={s.icon} />
+              <span>{t(s.labelKey)}</span>
+            </button>
+          ))}
+        </nav>
+        <div className="settings-card st-scroll" ref={card} onScroll={onScroll}>
+          <InterfaceSection />
+          <ScriptBookSection />
+          <LinesSection />
+          <FileManagementSection ref={filesHeading} />
+          <VersionSection />
         </div>
-        <div className="st-row">
-          <label className="st-label" htmlFor="st-theme">
-            {t("settings.theme")}
-          </label>
-          <select
-            id="st-theme"
-            className="st-select"
-            value={settings.theme}
-            onChange={(e) => void update({ theme: e.target.value as Theme })}
-          >
-            {THEMES.map((th) => (
-              <option key={th} value={th}>
-                {t(`settings.themes.${th}`)}
-              </option>
-            ))}
-          </select>
-        </div>
-      </section>
-
-      <FileManagementSection ref={filesHeading} />
-
-      <section className="st-section" aria-labelledby="st-h-version">
-        <h2 className="st-h2" id="st-h-version">
-          {t("settings.version")}
-        </h2>
-        <div className="st-row">
-          <div className="st-label">{t("settings.versionLabel")}</div>
-          <div>
-            {version} · <Link to="/diagnostics">{t("diagnostics.link")}</Link>
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }

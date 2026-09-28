@@ -48,8 +48,63 @@
       "clipCount": "台词音频总数",
       "diskUsage": "占用的硬盘空间",
       "moving": "迁移中…",
-      "movingHint": "正在迁移收藏库，请勿关闭应用程序"
-    }
+      "movingHint": "正在迁移收藏库，请勿关闭应用程序",
+      "backup": "导出与导入",
+      "backupHint": "备份或还原所有角色簿与台词",
+      "export": "导出",
+      "import": "导入",
+      "exporting": "导出中…",
+      "exportingHint": "正在打包所有收藏与设置，请勿关闭应用程序",
+      "exportCopying": "正在复制音频 {{done}} / {{total}}",
+      "exportFinishing": "正在写入设置并压缩文件…",
+      "exportProgress": "导出进度",
+      "cancelExport": "取消导出",
+      "exportSuccess": "文件已导出至 {{dir}} 目录",
+      "exportFailed": "导出失败",
+      "importing": "导入中…",
+      "importingHint": "正在还原备份，请勿关闭应用程序",
+      "importSuccess": "导入完成",
+      "importFailed": "导入失败",
+      "confirm": "确认",
+      "importConfirmTitle": "确定要导入备份吗？",
+      "importConfirmBefore": "导入后将",
+      "importConfirmStrong": "清空当前所有的收藏与设置",
+      "importConfirmAfter": "，包括角色簿、台词、音频及所有设置，并还原为备份文件的内容。此操作无法撤销。",
+      "importConfirmCounts": "当前的收藏：{{characters}} 个角色、{{clips}} 句台词，共 {{size}}",
+      "importConfirmTip": "建议先「导出」当前的收藏与设置，以免数据丢失。",
+      "cancel": "取消",
+      "confirmImport": "确定导入",
+      "reason": {
+        "noSpace": "目标位置空间不足",
+        "notOurArchive": "这不是收藏库备份文件",
+        "tooNew": "备份文件由较新版本的 App 创建",
+        "unsafe": "备份文件内容不安全",
+        "busy": "另一项收藏库操作正在进行"
+      }
+    },
+    "toc": "设置目录",
+    "perPage": "每页条数",
+    "unitItems": "条",
+    "unitSeconds": "秒",
+    "languages": {
+      "zh-Hant": "繁体中文",
+      "zh-Hans": "简体中文",
+      "ja": "日文",
+      "en": "英文"
+    },
+    "book": {
+      "title": "角色簿"
+    },
+    "lines": {
+      "title": "台词页",
+      "playGap": "全部播放每句切换秒数",
+      "playGapHint": "播完一句后，间隔几秒再播下一句",
+      "font": "台词字体"
+    },
+    "checkUpdate": "检查更新",
+    "autoUpdate": "自动更新",
+    "autoUpdateLabel": "有新版本时自动下载并安装",
+    "updateUnavailable": "尚未设置更新来源，暂时无法检查更新"
   },
   "common": {
     "notImplemented": "尚未实现",

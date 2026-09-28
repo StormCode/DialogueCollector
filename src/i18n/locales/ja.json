@@ -48,8 +48,63 @@
       "clipCount": "セリフ音声の総数",
       "diskUsage": "使用中のディスク容量",
       "moving": "移動中…",
-      "movingHint": "ライブラリを移動しています。アプリを閉じないでください"
-    }
+      "movingHint": "ライブラリを移動しています。アプリを閉じないでください",
+      "backup": "エクスポートとインポート",
+      "backupHint": "すべてのキャラクター帳とセリフをバックアップまたは復元します",
+      "export": "エクスポート",
+      "import": "インポート",
+      "exporting": "エクスポート中…",
+      "exportingHint": "すべてのコレクションと設定をまとめています。アプリを閉じないでください",
+      "exportCopying": "音声をコピー中 {{done}} / {{total}}",
+      "exportFinishing": "設定を書き込み、圧縮しています…",
+      "exportProgress": "エクスポートの進行状況",
+      "cancelExport": "エクスポートを中止",
+      "exportSuccess": "{{dir}} にエクスポートしました",
+      "exportFailed": "エクスポートに失敗しました",
+      "importing": "インポート中…",
+      "importingHint": "バックアップを復元しています。アプリを閉じないでください",
+      "importSuccess": "インポートが完了しました",
+      "importFailed": "インポートに失敗しました",
+      "confirm": "確認",
+      "importConfirmTitle": "バックアップをインポートしますか？",
+      "importConfirmBefore": "インポートすると、",
+      "importConfirmStrong": "現在のコレクションと設定はすべて消去され",
+      "importConfirmAfter": "、キャラクター帳・セリフ・音声・設定がバックアップの内容に置き換わります。この操作は元に戻せません。",
+      "importConfirmCounts": "現在のコレクション：キャラクター {{characters}} 人、セリフ {{clips}} 件、合計 {{size}}",
+      "importConfirmTip": "データを失わないよう、先に現在のコレクションと設定を「エクスポート」することをおすすめします。",
+      "cancel": "キャンセル",
+      "confirmImport": "インポートする",
+      "reason": {
+        "noSpace": "保存先の空き容量が足りません",
+        "notOurArchive": "コレクションのバックアップファイルではありません",
+        "tooNew": "新しいバージョンのアプリで作成されたバックアップです",
+        "unsafe": "バックアップの内容が安全ではありません",
+        "busy": "別のライブラリ操作が実行中です"
+      }
+    },
+    "toc": "設定の目次",
+    "perPage": "1 ページの件数",
+    "unitItems": "件",
+    "unitSeconds": "秒",
+    "languages": {
+      "zh-Hant": "繁体字中国語",
+      "zh-Hans": "簡体字中国語",
+      "ja": "日本語",
+      "en": "英語"
+    },
+    "book": {
+      "title": "キャラクター帳"
+    },
+    "lines": {
+      "title": "セリフページ",
+      "playGap": "連続再生の間隔（秒）",
+      "playGapHint": "1 つのセリフを再生し終えてから次を再生するまでの秒数",
+      "font": "セリフのフォント"
+    },
+    "checkUpdate": "アップデートを確認",
+    "autoUpdate": "自動アップデート",
+    "autoUpdateLabel": "新しいバージョンがあれば自動でダウンロードしてインストールする",
+    "updateUnavailable": "アップデート配信元がまだ設定されていないため、確認できません"
   },
   "common": {
     "notImplemented": "未実装",

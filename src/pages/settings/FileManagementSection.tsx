@@ -1,12 +1,20 @@
-import { open } from "@tauri-apps/plugin-dialog";
+import { downloadDir, join } from "@tauri-apps/api/path";
+import { open, save } from "@tauri-apps/plugin-dialog";
 import { forwardRef, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { unavailableMessageKey } from "../../components/LibraryUnavailableToast";
 import { Toast } from "../../components/feedback/Toast";
+import { Button } from "../../components/ui/Button";
+import { Modal } from "../../components/ui/Modal";
 import { formatBytes, formatCount } from "../../lib/format";
 import { errorKind } from "../../lib/ipc";
+import type { BackupPreview } from "../../lib/types";
+import { useBackupStore } from "../../stores/backupStore";
 import { useLibraryStore } from "../../stores/libraryStore";
+import { Icon } from "./icons";
+
+type ToastState = { tone: "positive" | "negative" | "informative"; text: string } | null;
 
 /** Toast copy for a rejected 瀏覽 choice, keyed by `CommandError.kind` from Rust. */
 function chooseErrorKey(kind: string): string {
@@ -28,9 +36,39 @@ function chooseErrorKey(kind: string): string {
   }
 }
 
-// Board: Settings.dc.html → 檔案管理 (data-sec="files"), plus its libraryNotFound and
-// networkDriveDenied toasts. The heading is focusable so the 找不到收藏庫 toast on the main page
-// can land the user here (DD3).
+/** A specific reason after 匯出失敗／匯入失敗, when the error names one. */
+function backupReasonKey(kind: string): string | null {
+  switch (kind) {
+    case "Backup.InsufficientSpace":
+      return "settings.files.reason.noSpace";
+    case "Backup.NotOurArchive":
+      return "settings.files.reason.notOurArchive";
+    case "Backup.SchemaTooNew":
+    case "Backup.FormatTooNew":
+      return "settings.files.reason.tooNew";
+    case "Backup.PathTraversal":
+      return "settings.files.reason.unsafe";
+    case "Library.Busy":
+      return "settings.files.reason.busy";
+    default:
+      return null;
+  }
+}
+
+function dirOf(path: string): string {
+  const cut = Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\"));
+  return cut > 0 ? path.slice(0, cut) : path;
+}
+
+function backupFileName(now = new Date()): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
+  return `DialogueCollector-${stamp}.zip`;
+}
+
+// Board: Settings.dc.html → 檔案管理, plus SettingsExporting, SettingsImportConfirm and the
+// export/import/library toasts. The heading is focusable so the 找不到收藏庫 toast on the main
+// page can land the user here (DD3).
 export const FileManagementSection = forwardRef<HTMLHeadingElement>(function FileManagementSection(
   _props,
   headingRef,
@@ -38,35 +76,85 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
   const { t, i18n } = useTranslation();
   const status = useLibraryStore((s) => s.status);
   const relocating = useLibraryStore((s) => s.relocating);
-  const progress = useLibraryStore((s) => s.progress);
+  const moveProgress = useLibraryStore((s) => s.progress);
   const chooseLocation = useLibraryStore((s) => s.chooseLocation);
-  const [error, setError] = useState<string | null>(null);
+  const exporting = useBackupStore((s) => s.exporting);
+  const exportProgress = useBackupStore((s) => s.exportProgress);
+  const importing = useBackupStore((s) => s.importing);
+  const { exportTo, cancelExport, inspect, importFrom } = useBackupStore.getState();
+
+  const [toast, setToast] = useState<ToastState>(null);
   const [unavailableDismissed, setUnavailableDismissed] = useState(false);
-  const dismissError = useCallback(() => setError(null), []);
+  const [pendingImport, setPendingImport] = useState<{ path: string; preview: BackupPreview } | null>(null);
+  const dismissToast = useCallback(() => setToast(null), []);
+  const busy = relocating || exporting || importing;
 
   const browse = async () => {
-    const picked = await open({
-      directory: true,
-      multiple: false,
-      defaultPath: status?.path ?? undefined,
-    });
+    const picked = await open({ directory: true, multiple: false, defaultPath: status?.path ?? undefined });
     if (typeof picked !== "string") return;
     try {
       await chooseLocation(picked);
       setUnavailableDismissed(true);
     } catch (e) {
-      setError(t(chooseErrorKey(errorKind(e))));
+      setToast({ tone: "negative", text: t(chooseErrorKey(errorKind(e))) });
+    }
+  };
+
+  const failure = (base: string, e: unknown) => {
+    const reason = backupReasonKey(errorKind(e));
+    return reason ? `${t(base)}：${t(reason)}` : t(base);
+  };
+
+  const startExport = async () => {
+    const dest = await save({
+      defaultPath: await join(await downloadDir(), backupFileName()),
+      filters: [{ name: "ZIP", extensions: ["zip"] }],
+    });
+    if (!dest) return;
+    try {
+      await exportTo(dest);
+      setToast({ tone: "positive", text: t("settings.files.exportSuccess", { dir: dirOf(dest) }) });
+    } catch (e) {
+      if (errorKind(e) === "Backup.Cancelled") return;
+      setToast({ tone: "negative", text: failure("settings.files.exportFailed", e) });
+    }
+  };
+
+  const pickImport = async () => {
+    const path = await open({ multiple: false, filters: [{ name: "ZIP", extensions: ["zip"] }] });
+    if (typeof path !== "string") return;
+    try {
+      setPendingImport({ path, preview: await inspect(path) });
+    } catch (e) {
+      setToast({ tone: "negative", text: failure("settings.files.importFailed", e) });
+    }
+  };
+
+  const confirmImport = async () => {
+    if (!pendingImport) return;
+    const { path } = pendingImport;
+    setPendingImport(null);
+    try {
+      await importFrom(path);
+      setUnavailableDismissed(true);
+      setToast({ tone: "positive", text: t("settings.files.importSuccess") });
+    } catch (e) {
+      setToast({ tone: "negative", text: failure("settings.files.importFailed", e) });
     }
   };
 
   const reason = status?.reason;
   const showUnavailable =
-    !unavailableDismissed && !relocating && status && !status.ready && reason && reason.code !== "moving";
-  const percent =
-    progress && progress.total > 0 ? Math.floor((progress.done / progress.total) * 100) : null;
+    !unavailableDismissed && !busy && status && !status.ready && reason && reason.code !== "moving";
+  const exportPct =
+    exportProgress && exportProgress.total > 0
+      ? Math.floor((exportProgress.done / exportProgress.total) * 100)
+      : 0;
+  const movePct =
+    moveProgress && moveProgress.total > 0 ? Math.floor((moveProgress.done / moveProgress.total) * 100) : null;
 
   return (
-    <section className="st-section" aria-labelledby="st-h-files">
+    <section className="st-section" data-sec="files" aria-labelledby="st-h-files">
       <h2 className="st-h2" id="st-h-files" ref={headingRef} tabIndex={-1}>
         {t("settings.files.title")}
       </h2>
@@ -75,7 +163,7 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
         <label className="st-label" htmlFor="st-audio-path">
           {t("settings.files.location")}
         </label>
-        <div className="st-control st-control--path">
+        <div className="st-inline">
           <input
             id="st-audio-path"
             className="ro-input"
@@ -84,59 +172,126 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
             value={status?.path ?? ""}
             placeholder={t("settings.files.noLocation")}
           />
-          <button type="button" className="btn btn--outline" onClick={() => void browse()} disabled={relocating}>
+          <Button variant="outline" onClick={() => void browse()} disabled={busy}>
             {t("settings.files.browse")}
-          </button>
+          </Button>
+        </div>
+      </div>
+
+      <div className="st-row">
+        <div className="st-label">
+          {t("settings.files.backup")}
+          <span className="st-sub">{t("settings.files.backupHint")}</span>
+        </div>
+        <div className="st-inline st-inline--split">
+          <Button variant="solid" fullWidth onClick={() => void startExport()} disabled={busy || !status?.ready}>
+            {t("settings.files.export")}
+          </Button>
+          <Button variant="outline" fullWidth onClick={() => void pickImport()} disabled={busy}>
+            {t("settings.files.import")}
+          </Button>
         </div>
       </div>
 
       <div className="st-row">
         <div className="st-label">{t("settings.files.storage")}</div>
-        <div className="st-control st-control--stats">
+        <div className="st-inline">
           <div className="stat-box">
-            <span className="stat-num">
-              {status?.stats ? formatCount(status.stats.clipCount, i18n.language) : "—"}
-            </span>
+            <span className="stat-num">{status?.stats ? formatCount(status.stats.clipCount, i18n.language) : "—"}</span>
             <span className="stat-cap">{t("settings.files.clipCount")}</span>
           </div>
           <div className="stat-box">
-            <span className="stat-num">
-              {status?.stats ? formatBytes(status.stats.bytes, i18n.language) : "—"}
-            </span>
+            <span className="stat-num">{status?.stats ? formatBytes(status.stats.bytes, i18n.language) : "—"}</span>
             <span className="stat-cap">{t("settings.files.diskUsage")}</span>
           </div>
         </div>
       </div>
 
-      {relocating && (
-        <div className="modal-layer" role="dialog" aria-modal="true" aria-labelledby="st-moving-title">
-          <div className="modal-backdrop" aria-hidden="true" />
-          <div className="modal-card" role="status" aria-live="polite">
-            <div className="modal-card__title" id="st-moving-title">
-              {t("settings.files.moving")}
-            </div>
-            <div className="modal-card__body">{t("settings.files.movingHint")}</div>
-            {percent !== null && (
-              <div
-                className="progress"
-                role="progressbar"
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={percent}
-              >
-                <div className="progress__bar" style={{ width: `${percent}%` }} />
-              </div>
-            )}
+      {exporting && (
+        <Modal title={t("settings.files.export")}>
+          <ProgressBody
+            icon="sync"
+            title={t("settings.files.exporting")}
+            hint={t("settings.files.exportingHint")}
+            pct={exportPct}
+            step={
+              exportProgress?.finishing
+                ? t("settings.files.exportFinishing")
+                : t("settings.files.exportCopying", {
+                    done: formatCount(exportProgress?.done ?? 0, i18n.language),
+                    total: formatCount(exportProgress?.total ?? 0, i18n.language),
+                  })
+            }
+            label={t("settings.files.exportProgress")}
+          />
+          <div className="modal-actions">
+            <Button variant="neutral" onClick={() => void cancelExport()} data-autofocus>
+              {t("settings.files.cancelExport")}
+            </Button>
           </div>
-        </div>
+        </Modal>
       )}
 
-      {error && (
-        <Toast tone="negative" onDismiss={dismissError} autoDismissMs={4000}>
-          {error}
+      {importing && (
+        <Modal title={t("settings.files.import")}>
+          <ProgressBody icon="sync" title={t("settings.files.importing")} hint={t("settings.files.importingHint")} />
+        </Modal>
+      )}
+
+      {relocating && (
+        <Modal title={t("settings.files.location")}>
+          <ProgressBody
+            icon="sync"
+            title={t("settings.files.moving")}
+            hint={t("settings.files.movingHint")}
+            pct={movePct ?? undefined}
+            label={t("settings.files.moving")}
+          />
+        </Modal>
+      )}
+
+      {pendingImport && (
+        <Modal title={t("settings.files.confirm")} onClose={() => setPendingImport(null)}>
+          <div className="confirm">
+            <div className="confirm__icon" aria-hidden="true">
+              <Icon name="restore" size={32} />
+            </div>
+            <div className="confirm__title">{t("settings.files.importConfirmTitle")}</div>
+            <div className="confirm__body">
+              {t("settings.files.importConfirmBefore")}
+              <strong>{t("settings.files.importConfirmStrong")}</strong>
+              {t("settings.files.importConfirmAfter")}
+            </div>
+            {/* D10: name what will be lost before the irreversible replace. */}
+            <div className="confirm__counts">
+              {t("settings.files.importConfirmCounts", {
+                characters: formatCount(pendingImport.preview.currentCharacters, i18n.language),
+                clips: formatCount(pendingImport.preview.currentClips, i18n.language),
+                size: formatBytes(pendingImport.preview.currentBytes, i18n.language),
+              })}
+            </div>
+            <div className="confirm__tip">
+              <Icon name="lightbulb" size={18} />
+              <span>{t("settings.files.importConfirmTip")}</span>
+            </div>
+          </div>
+          <div className="modal-actions">
+            <Button variant="neutral" onClick={() => setPendingImport(null)} data-autofocus>
+              {t("settings.files.cancel")}
+            </Button>
+            <Button variant="danger" onClick={() => void confirmImport()}>
+              {t("settings.files.confirmImport")}
+            </Button>
+          </div>
+        </Modal>
+      )}
+
+      {toast && (
+        <Toast tone={toast.tone} onDismiss={dismissToast} autoDismissMs={4000}>
+          {toast.text}
         </Toast>
       )}
-      {!error && showUnavailable && (
+      {!toast && showUnavailable && (
         <Toast tone="negative" onDismiss={() => setUnavailableDismissed(true)}>
           {reason.code === "notFound" || reason.code === "noPointer" || reason.code === "notALibrary"
             ? t("library.choose.libraryNotFound")
@@ -149,3 +304,49 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
     </section>
   );
 });
+
+function ProgressBody({
+  icon,
+  title,
+  hint,
+  pct,
+  step,
+  label,
+}: {
+  icon: "sync";
+  title: string;
+  hint: string;
+  pct?: number;
+  step?: string;
+  label?: string;
+}) {
+  return (
+    <div className="progress-body" role="status" aria-live="polite">
+      <div className="progress-body__icon" aria-hidden="true">
+        <span className="spin">
+          <Icon name={icon} size={36} />
+        </span>
+      </div>
+      <div className="progress-body__title">{title}</div>
+      <div className="progress-body__hint">{hint}</div>
+      {pct !== undefined && (
+        <div className="progress-body__bar">
+          <div
+            className="progress"
+            role="progressbar"
+            aria-label={label}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={pct}
+          >
+            <div className="progress__fill" style={{ width: `${pct}%` }} />
+          </div>
+          <div className="progress-body__meta">
+            <span>{step}</span>
+            <span className="progress-body__pct">{pct}%</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -48,8 +48,63 @@
       "clipCount": "Audio clips",
       "diskUsage": "Disk space used",
       "moving": "Moving…",
-      "movingHint": "Moving your library. Please don't close the app."
-    }
+      "movingHint": "Moving your library. Please don't close the app.",
+      "backup": "Export and import",
+      "backupHint": "Back up or restore every character and line",
+      "export": "Export",
+      "import": "Import",
+      "exporting": "Exporting…",
+      "exportingHint": "Packing your whole collection and settings. Please don't close the app.",
+      "exportCopying": "Copying audio {{done}} / {{total}}",
+      "exportFinishing": "Writing settings and compressing…",
+      "exportProgress": "Export progress",
+      "cancelExport": "Cancel export",
+      "exportSuccess": "Exported to {{dir}}",
+      "exportFailed": "Export failed",
+      "importing": "Importing…",
+      "importingHint": "Restoring the backup. Please don't close the app.",
+      "importSuccess": "Import complete",
+      "importFailed": "Import failed",
+      "confirm": "Confirm",
+      "importConfirmTitle": "Import this backup?",
+      "importConfirmBefore": "Importing will ",
+      "importConfirmStrong": "erase your whole current collection and settings",
+      "importConfirmAfter": ", including characters, lines, audio and every setting, and replace them with the backup. This can't be undone.",
+      "importConfirmCounts": "Current collection: {{characters}} characters, {{clips}} lines, {{size}} in total",
+      "importConfirmTip": "Export your current collection and settings first so nothing is lost.",
+      "cancel": "Cancel",
+      "confirmImport": "Import",
+      "reason": {
+        "noSpace": "not enough space at the destination",
+        "notOurArchive": "this is not a collection backup",
+        "tooNew": "the backup was made by a newer version of the app",
+        "unsafe": "the backup contains unsafe paths",
+        "busy": "another library operation is running"
+      }
+    },
+    "toc": "Settings sections",
+    "perPage": "Items per page",
+    "unitItems": "items",
+    "unitSeconds": "sec",
+    "languages": {
+      "zh-Hant": "Traditional Chinese",
+      "zh-Hans": "Simplified Chinese",
+      "ja": "Japanese",
+      "en": "English"
+    },
+    "book": {
+      "title": "Character book"
+    },
+    "lines": {
+      "title": "Lines page",
+      "playGap": "Gap between lines in Play all",
+      "playGapHint": "Seconds to wait after one line before playing the next",
+      "font": "Font for lines"
+    },
+    "checkUpdate": "Check for updates",
+    "autoUpdate": "Automatic updates",
+    "autoUpdateLabel": "Download and install new versions automatically",
+    "updateUnavailable": "No update source is configured yet, so updates can't be checked."
   },
   "common": {
     "notImplemented": "Not implemented yet",

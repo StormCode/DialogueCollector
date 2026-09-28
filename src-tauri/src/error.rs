@@ -53,4 +53,16 @@ impl From<crate::store::StoreError> for CommandError {
     }
 }
 
+impl From<crate::library::backup::BackupError> for CommandError {
+    fn from(e: crate::library::backup::BackupError) -> Self {
+        use crate::library::backup::BackupError;
+        match e {
+            // Surface the underlying library/store kind so the renderer handles them uniformly.
+            BackupError::Library(inner) => inner.into(),
+            BackupError::Store(inner) => inner.into(),
+            other => Self::new(format!("Backup.{}", other.kind()), other),
+        }
+    }
+}
+
 pub type CommandResult<T> = Result<T, CommandError>;

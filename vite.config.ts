@@ -34,5 +34,7 @@ export default defineConfig(() => ({
   test: {
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
+    // themes.test.ts reads these as ?raw; vitest blanks CSS it doesn't process.
+    css: { include: [/themes\.css/, /tokens\.css/] },
   },
 }));
