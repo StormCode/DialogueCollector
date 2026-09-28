@@ -282,7 +282,7 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
                 {!pickQuery.trim() && (
                   <button
                     type="button"
-                    className={`sel-pick sel-pick--wide${s.assigned[picker.index] === undefined ? " is-current" : ""}`}
+                    className={`sel-pick${s.assigned[picker.index] === undefined ? " is-current" : ""}`}
                     aria-pressed={s.assigned[picker.index] === undefined}
                     onClick={() => pick(null)}
                   >
