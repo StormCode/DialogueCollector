@@ -122,3 +122,16 @@ export interface ImportOutcome {
   status: LibraryStatus;
   settings: Settings;
 }
+
+/** `update-progress` payload (src-tauri/src/updater.rs). */
+export interface UpdateProgress {
+  version: string;
+  downloaded: number;
+  total: number | null;
+}
+
+/** `check_for_update` resolves only when nothing needs installing. */
+export interface UpdateCheck {
+  status: "upToDate";
+  version: string;
+}

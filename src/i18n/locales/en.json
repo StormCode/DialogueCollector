@@ -104,7 +104,14 @@
     "checkUpdate": "Check for updates",
     "autoUpdate": "Automatic updates",
     "autoUpdateLabel": "Download and install new versions automatically",
-    "updateUnavailable": "No update source is configured yet, so updates can't be checked."
+    "update": {
+      "latest": "You're up to date!",
+      "updating": "Updating...",
+      "unreachable": "Can't reach the update server. Try again later.",
+      "badSignature": "The update's signature didn't verify, so it wasn't installed.",
+      "busy": "The library is being moved, exported or imported. Check again when it's done.",
+      "failed": "The update failed. Try again later."
+    }
   },
   "common": {
     "notImplemented": "Not implemented yet",

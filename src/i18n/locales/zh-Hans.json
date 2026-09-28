@@ -104,7 +104,14 @@
     "checkUpdate": "检查更新",
     "autoUpdate": "自动更新",
     "autoUpdateLabel": "有新版本时自动下载并安装",
-    "updateUnavailable": "尚未设置更新来源，暂时无法检查更新"
+    "update": {
+      "latest": "已是最新版本!",
+      "updating": "更新中...",
+      "unreachable": "无法连接到更新服务器，请稍后再试",
+      "badSignature": "更新文件的签名验证失败，已停止安装",
+      "busy": "正在移动、导出或导入收藏库，完成后再检查更新",
+      "failed": "更新失败，请稍后再试"
+    }
   },
   "common": {
     "notImplemented": "尚未实现",

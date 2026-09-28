@@ -7,12 +7,14 @@
 //! - `library` — the self-contained library folder, its pointer, settings files, export/import
 //! - `import`  — the cue → clip pipeline, partial failure, retry and cancel
 //!
-//! The updater is configuration (`tauri.conf.json` + a minisign key), not a module.
+//! The updater is configuration (`tauri.conf.json` + a minisign key); `updater` only holds the
+//! glue deciding when to check and when to install.
 
 mod commands;
 mod error;
 mod library;
 mod smoke;
+mod updater;
 
 // Skeleton modules: their types exist ahead of their callers. Drop each `allow` once the
 // module is wired into a command.
@@ -56,6 +58,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
             use tauri::Manager;
 
@@ -77,6 +80,8 @@ pub fn run() {
             if let Some(ready) = library.library() {
                 commands::grant_asset_scope(app.handle(), ready.root());
             }
+            let auto_update = loaded.settings.auto_update;
+            app.manage(updater::UpdaterState::default());
             app.manage(AppState {
                 settings_files: files,
                 settings: Mutex::new(loaded.settings),
@@ -85,6 +90,9 @@ pub fn run() {
                 library_busy: AtomicBool::new(false),
                 export_cancel: std::sync::Arc::new(AtomicBool::new(false)),
             });
+            if auto_update && !app.state::<smoke::SmokeMode>().enabled {
+                tauri::async_runtime::spawn(updater::stage_in_background(app.handle().clone()));
+            }
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -97,10 +105,16 @@ pub fn run() {
             commands::cancel_export,
             commands::inspect_backup,
             commands::import_backup,
+            commands::check_for_update,
             smoke::smoke_mode,
             smoke::run_smoke,
             smoke::smoke_finish,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|app, event| {
+            if let tauri::RunEvent::Exit = event {
+                updater::install_staged_on_exit(app);
+            }
+        });
 }

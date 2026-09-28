@@ -323,3 +323,10 @@ pub async fn import_backup(
         settings,
     })
 }
+
+/// 檢查更新 (T22). Resolves only when already up to date; otherwise the app restarts into the
+/// new version, reporting download progress on `update-progress` first.
+#[tauri::command]
+pub async fn check_for_update(app: AppHandle) -> CommandResult<crate::updater::CheckOutcome> {
+    Ok(crate::updater::check_and_install(&app).await?)
+}

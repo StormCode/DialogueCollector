@@ -53,5 +53,17 @@
         "template": "windows/installer.nsi"
       }
     }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEM3MTI1RDA3OUFBOTVFNzcKUldSM1hxbWFCMTBTeDF3SVdIT0VjN2doaDNQVUpod204cHRrdkliUVlrWlplVHZXQlJVR25taGsK",
+      "endpoints": [
+        "https://github.com/StormCode/DialogueCollector/releases/latest/download/latest.json"
+      ],
+      "requireSignedVersion": true,
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }

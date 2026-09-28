@@ -65,4 +65,10 @@ impl From<crate::library::backup::BackupError> for CommandError {
     }
 }
 
+impl From<crate::updater::UpdateError> for CommandError {
+    fn from(e: crate::updater::UpdateError) -> Self {
+        Self::new(format!("Update.{}", e.kind()), e)
+    }
+}
+
 pub type CommandResult<T> = Result<T, CommandError>;
