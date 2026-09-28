@@ -8,7 +8,7 @@ import { Modal } from "../../components/ui/Modal";
 import { useRevealScrollbar } from "../../components/ui/useRevealScrollbar";
 import { inTauri } from "../../lib/ipc";
 import type { MissingFile } from "../../lib/types";
-import { Icon } from "./icons";
+import { MaterialIcon } from "../../components/icons/Icon";
 
 // Avatar fallback colours: one data-vis ramp per character, stable across sessions.
 const RAMPS = ["indigo", "jade", "pink", "orange", "blue", "violet", "red", "green"] as const;
@@ -40,7 +40,7 @@ export function MissingFilesModal({ files, onClose }: { files: MissingFile[]; on
     <Modal title={t("settings.files.missing.title")} size="large" onClose={onClose}>
       <div className="mf-body">
         <div className="mf-banner">
-          <Icon name="error" size={18} />
+          <MaterialIcon name="error" size={18} />
           <span>{t("settings.files.missing.banner", { count: files.length })}</span>
         </div>
         <div className="mf-table" role="table" aria-label={t("settings.files.missing.title")}>
@@ -66,7 +66,7 @@ export function MissingFilesModal({ files, onClose }: { files: MissingFile[]; on
                     aria-label={t("settings.files.missing.viewLabel", { name: file.characterName })}
                   >
                     {t("settings.files.missing.view")}
-                    <Icon name="chevronRight" size={18} />
+                    <MaterialIcon name="chevron_right" size={18} />
                   </Link>
                 </span>
               </div>

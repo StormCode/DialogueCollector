@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
+import { BentoIcon, type BentoIconName } from "../icons/Icon";
 import "./Toast.css";
 
 interface ToastProps {
@@ -13,7 +14,14 @@ interface ToastProps {
   autoDismissMs?: number;
 }
 
-// Boards: Main.dc.html (.lib-toast) and the Settings toasts.
+// Bento Toast's leading glyph per tone.
+const GLYPH: Record<ToastProps["tone"], BentoIconName> = {
+  negative: "NegativeSolid",
+  positive: "PositiveSolid",
+  informative: "InfoSolid",
+};
+
+// Boards: Main.dc.html (.lib-toast) and the Settings toasts (Bento Toast).
 export function Toast({ tone, children, onDismiss, action, autoDismissMs }: ToastProps) {
   const { t } = useTranslation();
 
@@ -25,12 +33,13 @@ export function Toast({ tone, children, onDismiss, action, autoDismissMs }: Toas
 
   return (
     <div className={`toast toast--${tone}`} role={tone === "negative" ? "alert" : "status"}>
+      <span className="toast__icon">
+        <BentoIcon name={GLYPH[tone]} size={16} />
+      </span>
       <span className="toast__text">{children}</span>
       {action}
       <button type="button" className="toast__close" aria-label={t("common.close")} onClick={onDismiss}>
-        <svg viewBox="0 -960 960 960" width="16" height="16" aria-hidden="true" fill="currentColor">
-          <path d="m256-213.85-42.15-42.15L437.85-480 213.85-704l42.15-42.15L480-522.15l224-224L746.15-704l-224 224 224 224L704-213.85l-224-224-224 224Z" />
-        </svg>
+        <BentoIcon name="XWeightBold" size={16} />
       </button>
     </div>
   );

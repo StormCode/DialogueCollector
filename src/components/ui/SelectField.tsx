@@ -1,5 +1,6 @@
 import type { SelectHTMLAttributes } from "react";
 
+import { BentoIcon } from "../icons/Icon";
 import "./ui.css";
 
 export interface Option {
@@ -24,9 +25,7 @@ export function SelectField({ options, value, onChange, className = "", ...rest 
           </option>
         ))}
       </select>
-      <svg viewBox="0 -960 960 960" width="18" height="18" aria-hidden="true" fill="currentColor">
-        <path d="M480-362.46 240-602.46 282.46-645 480-447.46 677.54-645 720-602.46l-240 240Z" />
-      </svg>
+      <BentoIcon name="ChevronDown" className="ui-select__chevron" />
     </span>
   );
 }

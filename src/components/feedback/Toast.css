@@ -40,6 +40,24 @@
   color: var(--bento-content-informative);
 }
 
+/* Bento Toast's leading glyph, in the tone's icon colour. */
+.toast__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.toast--negative .toast__icon {
+  color: var(--bento-icon-negative);
+}
+
+.toast--positive .toast__icon {
+  color: var(--bento-icon-positive);
+}
+
+.toast--informative .toast__icon {
+  color: var(--bento-icon-informative);
+}
+
 .toast__text {
   flex: 1 1 auto;
   min-width: 0;

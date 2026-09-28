@@ -160,9 +160,9 @@
 .ui-checkbox {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
-  font: var(--bento-weight-regular) 14px/20px var(--dc-ui-font);
+  font: var(--bento-weight-regular) 14px/18px var(--dc-ui-font);
   color: var(--bento-content-primary);
 }
 
@@ -173,24 +173,31 @@
   height: 1px;
 }
 
+/* Bento Checkbox: 24px box, radius 8, a 1px inset line until checked. */
 .ui-checkbox__box {
   box-sizing: border-box;
-  width: 20px;
-  height: 20px;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid var(--bento-border-input-enabled);
-  border-radius: 6px;
+  border-radius: var(--bento-radius-8);
   background: var(--bento-bg-primary);
+  box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-border-input-enabled);
   color: transparent;
+  transition: background-color 120ms ease;
+}
+
+.ui-checkbox:hover .ui-checkbox__box {
+  box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-border-input-hover);
 }
 
 /* As Bento's Checkbox: the theme maps --bento-bg-interactive to the accent, and 夜光黑 to a
    mid grey so the white tick stays visible on its light accent. */
 .ui-checkbox input:checked + .ui-checkbox__box {
-  border-color: var(--bento-bg-interactive);
   background: var(--bento-bg-interactive);
+  box-shadow: none;
   color: var(--bento-white);
 }
 
