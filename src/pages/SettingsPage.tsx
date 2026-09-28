@@ -69,14 +69,15 @@ export function SettingsPage() {
 
   return (
     <div className="settings-page">
-      <h1 className="settings-page__title">{t("settings.title")}</h1>
+      <h1 className="settings-page__title st-anim-title">{t("settings.title")}</h1>
       <div className="settings-page__body">
         <nav className="settings-toc" aria-label={t("settings.toc")}>
-          {SECTIONS.map((s) => (
+          {SECTIONS.map((s, i) => (
             <button
               key={s.id}
               type="button"
-              className={`toc-item${active === s.id ? " is-active" : ""}`}
+              className={`toc-item st-anim-toc${active === s.id ? " is-active" : ""}`}
+              style={{ animationDelay: `${450 + i * 90}ms` }}
               aria-current={active === s.id ? "true" : undefined}
               onClick={() => goTo(s.id)}
             >
