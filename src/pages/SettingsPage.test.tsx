@@ -157,7 +157,9 @@ describe("SettingsPage", () => {
     expect(modal).toHaveTextContent("共 2 個台詞的音檔已不在收藏庫中");
     expect(within(modal).getAllByRole("row")).toHaveLength(3);
     expect(modal).toHaveTextContent("這一切都是命運石之門的選擇。");
-    fireEvent.click(within(modal).getByRole("link", { name: "查看芙莉蓮的台詞" }));
+    const view = within(modal).getByRole("link", { name: "查看芙莉蓮的台詞" });
+    expect(view).toHaveAttribute("href", "/characters/2?missing=1");
+    fireEvent.click(view);
     expect(await screen.findByText("lines page")).toBeInTheDocument();
   });
 });
