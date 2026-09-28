@@ -154,26 +154,27 @@ pub async fn stage_in_background<R: Runtime>(app: AppHandle<R>) {
         return;
     };
     log::info!("checking for updates in the background");
-    let result = async {
-        let Some(update) = check(&app).await? else {
-            return Ok(None);
-        };
-        log::info!(
-            "update {} found, downloading in the background",
-            update.version
-        );
-        let bytes = download(&app, &update).await?;
-        Ok::<_, UpdateError>(Some((update, bytes)))
-    }
-    .await;
-    match result {
-        Ok(Some((update, bytes))) => {
+    let update = match check(&app).await {
+        Ok(Some(update)) => update,
+        Ok(None) => return log::info!("no update available"),
+        // Offline or rate-limited: expected, so not a warning.
+        Err(UpdateError::Unreachable(e)) => return log::info!("update check skipped: {e}"),
+        Err(e) => return log::warn!("update check failed: {e}"),
+    };
+    log::info!(
+        "update {} found, downloading in the background",
+        update.version
+    );
+    match download(&app, &update).await {
+        Ok(bytes) => {
             log::info!("update {} downloaded; installing on exit", update.version);
             *state.staged.lock().unwrap() = Some((update.restart_after_install(false), bytes));
         }
-        Ok(None) => log::info!("no update available"),
-        Err(UpdateError::Unreachable(e)) => log::info!("update check skipped: {e}"),
-        Err(e) => log::warn!("background update failed: {e}"),
+        // A dropped connection mid-download lands here too; the next launch starts over.
+        Err(e) => log::warn!(
+            "update {} download failed, retrying on next launch: {e}",
+            update.version
+        ),
     }
 }
 
