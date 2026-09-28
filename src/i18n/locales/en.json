@@ -19,7 +19,21 @@
     "mediaFilter": "Video and audio"
   },
   "scriptBook": {
-    "title": "Script Book"
+    "title": "Script book",
+    "search": "Character or voice/cast",
+    "filter": "Filter",
+    "category": "Category",
+    "source": "Anime / movie / TV title",
+    "removeFilter": "Remove {{name}}",
+    "add": "Add character",
+    "empty": "Nothing here yet",
+    "noResult": "No matching character",
+    "edit": "Edit {{name}}",
+    "deleteTitle": "Delete this character?",
+    "deleteBody": "Deleting {{name}} removes all of their lines too, and can’t be undone.",
+    "deleteConfirm": "Delete",
+    "fileRemovalFailed": "The character is deleted, but some files couldn’t be removed; they’ll be retried next time the library opens.",
+    "deleteFailed": "Couldn’t delete the character. Try again later."
   },
   "lines": {
     "title": "Lines"
@@ -223,7 +237,9 @@
   "common": {
     "notImplemented": "Not implemented yet",
     "close": "Close",
-    "clearSearch": "Clear search"
+    "clearSearch": "Clear search",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
   },
   "diagnostics": {
     "title": "Diagnostics",
@@ -293,6 +309,20 @@
       "anime": "Anime",
       "movie": "Movie",
       "tv": "TV series"
+    },
+    "edit": {
+      "title": "Edit character",
+      "submit": "Save",
+      "delete": "Delete character",
+      "pngHint": "A png with a transparent background works best"
     }
+  },
+  "pagination": {
+    "label": "Pages",
+    "first": "First page",
+    "prev": "Previous page",
+    "next": "Next page",
+    "last": "Last page",
+    "page": "Page {{n}}"
   }
 }

@@ -1,0 +1,374 @@
+/* Board: ScriptBook.dc.html. `--bento-dv-indigo-N` there is `--dc-accent-N` here. */
+.sb-page {
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 56px 104px;
+}
+
+.sb-title {
+  flex-shrink: 0;
+  margin: 0;
+  font: var(--bento-weight-semibold) 32px/32px var(--dc-ui-font);
+  color: var(--bento-content-primary);
+}
+
+.sb-toolbar {
+  position: relative;
+  z-index: 30;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sb-toolbar__gap {
+  flex: 1 1 auto;
+}
+
+/* The filter button sits inside the search field's right end; the field keeps its clear
+   button clear of it. */
+.sb-search {
+  width: 400px;
+}
+
+.sb-search .ui-search {
+  padding-right: 70px;
+}
+
+.sb-filter {
+  position: relative;
+  z-index: 30;
+  flex-shrink: 0;
+  margin-left: -12px;
+  transform: translateX(-62px);
+}
+
+.sb-filter__btn {
+  appearance: none;
+  box-sizing: border-box;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--bento-radius-16);
+  background: var(--bento-bg-primary);
+  box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-border-input-enabled);
+  color: var(--bento-content-secondary);
+  cursor: pointer;
+}
+
+.sb-filter__btn:hover {
+  background: var(--bento-bg-secondary);
+  box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-border-input-hover);
+}
+
+.sb-filter__btn.is-active {
+  background: var(--dc-accent-5);
+  box-shadow: inset 0 0 0 var(--bento-border-width-strong) var(--bento-border-input-focus);
+  color: var(--dc-accent-40);
+}
+
+.sb-dismiss {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+}
+
+.sb-filter__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 999;
+  box-sizing: border-box;
+  width: 560px;
+  max-height: 50vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  border: 1px solid var(--bento-neutral-10);
+  border-radius: var(--bento-radius-16);
+  background: var(--bento-bg-primary);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+}
+
+.sb-filter__col {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sb-filter__col + .sb-filter__col {
+  border-left: 1px solid var(--bento-neutral-10);
+}
+
+.sb-filter__title {
+  flex-shrink: 0;
+  padding: 14px 16px 6px;
+  font: var(--bento-weight-semibold) 13px/16px var(--dc-ui-font);
+  color: var(--bento-content-secondary);
+}
+
+.sb-filter__tags {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 16px 10px;
+}
+
+.sb-filter__tags:empty {
+  padding-bottom: 0;
+}
+
+.sb-filter__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 4px 16px 14px;
+}
+
+.sb-filter__item {
+  --bento-bg-interactive: var(--dc-accent-40);
+  --bento-border-input-enabled: var(--dc-accent-20);
+  --bento-border-input-hover: var(--dc-accent-40);
+  box-sizing: border-box;
+  width: 100%;
+  padding: 6px 4px;
+  border-radius: var(--bento-radius-8);
+}
+
+.sb-filter__item:hover {
+  background: var(--bento-bg-secondary);
+}
+
+.sb-filter__item .ui-checkbox {
+  width: 100%;
+}
+
+.sb-add {
+  appearance: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px 14px 20px;
+  border: none;
+  border-radius: var(--bento-radius-16);
+  background: var(--dc-accent-40);
+  color: var(--bento-action-solid-primary-fg);
+  font: var(--bento-weight-medium) 14px/18px var(--dc-ui-font);
+  cursor: pointer;
+}
+
+.sb-add:hover {
+  background: var(--dc-accent-50);
+}
+
+/* ---- empty and no-result (design/README.md: empty.png) ---- */
+.sb-empty {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.sb-empty img {
+  width: 360px;
+  height: 360px;
+  margin: -40px 0 -48px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+.sb-empty img.is-noresult {
+  margin-bottom: -44px;
+}
+
+.sb-empty p {
+  margin: 0;
+  font: var(--bento-weight-medium) 18px/26px var(--dc-ui-font);
+  color: var(--bento-content-secondary);
+}
+
+/* ---- the grid ---- */
+.sb-scroll {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: calc(4px - var(--st-scrollbar));
+}
+
+.sb-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 20px;
+}
+
+@keyframes sb-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(48px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sb-card-wrap {
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: var(--bento-radius-16);
+  animation: sb-fade-up 1100ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.sb-card {
+  appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 1px solid var(--bento-neutral-10);
+  border-radius: var(--bento-radius-16);
+  background: var(--bento-bg-primary);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.sb-card:hover {
+  background: var(--bento-bg-secondary);
+  box-shadow: var(--bento-elevation-sm);
+}
+
+.sb-card__avatar {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--bento-radius-12);
+  background: var(--bento-bg-secondary);
+  color: var(--bento-icon-secondary);
+}
+
+.sb-card__avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sb-card__body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sb-card__name,
+.sb-card__source,
+.sb-card__cv {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sb-card__name {
+  font: var(--bento-weight-semibold) 18px/24px var(--dc-ui-font);
+  color: var(--bento-content-primary);
+}
+
+.sb-card__source {
+  font: var(--bento-weight-medium) 14px/20px var(--dc-ui-font);
+  color: var(--bento-content-secondary);
+}
+
+.sb-card__cv {
+  font: var(--bento-weight-regular) 13px/18px var(--dc-ui-font);
+  color: var(--bento-neutral-60);
+}
+
+/* Hovering the card reveals the corner arc and the edit button after 1s (and hides them at
+   once on leave). */
+.sb-card__corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--dc-accent-10);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(40%, -40%);
+  transition: opacity 0s linear 0s;
+}
+
+.sb-card-wrap:hover .sb-card__corner {
+  opacity: 0.5;
+  transition: opacity 0s linear 1s;
+}
+
+.sb-card__edit {
+  appearance: none;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  box-sizing: border-box;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dc-accent-30);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0s linear 0s;
+}
+
+.sb-card-wrap:hover .sb-card__edit,
+.sb-card__edit:focus-visible {
+  opacity: 1;
+  transition: opacity 0s linear 1s;
+}
+
+.sb-card__edit:focus-visible {
+  transition: none;
+}
+
+.sb-card__edit:hover {
+  color: var(--dc-accent-50);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-card-wrap {
+    animation: none;
+  }
+}

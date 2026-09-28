@@ -7,6 +7,7 @@ import type {
   AppInfo,
   Assignment,
   Character,
+  CharacterEdit,
   Cue,
   JobOutcome,
   NewCharacter,
@@ -35,6 +36,10 @@ export const ipc = {
   verifyLibrary: () => invoke<VerifyReport>("verify_library"),
   parseSubtitle: (path: string) => invoke<Cue[]>("parse_subtitle", { path }),
   listCharacters: () => invoke<Character[]>("list_characters"),
+  // `portrait` is serde's adjacently tagged PortraitChange: { kind, path? }.
+  updateCharacter: (id: number, character: CharacterEdit) =>
+    invoke<Character>("update_character", { id, character }),
+  deleteCharacter: (id: number) => invoke<void>("delete_character", { id }),
   allowPreview: (path: string) => invoke<void>("allow_preview", { path }),
   createCharacter: (character: NewCharacter) => invoke<Character>("create_character", { character }),
   startSubtitleImport: (subtitle: string, source: string, assignments: Assignment[]) =>

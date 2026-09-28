@@ -3,7 +3,9 @@
 
      --dc-accent-1    selected list rows
      --dc-accent-5    soft fills (active nav item, stat and TOC highlights)
+     --dc-accent-10   chips, soft decorations
      --dc-accent-20   hover rings, faint art
+     --dc-accent-30   quiet icon buttons
      --dc-accent-40   swatches, focus rings, progress fills
      --dc-accent-50   primary buttons and interactive text
      --dc-accent-60   hover, and text on --dc-accent-5
@@ -21,7 +23,9 @@
 [data-theme="indigo"] {
   --dc-ramp-1: var(--bento-dv-indigo-1);
   --dc-ramp-5: var(--bento-dv-indigo-5);
+  --dc-ramp-10: var(--bento-dv-indigo-10);
   --dc-ramp-20: var(--bento-dv-indigo-20);
+  --dc-ramp-30: var(--bento-dv-indigo-30);
   --dc-ramp-40: var(--bento-dv-indigo-40);
   --dc-ramp-50: var(--bento-dv-indigo-50);
   --dc-ramp-60: var(--bento-dv-indigo-60);
@@ -30,7 +34,9 @@
 [data-theme="lightBlue"] {
   --dc-ramp-1: var(--bento-dv-blue-1);
   --dc-ramp-5: var(--bento-dv-blue-5);
+  --dc-ramp-10: var(--bento-dv-blue-10);
   --dc-ramp-20: var(--bento-dv-blue-20);
+  --dc-ramp-30: var(--bento-dv-blue-30);
   --dc-ramp-40: var(--bento-dv-blue-40);
   --dc-ramp-50: var(--bento-dv-blue-50);
   --dc-ramp-60: var(--bento-dv-blue-60);
@@ -39,7 +45,9 @@
 [data-theme="ruby"] {
   --dc-ramp-1: var(--bento-dv-red-1);
   --dc-ramp-5: var(--bento-dv-red-5);
+  --dc-ramp-10: var(--bento-dv-red-10);
   --dc-ramp-20: var(--bento-dv-red-20);
+  --dc-ramp-30: var(--bento-dv-red-30);
   --dc-ramp-40: var(--bento-dv-red-40);
   --dc-ramp-50: var(--bento-dv-red-50);
   --dc-ramp-60: var(--bento-dv-red-60);
@@ -48,7 +56,9 @@
 [data-theme="emerald"] {
   --dc-ramp-1: var(--bento-dv-jade-1);
   --dc-ramp-5: var(--bento-dv-jade-5);
+  --dc-ramp-10: var(--bento-dv-jade-10);
   --dc-ramp-20: var(--bento-dv-jade-20);
+  --dc-ramp-30: var(--bento-dv-jade-30);
   --dc-ramp-40: var(--bento-dv-jade-40);
   --dc-ramp-50: var(--bento-dv-jade-50);
   --dc-ramp-60: var(--bento-dv-jade-60);
@@ -57,7 +67,9 @@
 [data-theme="sunset"] {
   --dc-ramp-1: var(--bento-dv-orange-1);
   --dc-ramp-5: var(--bento-dv-orange-5);
+  --dc-ramp-10: var(--bento-dv-orange-10);
   --dc-ramp-20: var(--bento-dv-orange-20);
+  --dc-ramp-30: var(--bento-dv-orange-30);
   --dc-ramp-40: var(--bento-dv-orange-40);
   --dc-ramp-50: var(--bento-dv-orange-50);
   --dc-ramp-60: var(--bento-dv-orange-60);
@@ -66,7 +78,9 @@
 [data-theme="lipstick"] {
   --dc-ramp-1: var(--bento-dv-pink-1);
   --dc-ramp-5: var(--bento-dv-pink-5);
+  --dc-ramp-10: var(--bento-dv-pink-10);
   --dc-ramp-20: var(--bento-dv-pink-20);
+  --dc-ramp-30: var(--bento-dv-pink-30);
   --dc-ramp-40: var(--bento-dv-pink-40);
   --dc-ramp-50: var(--bento-dv-pink-50);
   --dc-ramp-60: var(--bento-dv-pink-60);
@@ -80,7 +94,9 @@
 
   --dc-ramp-1: #242c37;
   --dc-ramp-5: #2a3340;
+  --dc-ramp-10: #2e3743;
   --dc-ramp-20: #566273;
+  --dc-ramp-30: #9aa8bc;
   --dc-ramp-40: #cbd4e1;
   --dc-ramp-50: #dee4ed;
   --dc-ramp-60: #eef1f6;
@@ -149,7 +165,9 @@
 :root {
   --dc-accent-1: var(--dc-ramp-1);
   --dc-accent-5: var(--dc-ramp-5);
+  --dc-accent-10: var(--dc-ramp-10);
   --dc-accent-20: var(--dc-ramp-20);
+  --dc-accent-30: var(--dc-ramp-30);
   --dc-accent-40: var(--dc-ramp-40);
   --dc-accent-50: var(--dc-ramp-50);
   --dc-accent-60: var(--dc-ramp-60);

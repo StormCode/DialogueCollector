@@ -183,3 +183,46 @@
   font: var(--bento-weight-regular) 12px/16px var(--dc-ui-font);
   color: var(--bento-content-negative);
 }
+
+/* EditCharacter: no photo shows the person glyph in the 240px box. */
+.char-photo--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bento-icon-secondary);
+}
+
+.char-remove:disabled {
+  border-color: var(--bento-action-disabled-bg);
+  background: transparent;
+  color: var(--bento-action-disabled-fg);
+  cursor: not-allowed;
+}
+
+.char-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.char-edit__divider {
+  height: 1px;
+  background: var(--bento-neutral-10);
+}
+
+.char-edit__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.char-edit__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* .ec-btn-danger: content-negative text on the negative-40 outline. */
+.char-edit__delete.ui-btn--danger-outline {
+  color: var(--bento-content-negative);
+}

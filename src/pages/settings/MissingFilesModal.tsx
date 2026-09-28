@@ -4,6 +4,7 @@ import { Link } from "react-router";
 
 import { CharacterAvatar } from "../../components/characters/CharacterAvatar";
 import { Button } from "../../components/ui/Button";
+import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
 import { Modal } from "../../components/ui/Modal";
 import { useRevealScrollbar } from "../../components/ui/useRevealScrollbar";
 import type { MissingFile } from "../../lib/types";
@@ -23,7 +24,6 @@ export function MissingFilesModal({
 }) {
   const { t } = useTranslation();
   const [confirming, setConfirming] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const list = useRef<HTMLDivElement>(null);
   useRevealScrollbar(list);
   return (
@@ -75,38 +75,19 @@ export function MissingFilesModal({
       </div>
       {confirming && (
         // SettingsMissingDeleteAll.dc.html
-        <Modal title={t("settings.files.confirm")} size="small" onClose={() => setConfirming(false)}>
-          <div className="confirm">
-            <div className="confirm__icon" aria-hidden="true">
-              <BentoIcon name="Bin" size={32} />
-            </div>
-            <div className="confirm__title">
-              {t("settings.files.missing.deleteAllTitle", { count: files.length })}
-            </div>
-            <div className="confirm__body">{t("settings.files.missing.deleteAllBody")}</div>
-          </div>
-          <div className="modal-actions">
-            {/* DT2: a destructive dialog opens on 取消. */}
-            <Button variant="neutral" onClick={() => setConfirming(false)} data-autofocus>
-              {t("settings.files.cancel")}
-            </Button>
-            <Button
-              variant="danger"
-              disabled={deleting}
-              onClick={async () => {
-                setDeleting(true);
-                try {
-                  await onDeleteAll();
-                } finally {
-                  setDeleting(false);
-                  setConfirming(false);
-                }
-              }}
-            >
-              {t("settings.files.missing.deleteAll")}
-            </Button>
-          </div>
-        </Modal>
+        <ConfirmDialog
+          title={t("settings.files.missing.deleteAllTitle", { count: files.length })}
+          body={t("settings.files.missing.deleteAllBody")}
+          confirmLabel={t("settings.files.missing.deleteAll")}
+          onCancel={() => setConfirming(false)}
+          onConfirm={async () => {
+            try {
+              await onDeleteAll();
+            } finally {
+              setConfirming(false);
+            }
+          }}
+        />
       )}
     </Modal>
   );
