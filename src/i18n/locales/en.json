@@ -120,7 +120,8 @@
       "unreachable": "Can't reach the update server. Try again later.",
       "badSignature": "The update's signature didn't verify, so it wasn't installed.",
       "busy": "The library is being moved, exported or imported. Check again when it's done.",
-      "failed": "The update failed. Try again later."
+      "failed": "The update failed. Try again later.",
+      "inProgress": "An update is being checked or downloaded in the background. It installs when you quit the app."
     }
   },
   "common": {
