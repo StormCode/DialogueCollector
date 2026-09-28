@@ -104,6 +104,8 @@ jobs:
 
       - run: npm ci
       - run: npm test
+      # Windows-only paths (settings in Roaming, library in Local) are only exercised here.
+      - run: cargo test --manifest-path src-tauri/Cargo.toml
       - name: NSIS template matches the installed Tauri CLI
         run: node scripts/nsis/check-template.mjs
       - name: Package
@@ -125,7 +127,13 @@ jobs:
           # Release builds use the GUI subsystem, so stdout is not attached: read the report file.
           $p = Start-Process $exe.FullName -ArgumentList "--smoke", "--smoke-report", $report -Wait -PassThru
           Get-Content $report
-          exit $p.ExitCode
+          if ($p.ExitCode -ne 0) { exit $p.ExitCode }
+          # First launch creates the default library; settings live apart from it (ENG17).
+          $library = Join-Path $env:LOCALAPPDATA "DialogueCollector"
+          Get-ChildItem $library -Force | Format-Table Name, Length
+          if (-not (Test-Path (Join-Path $library "library.sqlite"))) { throw "first launch did not create the default library" }
+          if (Test-Path (Join-Path $library "settings.json")) { throw "settings.json written into the library folder" }
+          if (-not (Test-Path (Join-Path $env:APPDATA "DialogueCollector\settings.json"))) { throw "settings.json missing from Roaming AppData" }
 
       - uses: actions/upload-artifact@v7
         with:

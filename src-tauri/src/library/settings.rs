@@ -149,10 +149,40 @@ pub struct SettingsFiles {
 
 impl SettingsFiles {
     pub fn from_os() -> Result<Self, LibraryError> {
-        Ok(Self::new(
-            paths::settings_dir()?,
-            paths::default_library_dir()?,
-        ))
+        let files = Self::new(paths::settings_dir()?, paths::default_library_dir()?);
+        #[cfg(windows)]
+        if let Some(legacy) = paths::legacy_settings_dir() {
+            files.adopt_legacy(&legacy)?;
+        }
+        Ok(files)
+    }
+
+    /// Moves `settings.json` and `machine.json` out of `legacy` into the settings directory.
+    /// A file already present at the new location wins and the stale copy is removed, so
+    /// `legacy` (the default library folder on Windows) no longer reads as "not a library".
+    pub fn adopt_legacy(&self, legacy: &Path) -> Result<(), LibraryError> {
+        if legacy == self.dir {
+            return Ok(());
+        }
+        for name in [SETTINGS_FILE, MACHINE_FILE] {
+            let from = legacy.join(name);
+            if !from.is_file() {
+                continue;
+            }
+            let to = self.dir.join(name);
+            if to.exists() {
+                fs::remove_file(&from).map_err(|e| LibraryError::io(&from, e))?;
+                log::info!("removed stale {}", from.display());
+                continue;
+            }
+            fs::create_dir_all(&self.dir).map_err(|e| LibraryError::io(&self.dir, e))?;
+            if fs::rename(&from, &to).is_err() {
+                fs::copy(&from, &to).map_err(|e| LibraryError::io(&to, e))?;
+                fs::remove_file(&from).map_err(|e| LibraryError::io(&from, e))?;
+            }
+            log::info!("moved {} to {}", from.display(), to.display());
+        }
+        Ok(())
     }
 
     pub fn new(dir: PathBuf, default_library: PathBuf) -> Self {
@@ -259,6 +289,51 @@ fn write_json_atomic<T: Serialize>(path: &Path, value: &T) -> Result<(), Library
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// 0.1.0/0.1.1 on Windows wrote both files into the default library folder, so the first
+    /// launch reported 找不到收藏庫 (NotALibrary) instead of creating the library.
+    #[test]
+    fn legacy_files_in_the_default_library_are_moved_out_and_the_library_is_created() {
+        let dir = tempfile::tempdir().unwrap();
+        let library = dir.path().join("Local/DialogueCollector");
+        let legacy = SettingsFiles::new(library.clone(), library.clone());
+        let written = legacy.load_or_init().unwrap();
+        assert!(written.first_run);
+
+        let files = SettingsFiles::new(
+            dir.path().join("Roaming/DialogueCollector"),
+            library.clone(),
+        );
+        files.adopt_legacy(&library).unwrap();
+        assert!(
+            fs::read_dir(&library).unwrap().next().is_none(),
+            "legacy folder emptied"
+        );
+
+        let loaded = files.load_or_init().unwrap();
+        assert!(!loaded.first_run, "settings carried over, not reset");
+        assert_eq!(
+            loaded.machine.library_path.as_deref(),
+            Some(library.as_path())
+        );
+        let state = crate::library::LibraryState::at_startup(Some(&library), &library);
+        assert!(state.library().is_some(), "{:?}", state.status());
+    }
+
+    #[test]
+    fn adopting_keeps_the_new_file_and_drops_the_stale_one() {
+        let dir = tempfile::tempdir().unwrap();
+        let legacy = dir.path().join("old");
+        let files = SettingsFiles::new(dir.path().join("new"), dir.path().join("lib"));
+        files.load_or_init().unwrap();
+        let current = fs::read(files.dir().join(SETTINGS_FILE)).unwrap();
+        fs::create_dir_all(&legacy).unwrap();
+        fs::write(legacy.join(SETTINGS_FILE), b"{\"theme\":\"ruby\"}").unwrap();
+
+        files.adopt_legacy(&legacy).unwrap();
+        assert!(!legacy.join(SETTINGS_FILE).exists());
+        assert_eq!(fs::read(files.dir().join(SETTINGS_FILE)).unwrap(), current);
+    }
 
     fn files(dir: &tempfile::TempDir) -> SettingsFiles {
         SettingsFiles::new(dir.path().join("prefs"), dir.path().join("library"))
