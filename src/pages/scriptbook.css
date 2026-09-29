@@ -247,7 +247,8 @@
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 16px;
+  /* 20px between photo and text, 4px over the board (user 2026-09-29). */
+  gap: 20px;
   padding: 16px 20px;
   border: 1px solid var(--bento-neutral-10);
   border-radius: var(--bento-radius-16);
