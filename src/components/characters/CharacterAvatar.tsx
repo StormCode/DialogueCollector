@@ -38,7 +38,8 @@ export function CharacterAvatar({
         width: size,
         height: size,
         fontSize: Math.round(size * 0.43),
-        background: `var(--bento-dv-${ramp}-10)`,
+        // The ramp is for the initial; a photo keeps its own transparency.
+        background: portraitPath ? "transparent" : `var(--bento-dv-${ramp}-10)`,
         color: `var(--bento-dv-${ramp}-70)`,
       }}
     >

@@ -135,6 +135,11 @@
   background: var(--bento-bg-secondary);
 }
 
+/* A picked photo keeps its own transparency; the backdrop is for the empty frame. */
+.char-photo.has-photo {
+  background: transparent;
+}
+
 .char-photo img {
   display: block;
   width: 100%;
