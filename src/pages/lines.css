@@ -696,3 +696,10 @@
   font: var(--bento-weight-medium) 18px/26px var(--dc-ui-font);
   color: var(--bento-content-secondary);
 }
+
+/* Pagination at the foot of the page, level with 台詞本's (56px up: the page's 48 + 8), and
+   below the last card once the lines run longer than the window (user 2026-09-29). */
+.ln-page > .ui-pages {
+  margin-top: auto;
+  margin-bottom: 8px;
+}
