@@ -317,7 +317,6 @@
       "or": "または",
       "browse": "ファイルを選択",
       "formats": "JPG、PNG、GIF に対応",
-      "pngHint": "背景が透明な PNG がおすすめです",
       "changePhoto": "写真を変更",
       "removePhoto": "写真を削除",
       "imageFilter": "画像",
@@ -336,7 +335,8 @@
             "category": "カテゴリーを選んでください"
           }
         }
-      }
+      },
+      "photoHint": "1:1 の画像がおすすめです"
     },
     "fields": {
       "name": "キャラクター名",
@@ -356,7 +356,7 @@
       "title": "キャラクターを編集",
       "submit": "保存",
       "delete": "キャラクターを削除",
-      "pngHint": "背景が透明な png がおすすめです"
+      "photoHint": "1:1 の画像がおすすめです"
     }
   },
   "pagination": {

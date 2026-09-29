@@ -317,7 +317,6 @@
       "or": "或",
       "browse": "浏览文件",
       "formats": "支持JPG、PNG、GIF",
-      "pngHint": "建议上传透明背景的PNG图片",
       "changePhoto": "更换照片",
       "removePhoto": "删除照片",
       "imageFilter": "图片",
@@ -336,7 +335,8 @@
             "category": "请选择类别"
           }
         }
-      }
+      },
+      "photoHint": "建议上传1:1比例的图片"
     },
     "fields": {
       "name": "角色名称",
@@ -356,7 +356,7 @@
       "title": "编辑角色",
       "submit": "编辑",
       "delete": "删除角色",
-      "pngHint": "建议上传透明背景的png"
+      "photoHint": "建议上传1:1比例的图片"
     }
   },
   "pagination": {
