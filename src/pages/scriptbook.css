@@ -253,9 +253,10 @@
     box-shadow 120ms ease;
 }
 
+/* Like a line card on the 台詞 page: a shadow on hover, the background stays (user 2026-09-29;
+   the board also tints it bg-secondary). */
 .sb-card:hover {
-  background: var(--bento-bg-secondary);
-  box-shadow: var(--bento-elevation-sm);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
 .sb-card__avatar {
