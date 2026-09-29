@@ -16,7 +16,10 @@
     "subtitleFormats": "ASS and SRT",
     "mediaFormats": "MKV, MP4, WEBM, OGG, M4A, MP3",
     "subtitleFilter": "Subtitles",
-    "mediaFilter": "Video and audio"
+    "mediaFilter": "Video and audio",
+    "unsupported": "This file type isn’t supported yet",
+    "unsupportedSkipped": "This file type isn’t supported yet; skipped {{count}} files",
+    "unsupportedSkipped_one": "This file type isn’t supported yet; skipped 1 file"
   },
   "scriptBook": {
     "title": "Script book",

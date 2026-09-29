@@ -16,7 +16,9 @@
     "subtitleFormats": "ASS、SRT に対応",
     "mediaFormats": "MKV、MP4、WEBM、OGG、M4A、MP3 に対応",
     "subtitleFilter": "字幕ファイル",
-    "mediaFilter": "動画・音声ファイル"
+    "mediaFilter": "動画・音声ファイル",
+    "unsupported": "この形式にはまだ対応していません",
+    "unsupportedSkipped": "この形式にはまだ対応していません。{{count}} 件のファイルをスキップしました"
   },
   "scriptBook": {
     "title": "セリフ帳",

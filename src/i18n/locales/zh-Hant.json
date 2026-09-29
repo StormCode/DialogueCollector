@@ -16,7 +16,9 @@
     "subtitleFormats": "支援 ASS、SRT",
     "mediaFormats": "支援 MKV、MP4、WEBM、OGG、M4A、MP3",
     "subtitleFilter": "字幕檔",
-    "mediaFilter": "影音檔"
+    "mediaFilter": "影音檔",
+    "unsupported": "尚未支援此格式",
+    "unsupportedSkipped": "尚未支援此格式，略過了{{count}}個檔案"
   },
   "scriptBook": {
     "title": "台詞本",
