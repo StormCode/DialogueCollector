@@ -18,7 +18,7 @@
     "subtitleFilter": "字幕文件",
     "mediaFilter": "音视频文件",
     "unsupported": "尚未支持此格式",
-    "unsupportedSkipped": "尚未支持此格式，跳过了{{count}}个文件"
+    "unsupportedSkipped": "尚未支持此格式，跳过了 {{count}} 个文件"
   },
   "scriptBook": {
     "title": "台词本",
@@ -391,6 +391,23 @@
       "Line": {
         "NotFound": "这段台词已不存在"
       }
-    }
+    },
+    "unassigned": "未指派"
+  },
+  "manual": {
+    "title": "请输入台词",
+    "subtitle": "输入这段台词的文字内容，并选择对应的角色",
+    "translation": "台词译文",
+    "import": "导入",
+    "importNext": "导入下一句",
+    "prev": "上一条",
+    "next": "下一条",
+    "pagerLabel": "台词切换",
+    "pendingMany": "还有 {{count}} 条未完成（第 {{list}} 条）",
+    "pendingOne": "请填写台词内容或译文，并指派角色",
+    "pendingUnassigned": "请指派角色后再导入",
+    "unassignedError": "未指派角色无法导入，请选择角色",
+    "noAudio": "跳过了 {{count}} 个没有音频的文件",
+    "partial": "已导入 {{imported}} 句，{{failed}} 句失败"
   }
 }

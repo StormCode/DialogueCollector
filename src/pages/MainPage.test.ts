@@ -15,6 +15,6 @@ describe("dropping files on the main page", () => {
   it("words the notice for one file and for several", () => {
     const t = i18n.getFixedT("zh-Hant");
     expect(t("main.unsupported")).toBe("尚未支援此格式");
-    expect(t("main.unsupportedSkipped", { count: 3 })).toBe("尚未支援此格式，略過了3個檔案");
+    expect(t("main.unsupportedSkipped", { count: 3 })).toBe("尚未支援此格式，略過了 3 個檔案");
   });
 });

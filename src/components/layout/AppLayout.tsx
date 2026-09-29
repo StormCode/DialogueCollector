@@ -17,7 +17,13 @@ export function AppLayout() {
       </main>
       <SideNav />
       {notice && (
-        <Toast key={notice.text} tone={notice.tone} onDismiss={dismissNotice} autoDismissMs={5000}>
+        <Toast
+          key={notice.text}
+          tone={notice.tone}
+          onDismiss={dismissNotice}
+          autoDismissMs={5000}
+          minWidth={notice.minWidth}
+        >
           {notice.text}
         </Toast>
       )}

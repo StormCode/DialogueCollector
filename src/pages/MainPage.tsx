@@ -40,6 +40,8 @@ export function MainPage() {
     showNotice({
       tone: "negative",
       text: dropped === 1 ? t("main.unsupported") : t("main.unsupportedSkipped", { count: skipped }),
+      // MainUnsupportedFormat / MainUnsupportedMulti: sized to the text, at least 360px.
+      minWidth: 360,
     });
   };
 

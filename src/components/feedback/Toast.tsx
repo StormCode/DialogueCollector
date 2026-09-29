@@ -14,6 +14,8 @@ interface ToastProps {
   autoDismissMs?: number;
   /** Boards that set the Bento Toast's width (e.g. 360 on SubtitleSelect). */
   width?: number;
+  /** Sized to its text but at least this wide (Main's 尚未支援此格式: 360). */
+  minWidth?: number;
 }
 
 // Bento Toast's leading glyph per tone.
@@ -24,7 +26,7 @@ const GLYPH: Record<ToastProps["tone"], BentoIconName> = {
 };
 
 // Boards: Main.dc.html (.lib-toast) and the Settings toasts (Bento Toast).
-export function Toast({ tone, children, onDismiss, action, autoDismissMs, width }: ToastProps) {
+export function Toast({ tone, children, onDismiss, action, autoDismissMs, width, minWidth }: ToastProps) {
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -37,7 +39,13 @@ export function Toast({ tone, children, onDismiss, action, autoDismissMs, width 
     <div
       className={`toast toast--${tone}`}
       role={tone === "negative" ? "alert" : "status"}
-      style={width ? { width: `min(${width}px, calc(100vw - 48px))` } : undefined}
+      style={
+        width
+          ? { width: `min(${width}px, calc(100vw - 48px))` }
+          : minWidth
+            ? { width: "auto", minWidth: `min(${minWidth}px, calc(100vw - 48px))` }
+            : undefined
+      }
     >
       <span className="toast__icon">
         <BentoIcon name={GLYPH[tone]} size={16} />

@@ -391,6 +391,23 @@
       "Line": {
         "NotFound": "このセリフはもう存在しません"
       }
-    }
+    },
+    "unassigned": "未指定"
+  },
+  "manual": {
+    "title": "セリフを入力",
+    "subtitle": "このセリフのテキストを入力し、対応するキャラクターを選んでください",
+    "translation": "訳文",
+    "import": "インポート",
+    "importNext": "次のセリフをインポート",
+    "prev": "前へ",
+    "next": "次へ",
+    "pagerLabel": "セリフの切り替え",
+    "pendingMany": "未完了が {{count}} 件あります（{{list}} 件目）",
+    "pendingOne": "セリフか訳文を入力し、キャラクターを選んでください",
+    "pendingUnassigned": "キャラクターを選んでからインポートしてください",
+    "unassignedError": "未指定のままではインポートできません。キャラクターを選んでください",
+    "noAudio": "音声のないファイルを {{count}} 件スキップしました",
+    "partial": "{{imported}} 件をインポートし、{{failed}} 件が失敗しました"
   }
 }

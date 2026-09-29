@@ -4,6 +4,8 @@ import { create } from "zustand";
 export interface Notice {
   tone: "negative" | "positive" | "informative";
   text: string;
+  /** Sized to its text, at least this wide (see Toast). */
+  minWidth?: number;
 }
 
 interface UiState {

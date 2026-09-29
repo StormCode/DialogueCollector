@@ -207,6 +207,7 @@ export type FailureReason =
   | "sidecarUnusable"
   | "killed"
   | "other"
+  | "noAudio"
   | "cancelled";
 
 export interface ImportFailure {
@@ -264,4 +265,33 @@ export interface LineEdit {
   text: string;
   translation: string | null;
   characterId: number;
+}
+
+// ---------------------------------------------------------------- 直接匯入
+
+export interface MediaInfo {
+  path: string;
+  durationMs: number | null;
+  hasAudio: boolean;
+}
+
+/** One InputLine card as it is imported. */
+export interface ManualEntry {
+  path: string;
+  characterId: number;
+  text: string;
+  translation: string | null;
+}
+
+export interface ManualFailure {
+  /** Position in the submitted list. */
+  index: number;
+  reason: FailureReason;
+  detail: string | null;
+}
+
+export interface ManualOutcome {
+  status: "complete" | "partial" | "failed" | "cancelled";
+  imported: number;
+  failures: ManualFailure[];
 }
