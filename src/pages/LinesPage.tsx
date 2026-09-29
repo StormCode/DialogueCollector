@@ -207,7 +207,7 @@ export function LinesPage() {
         style={{ animationDelay: `${idx * 100}ms` }}
       >
         <span className="ln-check">
-          <Checkbox checked={checked.includes(line.id)} onChange={() => toggleCheck(line.id)} label={t("lines.check")} />
+          <Checkbox checked={checked.includes(line.id)} onChange={() => toggleCheck(line.id)} label={t("lines.check")} hideLabel />
         </span>
         {editMode ? (
           <div className="ln-actions">
