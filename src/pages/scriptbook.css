@@ -315,6 +315,9 @@
 
 /* Hovering the card reveals the corner arc and the edit button after 1s (and hides them at
    once on leave). */
+/* After the board's 1s hover delay the corner spreads out from the top-right corner and the
+   pencil pops in just behind it (user 2026-09-29; the board only switches them on). Leaving
+   draws both back in quickly. */
 .sb-card__corner {
   position: absolute;
   top: 0;
@@ -325,13 +328,18 @@
   background: var(--dc-accent-10);
   opacity: 0;
   pointer-events: none;
-  transform: translate(40%, -40%);
-  transition: opacity 0s linear 0s;
+  transform: translate(40%, -40%) scale(0);
+  transition:
+    transform 180ms ease-in,
+    opacity 180ms ease-in;
 }
 
 .sb-card-wrap:hover .sb-card__corner {
   opacity: 0.5;
-  transition: opacity 0s linear 1s;
+  transform: translate(40%, -40%) scale(1);
+  transition:
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1) 1s,
+    opacity 120ms linear 1s;
 }
 
 .sb-card__edit {
@@ -351,13 +359,22 @@
   color: var(--dc-accent-30);
   opacity: 0;
   cursor: pointer;
-  transition: opacity 0s linear 0s;
+  transform: scale(0.4);
+  transform-origin: 70% 30%;
+  transition:
+    transform 150ms ease-in,
+    opacity 150ms ease-in,
+    color 120ms ease;
 }
 
 .sb-card-wrap:hover .sb-card__edit,
 .sb-card__edit:focus-visible {
   opacity: 1;
-  transition: opacity 0s linear 1s;
+  transform: scale(1);
+  transition:
+    transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1) 1.12s,
+    opacity 160ms ease-out 1.12s,
+    color 120ms ease;
 }
 
 .sb-card__edit:focus-visible {
@@ -371,5 +388,26 @@
 @media (prefers-reduced-motion: reduce) {
   .sb-card-wrap {
     animation: none;
+  }
+
+  /* No spreading: the corner and pencil just switch on after the delay, as on the board. */
+  .sb-card__corner {
+    transform: translate(40%, -40%);
+    transition: opacity 0s linear 0s;
+  }
+
+  .sb-card__edit {
+    transform: none;
+    transition: opacity 0s linear 0s;
+  }
+
+  .sb-card-wrap:hover .sb-card__corner {
+    transform: translate(40%, -40%);
+    transition: opacity 0s linear 1s;
+  }
+
+  .sb-card-wrap:hover .sb-card__edit {
+    transform: none;
+    transition: opacity 0s linear 1s;
   }
 }
