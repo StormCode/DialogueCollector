@@ -7,7 +7,7 @@ export const THEMES = [
   "ruby", // 寶石紅
   "emerald", // 翠綠
   "sunset", // 夕陽橘
-  "lipstick", // 口紅粉
+  "lipstick", // 蜜桃粉 (was 口紅粉; the id stays for saved settings)
   "midnight", // 夜光黑
 ] as const;
 export type Theme = (typeof THEMES)[number];
