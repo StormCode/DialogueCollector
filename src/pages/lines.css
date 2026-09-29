@@ -612,14 +612,12 @@
   color: var(--bento-neutral-60);
 }
 
-/* The 譯文 under the 原文, in both views (user decision 2026-09-29; not on the board). */
-.ln-card-sub {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+/* The 譯文 under the 原文 (user decision 2026-09-29, drawn on the Lines board as .ln-card-trans). */
+.ln-card-trans {
   overflow: hidden;
-  margin-top: -2px;
-  font: var(--bento-weight-regular) 14px/20px var(--dc-line-font), var(--dc-ui-font);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font: var(--bento-weight-regular) 13px/18px var(--dc-ui-font);
   color: var(--bento-content-secondary);
 }
 
@@ -628,17 +626,13 @@
 }
 
 .ln-list.is-compact .ln-card-body {
-  gap: 0;
+  gap: 2px;
 }
 
 .ln-list.is-compact .ln-card-text {
   -webkit-line-clamp: 1;
   font-size: 22px;
-  line-height: 48px;
-}
-
-.ln-list.is-compact .ln-card-sub {
-  -webkit-line-clamp: 1;
+  line-height: 32px;
 }
 
 .ln-list.is-compact .ln-card-meta {
