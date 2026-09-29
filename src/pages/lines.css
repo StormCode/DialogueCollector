@@ -606,11 +606,14 @@
   color: var(--bento-neutral-60);
 }
 
-/* The 譯文 under the 原文 (user decision 2026-09-29, drawn on the Lines board as .ln-card-trans). */
+/* The 譯文 under the 原文 (user decision 2026-09-29, drawn on the Lines board as .ln-card-trans).
+   原文 and 譯文 each show at most two lines, then an ellipsis, in both views (user 2026-09-29;
+   the board clamps compact to one line and the 譯文 to one). */
 .ln-card-trans {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   font: var(--bento-weight-regular) 13px/18px var(--dc-ui-font);
   color: var(--bento-content-secondary);
 }
@@ -624,7 +627,6 @@
 }
 
 .ln-list.is-compact .ln-card-text {
-  -webkit-line-clamp: 1;
   font-size: 22px;
   line-height: 32px;
 }
