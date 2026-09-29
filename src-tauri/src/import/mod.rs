@@ -15,6 +15,7 @@
 
 pub mod commit;
 pub mod job;
+pub mod manual;
 pub mod run;
 pub mod runs;
 

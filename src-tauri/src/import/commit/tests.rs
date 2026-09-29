@@ -7,6 +7,7 @@ use rand::Rng;
 use super::*;
 use crate::library::folder::Library;
 use crate::library::paths::{DB_FILE, TMP_DIR};
+use crate::media::new_clip_filename;
 
 // Crashes are real: a child process (this test binary re-run on `chaos_child`) aborts at a
 // step or is SIGKILLed. Unwinding a panic in-process would run destructors — a transaction's
@@ -44,6 +45,7 @@ fn line() -> NewLine {
         text: "人類的壽命真的很短暫呢。".into(),
         translation: None,
         duration_ms: 2000,
+        extension: "m4a",
     }
 }
 

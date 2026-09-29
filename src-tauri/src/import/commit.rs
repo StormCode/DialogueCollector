@@ -1,8 +1,8 @@
 //! `commit_cue`: the only place the ENG2 write order exists (ENG2 → A, T6, ET2).
 //!
-//!   encoded clip at `<library>/.tmp/<name>.m4a.tmp`
+//!   staged clip at `<library>/.tmp/<name>.tmp`
 //!     → fsync the file
-//!     → rename to `<library>/<name>.m4a`
+//!     → rename to `<library>/<name>.<m4a|mp3|ogg>`
 //!     → fsync the library folder
 //!     → insert the row → commit            (on the single writer, FC8)
 //!
@@ -14,7 +14,7 @@ use std::fs::{self, File};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use crate::media::new_clip_filename;
+use crate::media::new_clip_filename_with;
 use crate::store::writer::Writer;
 use crate::store::{self, StoreError};
 
@@ -27,6 +27,9 @@ pub struct NewLine {
     pub text: String,
     pub translation: Option<String>,
     pub duration_ms: i64,
+    /// The clip's extension, one of `media::CLIP_EXTENSIONS`: `m4a` when ffmpeg encoded it,
+    /// the source's own when 直接匯入 copied an audio file as it was.
+    pub extension: &'static str,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -81,7 +84,7 @@ pub(crate) fn commit_cue_with(
         .map_err(|e| ImportError::io(staged, e))?;
     probe(Step::FileSynced);
 
-    let (audio_filename, target) = rename_into(library, staged)?;
+    let (audio_filename, target) = rename_into(library, staged, line.extension)?;
     sync_dir(library).map_err(|e| ImportError::io(library, e))?;
     probe(Step::Renamed);
 
@@ -129,10 +132,15 @@ pub(crate) fn commit_cue_with(
     }
 }
 
-/// Renames `staged` to a fresh `<name>.m4a` in `library`, never replacing an existing file.
-fn rename_into(library: &Path, staged: &Path) -> Result<(String, PathBuf), ImportError> {
+/// Renames `staged` to a fresh `<name>.<extension>` in `library`, never replacing an existing
+/// file.
+fn rename_into(
+    library: &Path,
+    staged: &Path,
+    extension: &str,
+) -> Result<(String, PathBuf), ImportError> {
     for _ in 0..NAME_ATTEMPTS {
-        let name = new_clip_filename();
+        let name = new_clip_filename_with(extension);
         let target = library.join(&name);
         if target.exists() {
             continue;

@@ -16,6 +16,10 @@ use rand::Rng;
 pub const SOURCE_EXTENSIONS: &[&str] = &["mkv", "mp4", "webm", "ogg", "m4a", "mp3"];
 
 pub const CLIP_EXTENSION: &str = "m4a";
+
+/// Extensions a clip in the library may have: `m4a` from ffmpeg, or an audio file that 直接匯入
+/// copied in as it was (user decision 2026-09-28; schema v2 allows these three).
+pub const CLIP_EXTENSIONS: &[&str] = &["m4a", "mp3", "ogg"];
 const CLIP_NAME_LEN: usize = 12;
 const CLIP_NAME_ALPHABET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -39,16 +43,42 @@ pub enum MediaError {
 /// A new clip filename: 12 random uppercase alphanumerics plus `.m4a`.
 /// Uniqueness is enforced by `lines(audio_filename) UNIQUE`, not by this function.
 pub fn new_clip_filename() -> String {
+    new_clip_filename_with(CLIP_EXTENSION)
+}
+
+/// The same with another of `CLIP_EXTENSIONS`.
+pub fn new_clip_filename_with(extension: &str) -> String {
+    debug_assert!(CLIP_EXTENSIONS.contains(&extension));
     let mut rng = rand::rng();
     let stem: String = (0..CLIP_NAME_LEN)
         .map(|_| CLIP_NAME_ALPHABET[rng.random_range(0..CLIP_NAME_ALPHABET.len())] as char)
         .collect();
-    format!("{stem}.{CLIP_EXTENSION}")
+    format!("{stem}.{extension}")
+}
+
+/// Whether `name` is a clip this app wrote: 12 uppercase alphanumerics and a clip extension.
+pub fn is_clip_name(name: &str) -> bool {
+    name.split_once('.').is_some_and(|(stem, ext)| {
+        CLIP_EXTENSIONS.contains(&ext)
+            && stem.len() == CLIP_NAME_LEN
+            && stem.bytes().all(|b| CLIP_NAME_ALPHABET.contains(&b))
+    })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn clip_names_keep_one_of_the_clip_extensions() {
+        assert!(new_clip_filename_with("mp3").ends_with(".mp3"));
+        assert!(is_clip_name(&new_clip_filename_with("ogg")));
+        assert!(is_clip_name("ABCDEFGHIJKL.m4a"));
+        assert!(!is_clip_name("ABCDEFGHIJKL.wav"));
+        assert!(!is_clip_name("abcdefghijkl.mp3"));
+        assert!(!is_clip_name("ABCDEFGHIJK.mp3"));
+        assert!(!is_clip_name("ABCDEFGHIJKL.m4a.tmp"));
+    }
 
     #[test]
     fn clip_filename_is_twelve_uppercase_alphanumerics() {
