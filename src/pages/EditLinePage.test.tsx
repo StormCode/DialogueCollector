@@ -57,7 +57,7 @@ describe("EditLinePage", () => {
 
     fireEvent.change(text, { target: { value: "  " } });
     fireEvent.click(screen.getByRole("button", { name: "儲存" }));
-    expect(screen.getByText("請輸入台詞內容")).toBeInTheDocument();
+    expect(screen.getByText("請輸入台詞內容或譯文")).toBeInTheDocument();
     expect(update).not.toHaveBeenCalled();
 
     fireEvent.change(text, { target: { value: "今天的風真舒服。" } });
@@ -70,6 +70,17 @@ describe("EditLinePage", () => {
       expect(update).toHaveBeenCalledWith(7, { text: "今天的風真舒服。", translation: "Lovely breeze.", characterId: 2 }),
     );
     expect(await screen.findByText("已儲存變更")).toBeInTheDocument();
+  });
+
+  it("saves a line that has only a 譯文", async () => {
+    const update = vi.spyOn(ipc, "updateLine").mockResolvedValue({ ...LINE, text: "", translation: "Lovely breeze." });
+    renderPage();
+    const text = await screen.findByLabelText("台詞內容");
+    await waitFor(() => expect(text).toHaveValue("今天的風好舒服呢。"));
+    fireEvent.change(text, { target: { value: "" } });
+    fireEvent.change(screen.getByLabelText("台詞譯文 (optional)"), { target: { value: "Lovely breeze." } });
+    fireEvent.click(screen.getByRole("button", { name: "儲存" }));
+    await waitFor(() => expect(update).toHaveBeenCalledWith(7, { text: "", translation: "Lovely breeze.", characterId: 1 }));
   });
 
   it("取消 goes back to the lines page", async () => {

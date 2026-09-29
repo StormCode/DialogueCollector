@@ -373,7 +373,7 @@
     "preview": "再生プレビュー",
     "text": "セリフ",
     "textPlaceholder": "このセリフのテキストを入力…",
-    "textRequired": "セリフを入力してください",
+    "textRequired": "セリフか訳文を入力してください",
     "translation": "訳文 (optional)",
     "translationPlaceholder": "このセリフの訳文を入力…",
     "character": "キャラクター",

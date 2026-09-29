@@ -7,7 +7,7 @@ import { ipc } from "../lib/ipc";
 import type { Line, LinesPageData } from "../lib/types";
 import { DEFAULT_SETTINGS } from "../lib/types";
 import { useSettingsStore } from "../stores/settingsStore";
-import { formatCreated, formatDuration, LinesPage } from "./LinesPage";
+import { formatCreated, formatDuration, lineTitle, LinesPage } from "./LinesPage";
 
 vi.mock("@tauri-apps/plugin-dialog", () => ({ open: vi.fn() }));
 
@@ -61,6 +61,11 @@ describe("LinesPage", () => {
   it("formats durations and creation times as the board does", () => {
     expect(formatDuration(65_400)).toBe("1:05");
     expect(formatCreated(new Date(2026, 8, 22, 21, 5).getTime())).toBe("2026/09/22 21:05");
+  });
+
+  it("titles a card with the 譯文 when there is no 原文", () => {
+    expect(lineTitle({ text: "", translation: "El Psy Congroo." })).toBe("El Psy Congroo.");
+    expect(lineTitle({ text: "今天的風好舒服呢。", translation: "Lovely breeze." })).toBe("今天的風好舒服呢。");
   });
 
   it("shows 這裡什麼都沒有 with 匯入台詞 when the character has no lines", async () => {

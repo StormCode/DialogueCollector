@@ -28,13 +28,19 @@ pub struct Migration {
 }
 
 /// Ordered, consecutive from 1. Append only; never edit a shipped entry.
-pub const MIGRATIONS: &[Migration] = &[Migration {
-    version: 1,
-    sql: include_str!("migrations/0001_initial.sql"),
-}];
+pub const MIGRATIONS: &[Migration] = &[
+    Migration {
+        version: 1,
+        sql: include_str!("migrations/0001_initial.sql"),
+    },
+    Migration {
+        version: 2,
+        sql: include_str!("migrations/0002_line_text_optional.sql"),
+    },
+];
 
 /// The schema version this build writes. Opening a newer library is refused by name.
-pub const SCHEMA_VERSION: u32 = 1;
+pub const SCHEMA_VERSION: u32 = 2;
 
 #[derive(Debug, thiserror::Error)]
 pub enum StoreError {

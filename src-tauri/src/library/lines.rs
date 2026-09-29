@@ -104,18 +104,18 @@ pub fn set_pinned(conn: &Connection, id: i64, pinned: bool) -> Result<(), LineEr
     Ok(())
 }
 
-/// EditLine's 儲存: the text is required, the translation optional, and the line may move to
-/// another character.
+/// EditLine's 儲存: 原文 and 譯文 are each optional, but one of them must be there; the line
+/// may move to another character.
 pub fn update(conn: &Connection, root: &Path, id: i64, edit: LineEdit) -> Result<Line, LineError> {
     let text = edit.text.trim();
-    if text.is_empty() || text.chars().count() > 1000 {
-        return Err(LineError::Invalid { field: "text" });
-    }
     let translation = edit
         .translation
         .as_deref()
         .map(str::trim)
         .filter(|t| !t.is_empty());
+    if text.chars().count() > 1000 || (text.is_empty() && translation.is_none()) {
+        return Err(LineError::Invalid { field: "text" });
+    }
     if translation.is_some_and(|t| t.chars().count() > 1000) {
         return Err(LineError::Invalid {
             field: "translation",
@@ -286,6 +286,18 @@ mod tests {
             ),
             Err(LineError::Invalid { field: "text" })
         ));
+        let translation_only = update(
+            lib.conn(),
+            &root,
+            1,
+            LineEdit {
+                text: " ".into(),
+                translation: Some("The breeze is lovely today.".into()),
+                character_id: 2,
+            },
+        )
+        .unwrap();
+        assert_eq!(translation_only.text, "");
         assert!(matches!(
             update(
                 lib.conn(),
