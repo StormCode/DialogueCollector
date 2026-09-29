@@ -87,7 +87,7 @@ describe("ManualImportPage", () => {
     vi.spyOn(ipc, "probeMedia").mockResolvedValue([media("/a.mp3"), media("/silent.mp4", false), media("/b.ogg")]);
     renderPage(["/a.mp3", "/silent.mp4", "/b.ogg"]);
     expect(await screen.findByText("1/2")).toBeInTheDocument();
-    expect(useUiStore.getState().notice?.text).toBe("略過了 1 個沒有音訊的檔案");
+    expect(useUiStore.getState().notice).toMatchObject({ tone: "warning", text: "略過了 1 個沒有音訊的檔案" });
     expect(screen.getByText("尚有 2 筆未完成（第 1、2 筆）")).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("台詞譯文"), { target: { value: "Lovely breeze." } });
@@ -115,6 +115,7 @@ describe("ManualImportPage", () => {
     }
     fireEvent.click(importButton());
     expect(await screen.findByText("已匯入 1 句，1 句失敗")).toBeInTheDocument();
+    expect(screen.getByText("「再試一次」只會重新匯入失敗的 1 句")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "再試一次" }));
     await waitFor(() => expect(start).toHaveBeenCalledTimes(2));
     expect(start.mock.calls[1][0]).toEqual([{ path: "/b.mkv", characterId: 1, text: "二", translation: null }]);

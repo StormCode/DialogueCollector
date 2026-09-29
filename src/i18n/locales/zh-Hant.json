@@ -408,6 +408,8 @@
     "pendingUnassigned": "請指派角色後再匯入",
     "unassignedError": "未指派角色無法匯入，請選擇角色",
     "noAudio": "略過了 {{count}} 個沒有音訊的檔案",
-    "partial": "已匯入 {{imported}} 句，{{failed}} 句失敗"
+    "partial": "已匯入 {{imported}} 句，{{failed}} 句失敗",
+    "cancelNote": "取消會撤回這次已寫入的台詞，並回到表單",
+    "retryNote": "「再試一次」只會重新匯入失敗的 {{count}} 句"
   }
 }

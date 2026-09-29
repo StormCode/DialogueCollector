@@ -90,7 +90,8 @@ export function ManualImportPage() {
       const usable = infos.filter((m) => m.hasAudio && (m.durationMs ?? 0) > 0);
       const skipped = infos.length - usable.length;
       if (skipped > 0) {
-        showNotice({ tone: "negative", text: t("manual.noAudio", { count: skipped }) });
+        // InputLineNoAudio / MainNoAudio: a warning, sized to its text.
+        showNotice({ tone: "warning", text: t("manual.noAudio", { count: skipped }), minWidth: 360 });
       }
       if (usable.length === 0) {
         navigate("/", { replace: true });
@@ -166,6 +167,7 @@ export function ManualImportPage() {
             medallion={<Medallion icon="domain_add" motion="streak" />}
             title={t("import.indexing.title")}
             hint={t("import.indexing.hint")}
+            actionsNote={t("manual.cancelNote")}
             actions={
               <ImportButton kind="secondary" icon={<MaterialIcon name="close" />} onClick={() => void ipc.cancelImport()}>
                 {t("import.cancel")}
@@ -207,6 +209,9 @@ export function ManualImportPage() {
                 : t("import.oops")
             }
             entrance="shake"
+            footnote={
+              outcome && outcome.imported > 0 ? t("manual.retryNote", { count: outcome.failures.length }) : undefined
+            }
             actions={
               <>
                 <ImportButton kind="neutral" icon={<BentoIcon name="Home" size={24} />} onClick={home}>

@@ -5,7 +5,7 @@ import { BentoIcon, type BentoIconName } from "../icons/Icon";
 import "./Toast.css";
 
 interface ToastProps {
-  tone: "negative" | "positive" | "informative";
+  tone: "negative" | "positive" | "informative" | "warning";
   children: ReactNode;
   onDismiss: () => void;
   /** Extra control shown before the close button (e.g. the 設定 link on the main page). */
@@ -23,6 +23,7 @@ const GLYPH: Record<ToastProps["tone"], BentoIconName> = {
   negative: "NegativeSolid",
   positive: "PositiveSolid",
   informative: "InfoSolid",
+  warning: "WarningSolid",
 };
 
 // Boards: Main.dc.html (.lib-toast) and the Settings toasts (Bento Toast).

@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 /** A toast raised by one page that must outlive it (e.g. before navigating away). */
 export interface Notice {
-  tone: "negative" | "positive" | "informative";
+  tone: "negative" | "positive" | "informative" | "warning";
   text: string;
   /** Sized to its text, at least this wide (see Toast). */
   minWidth?: number;
