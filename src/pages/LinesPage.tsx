@@ -30,7 +30,7 @@ export function lineTitle(line: Pick<Line, "text" | "translation">) {
   return line.text.trim() || line.translation?.trim() || "";
 }
 
-/** The gray subtitle under it in 詳細: the 譯文, when the 原文 is already the title. */
+/** The gray subtitle under it (簡短 and 詳細): the 譯文, when the 原文 is already the title. */
 export function lineSubtitle(line: Pick<Line, "text" | "translation">) {
   return line.text.trim() ? line.translation?.trim() || null : null;
 }
