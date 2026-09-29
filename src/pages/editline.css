@@ -73,14 +73,14 @@
   justify-content: center;
   border: none;
   border-radius: var(--bento-radius-full);
-  background: var(--dc-accent-40);
-  color: var(--bento-white);
+  background: var(--dc-solid);
+  color: var(--dc-on-solid);
   cursor: pointer;
   transition: background-color 120ms ease;
 }
 
 .el-preview__play:hover {
-  background: var(--dc-accent-60);
+  background: var(--dc-solid-hover);
 }
 
 .el-preview__track {
@@ -320,12 +320,12 @@
   padding: 13px 24px 13px 20px;
   border: none;
   border-radius: var(--bento-radius-16);
-  background: var(--dc-accent-40);
-  color: var(--bento-white);
+  background: var(--dc-solid);
+  color: var(--dc-on-solid);
   font: var(--bento-weight-medium) 14px/18px var(--dc-ui-font);
   cursor: pointer;
 }
 
 .el-save:hover {
-  background: var(--dc-accent-60);
+  background: var(--dc-solid-hover);
 }
