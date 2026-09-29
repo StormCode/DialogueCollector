@@ -47,7 +47,15 @@ body {
   pointer-events: none;
 }
 
+/* No padding here: every page carries its board's own (80px, or 56px 104px, …). */
 .app-layout__content {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Pages without a board (diagnostics, placeholders). */
+.page {
+  box-sizing: border-box;
   height: 100%;
   overflow: auto;
   padding: var(--bento-space-80);
@@ -60,30 +68,6 @@ body {
 
 .page__note {
   color: var(--bento-content-secondary);
-}
-
-.main-page {
-  height: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--bento-space-40);
-  padding-right: var(--bento-space-80);
-}
-
-.main-page__zone {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px dashed var(--dc-accent);
-  border-radius: var(--bento-radius-24);
-  background: var(--bento-bg-primary);
-  color: var(--dc-accent);
-  font: var(--bento-weight-semibold) 20px/28px var(--dc-ui-font);
-  text-decoration: none;
-}
-
-.main-page__zone:hover {
-  background: var(--dc-accent-soft);
 }
 
 /* Page titles fade in (ScriptBook, Lines, LinesPoster boards: .pg-anim-title). */

@@ -1,10 +1,4 @@
 /* Board: ScriptBook.dc.html. `--bento-dv-indigo-N` there is `--dc-accent-N` here. */
-/* The page carries the board's padding itself, so the layout's default 80px goes. */
-.app-layout__content:has(.sb-page) {
-  padding: 0;
-  overflow: hidden;
-}
-
 .sb-page {
   box-sizing: border-box;
   height: 100%;
