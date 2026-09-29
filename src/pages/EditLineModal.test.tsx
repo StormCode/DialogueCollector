@@ -1,11 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import "../i18n";
 import { ipc } from "../lib/ipc";
 import type { Character, Line } from "../lib/types";
-import { EditLinePage } from "./EditLinePage";
+import { EditLineModal } from "./EditLineModal";
 
 vi.mock("@tauri-apps/plugin-dialog", () => ({ open: vi.fn() }));
 
@@ -29,30 +28,20 @@ const character = (id: number, name: string, source: string): Character => ({
   lineCount: 1,
 });
 
-function renderPage() {
-  return render(
-    <MemoryRouter initialEntries={["/characters/1/lines/7/edit"]}>
-      <Routes>
-        <Route path="/characters/:characterId/lines/:lineId/edit" element={<EditLinePage />} />
-        <Route path="/characters/:characterId" element={<p>lines page</p>} />
-      </Routes>
-    </MemoryRouter>,
-  );
-}
-
-describe("EditLinePage", () => {
+describe("EditLineModal", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => {});
-    vi.spyOn(ipc, "getLine").mockResolvedValue(LINE);
     vi.spyOn(ipc, "listCharacters").mockResolvedValue([character(1, "優希", "他是傳奇"), character(2, "芙莉蓮", "葬送的芙莉蓮")]);
   });
 
-  it("requires the text, then saves text, translation and a new character", async () => {
+  it("requires the text or the translation, then saves them and a new character", async () => {
     const update = vi.spyOn(ipc, "updateLine").mockResolvedValue({ ...LINE, characterId: 2 });
-    renderPage();
-    const text = await screen.findByLabelText("台詞內容");
-    await waitFor(() => expect(text).toHaveValue("今天的風好舒服呢。"));
+    const onClose = vi.fn();
+    render(<EditLineModal line={LINE} onClose={onClose} />);
+    const dialog = screen.getByRole("dialog", { name: "編輯台詞" });
+    const text = within(dialog).getByLabelText("台詞內容");
+    expect(text).toHaveValue("今天的風好舒服呢。");
     expect(screen.getByText("0:00 / 0:04")).toBeInTheDocument();
 
     fireEvent.change(text, { target: { value: "  " } });
@@ -62,6 +51,7 @@ describe("EditLinePage", () => {
 
     fireEvent.change(text, { target: { value: "今天的風真舒服。" } });
     fireEvent.change(screen.getByLabelText("台詞譯文 (optional)"), { target: { value: "Lovely breeze." } });
+    await screen.findByText("優希");
     fireEvent.click(screen.getByRole("button", { name: "角色" }));
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "葬送" } });
     fireEvent.click(screen.getByRole("option", { name: /芙莉蓮/ }));
@@ -70,22 +60,24 @@ describe("EditLinePage", () => {
       expect(update).toHaveBeenCalledWith(7, { text: "今天的風真舒服。", translation: "Lovely breeze.", characterId: 2 }),
     );
     expect(await screen.findByText("已儲存變更")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "取消" }));
+    expect(onClose).toHaveBeenCalledWith(true);
   });
 
   it("saves a line that has only a 譯文", async () => {
     const update = vi.spyOn(ipc, "updateLine").mockResolvedValue({ ...LINE, text: "", translation: "Lovely breeze." });
-    renderPage();
-    const text = await screen.findByLabelText("台詞內容");
-    await waitFor(() => expect(text).toHaveValue("今天的風好舒服呢。"));
-    fireEvent.change(text, { target: { value: "" } });
+    render(<EditLineModal line={LINE} onClose={() => {}} />);
+    fireEvent.change(screen.getByLabelText("台詞內容"), { target: { value: "" } });
     fireEvent.change(screen.getByLabelText("台詞譯文 (optional)"), { target: { value: "Lovely breeze." } });
     fireEvent.click(screen.getByRole("button", { name: "儲存" }));
     await waitFor(() => expect(update).toHaveBeenCalledWith(7, { text: "", translation: "Lovely breeze.", characterId: 1 }));
   });
 
-  it("取消 goes back to the lines page", async () => {
-    renderPage();
-    fireEvent.click(await screen.findByRole("link", { name: "取消" }));
-    expect(screen.getByText("lines page")).toBeInTheDocument();
+  it("closing without saving tells the page nothing changed", () => {
+    const onClose = vi.fn();
+    render(<EditLineModal line={LINE} onClose={onClose} />);
+    fireEvent.click(screen.getByRole("button", { name: "關閉" }));
+    expect(onClose).toHaveBeenCalledWith(false);
   });
 });

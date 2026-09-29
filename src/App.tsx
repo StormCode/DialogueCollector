@@ -4,7 +4,6 @@ import { HashRouter, Route, Routes } from "react-router";
 import { AppLayout } from "./components/layout/AppLayout";
 import { DiagnosticsPage } from "./pages/DiagnosticsPage";
 import i18n from "./i18n";
-import { EditLinePage } from "./pages/EditLinePage";
 import { LinesPage } from "./pages/LinesPage";
 import { MainPage } from "./pages/MainPage";
 import { ScriptBookPage } from "./pages/ScriptBookPage";
@@ -48,7 +47,6 @@ export default function App() {
           <Route path="import/manual" element={<ManualImportPage />} />
           <Route path="characters" element={<ScriptBookPage />} />
           <Route path="characters/:characterId" element={<LinesPage />} />
-          <Route path="characters/:characterId/lines/:lineId/edit" element={<EditLinePage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="diagnostics" element={<DiagnosticsPage />} />
         </Route>

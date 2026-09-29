@@ -17,6 +17,7 @@ import { usePlayer, type PlayMode } from "../hooks/usePlayer";
 import { errorKind, inTauri, ipc } from "../lib/ipc";
 import type { Line, LinesPageData } from "../lib/types";
 import { useSettingsStore } from "../stores/settingsStore";
+import { EditLineModal } from "./EditLineModal";
 import "./lines.css";
 
 type SortKey = "created" | "duration";
@@ -69,6 +70,7 @@ export function LinesPage() {
   const [pinCollapsed, setPinCollapsed] = useState(false);
   const [checked, setChecked] = useState<number[]>([]);
   const [page, setPage] = useState(1);
+  const [editing, setEditing] = useState<Line | null>(null);
   const [deleting, setDeleting] = useState<Line | null>(null);
   const [deletingPoster, setDeletingPoster] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -221,14 +223,15 @@ export function LinesPage() {
             >
               <MaterialIcon name={isPinned ? "keep:wght300fill1" : "keep:wght300"} />
             </button>
-            <Link
+            <button
+              type="button"
               className="ln-act ln-act-edit"
-              to={`/characters/${id}/lines/${line.id}/edit`}
               aria-label={t("lines.edit")}
               title={t("lines.edit")}
+              onClick={() => setEditing(line)}
             >
               <BentoIcon name="PencilWeightRegular" size={22} />
-            </Link>
+            </button>
             <button
               type="button"
               className="ln-act ln-act-del"
@@ -435,6 +438,15 @@ export function LinesPage() {
         </>
       )}
 
+      {editing && (
+        <EditLineModal
+          line={editing}
+          onClose={(saved) => {
+            setEditing(null);
+            if (saved) void load();
+          }}
+        />
+      )}
       {deleting && (
         // DeleteLine.dc.html
         <ConfirmDialog
