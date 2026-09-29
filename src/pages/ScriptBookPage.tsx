@@ -179,7 +179,7 @@ export function ScriptBookPage() {
               {shown.map((c, i) => (
                 <div key={c.id} className="sb-card-wrap" style={{ animationDelay: `${Math.floor(i / 2) * 180}ms` }}>
                   <button type="button" className="sb-card" onClick={() => navigate(`/characters/${c.id}`)}>
-                    <span className="sb-card__avatar">
+                    <span className={`sb-card__avatar${c.portraitPath ? " has-photo" : ""}`}>
                       {c.portraitPath && inTauri() ? (
                         <img src={convertFileSrc(c.portraitPath)} alt="" />
                       ) : (

@@ -280,6 +280,12 @@
   color: var(--bento-icon-secondary);
 }
 
+/* The backdrop is for the person glyph only: a transparent photo shows the card through it
+   (user 2026-09-29; the board fills every avatar). */
+.sb-card__avatar.has-photo {
+  background: transparent;
+}
+
 .sb-card__avatar img {
   display: block;
   width: 100%;

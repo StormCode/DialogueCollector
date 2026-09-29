@@ -116,7 +116,7 @@ function CharacterFormModal({ mode, onClose }: { mode: Mode; onClose: () => void
 
   const photoBlock = photo ? (
     <>
-      <div className="char-photo">{inTauri() && <img src={convertFileSrc(photo)} alt="" />}</div>
+      <div className="char-photo has-photo">{inTauri() && <img src={convertFileSrc(photo)} alt="" />}</div>
       <div className="char-photo__actions">
         <button type="button" className="char-browse" onClick={() => void browse()}>
           {t("characters.add.changePhoto")}
