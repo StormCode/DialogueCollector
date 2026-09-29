@@ -312,7 +312,8 @@
 .sb-card__name {
   flex: 0 1 auto;
   min-width: 0;
-  font: var(--bento-weight-semibold) 18px/24px var(--dc-ui-font);
+  /* 20px, 2px over the board (user 2026-09-29). */
+  font: var(--bento-weight-semibold) 20px/26px var(--dc-ui-font);
   color: var(--bento-content-primary);
 }
 
