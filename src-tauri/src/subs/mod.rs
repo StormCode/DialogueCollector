@@ -11,6 +11,8 @@
 //! - SRT: `<i>`-style tags and `{\an8}`-style overrides are stripped.
 //! - 原文／譯文 follow the subtitle's own lines (decided 2026-09-29): the first line is the
 //!   text, any further lines the translation.
+//! - Bilingual ASS that puts each language in its own event (`Text - JP` and `Text - CN` with
+//!   the same timing) is paired into one cue (user 2026-09-29): see `pair_bilingual`.
 //!
 //! Cues are returned in start-time order; `index` keeps each one's position in the file.
 
@@ -224,7 +226,7 @@ fn clean_srt_text(text: &str) -> String {
 pub fn parse_ass(text: &str) -> Result<Vec<Cue>, SubsError> {
     let mut in_events = false;
     let mut format: Option<Vec<String>> = None;
-    let mut cues = Vec::new();
+    let mut events: Vec<(String, Cue)> = Vec::new();
     let mut seen = std::collections::HashSet::new();
     let mut position = 0u32;
 
@@ -286,9 +288,124 @@ pub fn parse_ass(text: &str) -> Result<Vec<Cue>, SubsError> {
         if !seen.insert((start_ms, end_ms, text.clone())) {
             continue; // the same line repeated on another layer
         }
-        cues.push(Cue::new(this_position, start_ms, end_ms, &text));
+        let style = field("style").unwrap_or("").to_owned();
+        events.push((style, Cue::new(this_position, start_ms, end_ms, &text)));
     }
-    Ok(sort(cues))
+    Ok(sort(pair_bilingual(events)))
+}
+
+/// Which language a style name says its events are in, from tags like `JP` in `Text - JP`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum StyleLanguage {
+    Japanese,
+    Chinese,
+    Unknown,
+}
+
+fn style_language(style: &str) -> StyleLanguage {
+    let mut found = StyleLanguage::Unknown;
+    for tag in style.split(|c: char| !c.is_ascii_alphanumeric()) {
+        match tag.to_ascii_uppercase().as_str() {
+            "JP" | "JA" | "JPN" | "JAP" => return StyleLanguage::Japanese,
+            "CN" | "ZH" | "CHS" | "CHT" | "SC" | "TC" | "CHI" | "GB" | "BIG5" => {
+                found = StyleLanguage::Chinese
+            }
+            _ => {}
+        }
+    }
+    found
+}
+
+fn has_kana(text: &str) -> bool {
+    text.chars()
+        .any(|c| matches!(c, '\u{3041}'..='\u{309F}' | '\u{30A0}'..='\u{30FF}' | '\u{31F0}'..='\u{31FF}'))
+}
+
+/// Bilingual ASS often carries each language as its own event: `Text - JP` and `Text - CN`
+/// with exactly the same start and end, sometimes several per language (a line split in two, a
+/// spell name with its reading). Events sharing a timing are paired into one cue when every one
+/// of them is plainly Japanese or Chinese, by its style's tag or else by kana, and both
+/// languages are there: the Japanese, joined in file order, is the 原文 and the Chinese the
+/// 譯文. Two one-line events in different, untagged styles pair too when exactly one has kana:
+/// that one is the 原文. Anything else sharing a timing (two lines in one style, a title card's
+/// two lines, an event of neither language among them) is left as it is.
+fn pair_bilingual(events: Vec<(String, Cue)>) -> Vec<Cue> {
+    use std::collections::{HashMap, HashSet};
+    let mut by_time: HashMap<(u64, u64), Vec<usize>> = HashMap::new();
+    for (i, (_, cue)) in events.iter().enumerate() {
+        by_time
+            .entry((cue.start_ms, cue.end_ms))
+            .or_default()
+            .push(i);
+    }
+    let mut merged: HashMap<usize, Cue> = HashMap::new();
+    let mut dropped = HashSet::new();
+    for group in by_time.values_mut() {
+        if group.len() < 2 || group.iter().any(|&i| events[i].1.translation.is_some()) {
+            continue;
+        }
+        group.sort_by_key(|&i| events[i].1.index);
+        let language = |i: usize| match style_language(&events[i].0) {
+            StyleLanguage::Unknown if has_kana(&events[i].1.text) => StyleLanguage::Japanese,
+            other => other,
+        };
+        let japanese: Vec<usize> = group
+            .iter()
+            .copied()
+            .filter(|&i| language(i) == StyleLanguage::Japanese)
+            .collect();
+        let chinese: Vec<usize> = group
+            .iter()
+            .copied()
+            .filter(|&i| language(i) == StyleLanguage::Chinese)
+            .collect();
+        let (originals, translations) = if !japanese.is_empty()
+            && !chinese.is_empty()
+            && japanese.len() + chinese.len() == group.len()
+        {
+            (japanese, chinese)
+        } else if let [a, b] = group[..] {
+            // Two lines, neither style tagged: different styles and exactly one with kana, which
+            // leads. Without kana nothing says which is the original (a title card's two lines,
+            // two speakers), so they stay apart.
+            let (style_a, style_b) = (&events[a].0, &events[b].0);
+            let (ja, jb) = (has_kana(&events[a].1.text), has_kana(&events[b].1.text));
+            let untagged = style_language(style_a) == StyleLanguage::Unknown
+                && style_language(style_b) == StyleLanguage::Unknown;
+            if style_a == style_b || !untagged || ja == jb {
+                continue;
+            }
+            if jb {
+                (vec![b], vec![a])
+            } else {
+                (vec![a], vec![b])
+            }
+        } else {
+            continue;
+        };
+        let join = |ids: &[usize]| {
+            ids.iter()
+                .map(|&i| events[i].1.text.as_str())
+                .collect::<Vec<_>>()
+                .join(" ")
+        };
+        let keep = originals[0];
+        merged.insert(
+            keep,
+            Cue {
+                text: join(&originals),
+                translation: Some(join(&translations)),
+                ..events[keep].1.clone()
+            },
+        );
+        dropped.extend(group.iter().copied().filter(|&i| i != keep));
+    }
+    events
+        .into_iter()
+        .enumerate()
+        .filter(|(i, _)| !dropped.contains(i))
+        .map(|(i, (_, cue))| merged.remove(&i).unwrap_or(cue))
+        .collect()
 }
 
 fn clean_ass_text(text: &str) -> String {
