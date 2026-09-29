@@ -38,6 +38,9 @@
        only real playback (Play mode, a normal page load) shows the fade-up. */
     .sb-card-wrap { position: relative; box-sizing: border-box; border-radius: var(--bento-radius-16); overflow: hidden; opacity: 1; transform: translateY(0); animation-name: sb-fade-up; animation-duration: 1100ms; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); animation-fill-mode: forwards; }
     @media (prefers-reduced-motion: reduce) { .sb-card-wrap { animation: none; } }
+    @keyframes pg-title-fade { from { opacity: 0; } to { opacity: 1; } }
+    .pg-anim-title { animation: pg-title-fade 450ms ease-out backwards; }
+    @media (prefers-reduced-motion: reduce) { .pg-anim-title { animation: none; } }
     .sb-card { appearance: none; -webkit-appearance: none; text-align: left; width: 100%; display: flex; align-items: center; gap: 16px; box-sizing: border-box; padding: 16px 20px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-10); border-radius: var(--bento-radius-16); cursor: pointer; transition: background-color 120ms ease, box-shadow 120ms ease; }
     .sb-card:hover { background: var(--bento-bg-secondary); box-shadow: var(--bento-elevation-sm); }
 
@@ -113,7 +116,7 @@
     </button>
   </div>
 
-  <h1 style="margin: 0; flex-shrink: 0; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">台詞本</h1>
+  <h1 class="pg-anim-title" style="margin: 0; flex-shrink: 0; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">台詞本</h1>
 
   <div style="display: flex; align-items: center; gap: 12px; flex-shrink: 0;">
     <x-import component-from-global-scope="BentoDS27_65ebe9.SearchBar" placeholder="角色名稱 or CV/飾演" value="{{query}}" onChange="{{handleQueryChange}}" onClear="{{handleQueryClear}}" style="width: 400px;"></x-import>

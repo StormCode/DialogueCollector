@@ -81,7 +81,7 @@ export function ScriptBookPage() {
 
   return (
     <section className="sb-page">
-      <h1 className="sb-title">{t("scriptBook.title")}</h1>
+      <h1 className="sb-title pg-anim-title">{t("scriptBook.title")}</h1>
 
       <div className="sb-toolbar">
         <div className="sb-search">

@@ -285,7 +285,7 @@ export function LinesPage() {
           <MaterialIcon name="chevron_left" size={20} />
           {t("nav.scriptBook")}
         </Link>
-        <h1 className="ln-title">{t("lines.title", { name: data.character.name })}</h1>
+        <h1 className="ln-title pg-anim-title">{t("lines.title", { name: data.character.name })}</h1>
       </div>
 
       {data.posterPath ? (
