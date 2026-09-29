@@ -67,12 +67,12 @@
 }
 
 .ln-btn-primary {
-  background: var(--dc-accent-40);
-  color: var(--bento-white);
+  background: var(--dc-solid);
+  color: var(--dc-on-solid);
 }
 
 .ln-btn-primary:hover {
-  background: var(--dc-accent-60);
+  background: var(--dc-solid-hover);
 }
 
 .ln-btn-primary.is-stop {
@@ -531,14 +531,14 @@
   justify-content: center;
   border: none;
   border-radius: 50%;
-  background: var(--dc-accent-40);
-  color: var(--bento-white);
+  background: var(--dc-solid);
+  color: var(--dc-on-solid);
   cursor: pointer;
   transition: background-color 120ms ease;
 }
 
 .ln-play:hover {
-  background: var(--dc-accent-60);
+  background: var(--dc-solid-hover);
 }
 
 .ln-actions {

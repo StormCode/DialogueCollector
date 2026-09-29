@@ -611,8 +611,8 @@
 
 .ui-page.is-current {
   border-color: var(--dc-accent-40);
-  background: var(--dc-accent-40);
-  color: var(--bento-action-solid-primary-fg);
+  background: var(--dc-solid);
+  color: var(--dc-on-solid);
 }
 
 .ui-page-gap {

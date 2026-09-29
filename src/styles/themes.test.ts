@@ -37,9 +37,14 @@ function rampStep(theme: string, step: number): string {
   return value;
 }
 
-/** Primary button text: white unless the theme overrides it (夜光黑 is dark-on-light). */
+/** Primary button text: white unless the theme overrides it. */
 function buttonText(theme: string): string {
   return themeValue(theme, "bento-action-solid-primary-fg") ?? "#ffffff";
+}
+
+/** Primary button fill: ramp step 50 unless the theme sets its own (夜光黑's slate). */
+function buttonFill(theme: string): string {
+  return themeValue(theme, "bento-action-solid-primary-bg") ?? rampStep(theme, 50);
 }
 
 function luminance(hex: string): number {
@@ -57,12 +62,17 @@ function contrast(a: string, b: string): number {
 
 describe("theme contrast (T16)", () => {
   it.each(THEMES)("%s: text on the primary button", (theme) => {
-    const ratio = contrast(buttonText(theme), rampStep(theme, 50));
+    const ratio = contrast(buttonText(theme), buttonFill(theme));
     if (KNOWN_AA_FAILURES.has(theme)) {
       expect(ratio, `${theme} now passes AA; drop it from KNOWN_AA_FAILURES`).toBeLessThan(4.5);
     } else {
       expect(ratio).toBeGreaterThanOrEqual(4.5);
     }
+  });
+
+  it("夜光黑: white text on its slate buttons, and on their hover", () => {
+    expect(contrast(themeValue("midnight", "dc-on-solid")!, themeValue("midnight", "dc-solid")!)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(themeValue("midnight", "dc-on-solid")!, themeValue("midnight", "dc-solid-hover")!)).toBeGreaterThanOrEqual(4.5);
   });
 
   it.each(THEMES)("%s: hover text on the soft fill stays legible", (theme) => {

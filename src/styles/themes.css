@@ -156,10 +156,16 @@
   --bento-action-transparent-primary-fg: #dee4ed;
   --bento-action-transparent-primary-fg-hover: #ffffff;
   --bento-action-transparent-primary-bg-hover: rgba(255, 255, 255, 0.08);
-  --bento-action-solid-primary-bg: #dee4ed;
-  --bento-action-solid-primary-bg-hover: #ffffff;
-  --bento-action-solid-primary-fg: #141a22;
-  --bento-action-solid-primary-fg-hover: #141a22;
+  /* Solid buttons: a mid slate with white text rather than the board's light fill with dark
+     text, which glared on the dark page (user 2026-09-29). 7.5:1, 6.2:1 on hover. */
+  --bento-action-solid-primary-bg: #4a5568;
+  --bento-action-solid-primary-bg-hover: #566273;
+  --bento-action-solid-primary-fg: #ffffff;
+  --bento-action-solid-primary-fg-hover: #ffffff;
+  --dc-solid: #4a5568;
+  --dc-solid-hover: #566273;
+  --dc-solid-hover-subtle: #566273;
+  --dc-on-solid: #ffffff;
 }
 
 :root {
@@ -188,4 +194,11 @@
   --bento-action-transparent-primary-fg: var(--dc-accent-50);
   --bento-action-transparent-primary-fg-hover: var(--dc-accent-60);
   --bento-action-transparent-primary-bg-hover: var(--dc-accent-5);
+
+  /* Filled buttons drawn with the accent (全部播放, play circles, 新增角色, 儲存, …). 夜光黑
+     swaps them for a slate fill. */
+  --dc-solid: var(--dc-accent-40);
+  --dc-solid-hover: var(--dc-accent-60);
+  --dc-solid-hover-subtle: var(--dc-accent-50);
+  --dc-on-solid: var(--bento-white);
 }

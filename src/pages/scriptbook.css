@@ -162,14 +162,14 @@
   padding: 14px 24px 14px 20px;
   border: none;
   border-radius: var(--bento-radius-16);
-  background: var(--dc-accent-40);
-  color: var(--bento-action-solid-primary-fg);
+  background: var(--dc-solid);
+  color: var(--dc-on-solid);
   font: var(--bento-weight-medium) 14px/18px var(--dc-ui-font);
   cursor: pointer;
 }
 
 .sb-add:hover {
-  background: var(--dc-accent-50);
+  background: var(--dc-solid-hover-subtle);
 }
 
 /* ---- empty and no-result (design/README.md: empty.png) ---- */

@@ -334,12 +334,12 @@
 
 .imp-btn--primary {
   border: none;
-  background: var(--dc-accent-40);
-  color: var(--bento-action-solid-primary-fg);
+  background: var(--dc-solid);
+  color: var(--dc-on-solid);
 }
 
 .imp-btn--primary:hover:not(:disabled) {
-  background: var(--dc-accent-50);
+  background: var(--dc-solid-hover-subtle);
 }
 
 .imp-btn--secondary {
@@ -446,14 +446,14 @@
   padding: 12px 14px 12px 20px;
   border: none;
   border-radius: var(--bento-radius-16);
-  background: var(--dc-accent-40);
-  color: var(--bento-action-solid-primary-fg);
+  background: var(--dc-solid);
+  color: var(--dc-on-solid);
   font: var(--bento-weight-medium) 14px/18px var(--dc-ui-font);
   cursor: pointer;
 }
 
 .sel-assign__btn:hover:not(:disabled) {
-  background: var(--dc-accent-50);
+  background: var(--dc-solid-hover-subtle);
 }
 
 .sel-assign__btn:disabled {
