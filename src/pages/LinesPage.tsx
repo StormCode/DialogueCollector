@@ -25,6 +25,11 @@ type View = "compact" | "detail";
 
 const POSTER_EXTENSIONS = ["jpg", "jpeg", "png", "gif"];
 
+/** The card's line of text: the 原文, or the 譯文 when a line has only that. */
+export function lineTitle(line: Pick<Line, "text" | "translation">) {
+  return line.text.trim() || line.translation?.trim() || "";
+}
+
 export function formatDuration(ms: number) {
   const s = Math.round(ms / 1000);
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
@@ -240,8 +245,8 @@ export function LinesPage() {
           </button>
         )}
         <div className="ln-card-body">
-          <div className="ln-card-text" title={line.text}>
-            {line.text}
+          <div className="ln-card-text" title={lineTitle(line)}>
+            {lineTitle(line)}
           </div>
           <div className="ln-card-meta">
             <span className="ln-meta-item">

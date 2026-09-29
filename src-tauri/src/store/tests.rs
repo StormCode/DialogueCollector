@@ -126,6 +126,15 @@ fn newer_schema_is_refused_naming_both_versions() {
     assert_eq!(schema_version(&conn).unwrap(), Some(SCHEMA_VERSION + 1));
 }
 
+/// A library still at v1, for the synthetic migration tests.
+fn fresh_v1() -> (tempfile::TempDir, Connection) {
+    let dir = tempfile::tempdir().unwrap();
+    let mut conn = Connection::open(dir.path().join("library.sqlite")).unwrap();
+    conn.pragma_update(None, "foreign_keys", "ON").unwrap();
+    migrate(&mut conn, &MIGRATIONS[..1]).unwrap();
+    (dir, conn)
+}
+
 const V2: Migration = Migration {
     version: 2,
     sql: "ALTER TABLE lines ADD COLUMN note TEXT;",
@@ -143,7 +152,7 @@ fn v1_then(next: Migration) -> [Migration; 2] {
 
 #[test]
 fn v1_to_v2_migration_applies_once_and_is_idempotent() {
-    let (_dir, mut conn) = fresh();
+    let (_dir, mut conn) = fresh_v1();
     let steps = v1_then(V2);
     assert_eq!(migrate(&mut conn, &steps).unwrap(), 2);
     assert_eq!(migrate(&mut conn, &steps).unwrap(), 2);
@@ -160,7 +169,7 @@ fn v1_to_v2_migration_applies_once_and_is_idempotent() {
 
 #[test]
 fn failed_migration_rolls_back_entirely() {
-    let (_dir, mut conn) = fresh();
+    let (_dir, mut conn) = fresh_v1();
     let broken = Migration {
         version: 2,
         // The first statement succeeds, the second fails: neither may survive.
@@ -252,7 +261,7 @@ fn audio_filename_must_be_twelve_uppercase_alphanumerics_dot_m4a() {
         "abcdefghijkl.m4a",
         "ABCDEFGHIJK.m4a",
         "ABCDEFGHIJKLM.m4a",
-        "ABCDEFGHIJKL.mp3",
+        "ABCDEFGHIJKL.wav",
         "ABCDEF/HIJKL.m4a",
         "../ABCDEFGHI.m4a",
     ] {
@@ -307,7 +316,9 @@ fn line_checks_reject_bad_input() {
         )
     };
     let long = "台".repeat(1001);
+    // 原文 alone may be empty only when there is a 譯文 (see the v2 test below).
     assert!(is_constraint_violation(insert("", None, 1, 1)));
+    assert!(is_constraint_violation(insert("  ", None, 1, 1)));
     assert!(is_constraint_violation(insert(&long, None, 1, 1)));
     assert!(is_constraint_violation(insert("ok", Some("red"), 1, 1)));
     assert!(is_constraint_violation(insert("ok", Some("#12345"), 1, 1)));
@@ -315,6 +326,50 @@ fn line_checks_reject_bad_input() {
     assert!(is_constraint_violation(insert("ok", None, -1, 1)));
     assert!(is_constraint_violation(insert("ok", None, 1, 0)));
     insert("ok", Some("#3c6fD6"), 1, 1).unwrap();
+}
+
+#[test]
+fn v2_keeps_existing_lines_and_accepts_a_translation_without_text() {
+    let (_dir, mut conn) = fresh_v1();
+    let id = insert_character(&conn);
+    insert_line(&conn, id, "ABCDEFGHIJKL.m4a").unwrap();
+    assert_eq!(migrate(&mut conn, MIGRATIONS).unwrap(), 2);
+
+    let kept: i64 = conn
+        .query_row("SELECT COUNT(*) FROM lines", [], |r| r.get(0))
+        .unwrap();
+    assert_eq!(kept, 1);
+    let indexes: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM sqlite_master WHERE type = 'index' AND tbl_name = 'lines' AND name LIKE 'idx_lines_%'",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(indexes, 2);
+
+    let insert = |text: &str, translation: Option<&str>, audio: &str| {
+        conn.execute(
+            "INSERT INTO lines (character_id, text, translation, audio_filename, audio_bytes, duration_ms, created_at, updated_at)
+             VALUES (?1, ?2, ?3, ?4, 1, 1, 0, 0)",
+            params![id, text, translation, audio],
+        )
+    };
+    insert("", Some("The breeze is lovely today."), "BBBBBBBBBBBB.m4a").unwrap();
+    assert!(is_constraint_violation(insert(
+        "",
+        Some("  "),
+        "CCCCCCCCCCCC.m4a"
+    )));
+    assert!(is_constraint_violation(insert(
+        "",
+        None,
+        "CCCCCCCCCCCC.m4a"
+    )));
+    // The character is still guarded by the rebuilt table's foreign key.
+    assert!(is_constraint_violation(
+        conn.execute("DELETE FROM characters WHERE id = ?1", [id])
+    ));
 }
 
 #[test]

@@ -62,13 +62,15 @@ export function EditLinePage() {
   }, [characters, charQuery]);
   const selected = characters.find((c) => c.id === owner) ?? null;
 
-  const textError = attempted && !text.trim() ? t("editLine.textRequired") : undefined;
+  // 原文 and 譯文 are each optional, but one of them must be filled in.
+  const blank = !text.trim() && !translation.trim();
+  const textError = attempted && blank ? t("editLine.textRequired") : undefined;
   const charError = attempted && owner === null ? t("editLine.characterRequired") : undefined;
 
   const save = async () => {
     setAttempted(true);
     setSaveError(null);
-    if (!line || !text.trim() || owner === null) return;
+    if (!line || blank || owner === null) return;
     try {
       const updated = await ipc.updateLine(line.id, { text, translation: translation.trim() || null, characterId: owner });
       setLine(updated);
@@ -113,6 +115,7 @@ export function EditLinePage() {
             rows={7}
             value={translation}
             onChange={(v) => edited(() => setTranslation(v))}
+            invalid={!!textError}
           />
           <div className="el-group el-character">
             <span className="el-label" id="el-character-label">

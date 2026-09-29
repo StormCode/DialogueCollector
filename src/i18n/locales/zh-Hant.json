@@ -373,7 +373,7 @@
     "preview": "播放預覽",
     "text": "台詞內容",
     "textPlaceholder": "請輸入這段台詞的文字…",
-    "textRequired": "請輸入台詞內容",
+    "textRequired": "請輸入台詞內容或譯文",
     "translation": "台詞譯文 (optional)",
     "translationPlaceholder": "請輸入這段台詞的翻譯文字…",
     "character": "角色",

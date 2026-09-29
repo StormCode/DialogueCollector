@@ -377,7 +377,7 @@
     "preview": "Preview",
     "text": "Line",
     "textPlaceholder": "Type this line's text…",
-    "textRequired": "Enter the line's text",
+    "textRequired": "Enter the line or its translation",
     "translation": "Translation (optional)",
     "translationPlaceholder": "Type this line's translation…",
     "character": "Character",
