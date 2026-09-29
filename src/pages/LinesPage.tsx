@@ -30,6 +30,11 @@ export function lineTitle(line: Pick<Line, "text" | "translation">) {
   return line.text.trim() || line.translation?.trim() || "";
 }
 
+/** The gray subtitle under it in 詳細: the 譯文, when the 原文 is already the title. */
+export function lineSubtitle(line: Pick<Line, "text" | "translation">) {
+  return line.text.trim() ? line.translation?.trim() || null : null;
+}
+
 export function formatDuration(ms: number) {
   const s = Math.round(ms / 1000);
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
@@ -248,6 +253,11 @@ export function LinesPage() {
           <div className="ln-card-text" title={lineTitle(line)}>
             {lineTitle(line)}
           </div>
+          {lineSubtitle(line) && (
+            <div className="ln-card-sub" title={lineSubtitle(line) ?? undefined}>
+              {lineSubtitle(line)}
+            </div>
+          )}
           <div className="ln-card-meta">
             <span className="ln-meta-item">
               <MaterialIcon name="schedule" size={16} />

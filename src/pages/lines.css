@@ -612,6 +612,17 @@
   color: var(--bento-neutral-60);
 }
 
+/* The 譯文 under the 原文 in 詳細 (user decision 2026-09-29; not on the board). */
+.ln-card-sub {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: -2px;
+  font: var(--bento-weight-regular) 14px/20px var(--dc-line-font), var(--dc-ui-font);
+  color: var(--bento-content-secondary);
+}
+
 .ln-card.is-active .ln-card-text {
   color: var(--dc-accent-40);
 }
@@ -626,6 +637,7 @@
   line-height: 48px;
 }
 
+.ln-list.is-compact .ln-card-sub,
 .ln-list.is-compact .ln-card-meta {
   display: none;
 }

@@ -7,7 +7,7 @@ import { ipc } from "../lib/ipc";
 import type { Line, LinesPageData } from "../lib/types";
 import { DEFAULT_SETTINGS } from "../lib/types";
 import { useSettingsStore } from "../stores/settingsStore";
-import { formatCreated, formatDuration, lineTitle, LinesPage } from "./LinesPage";
+import { formatCreated, formatDuration, lineSubtitle, lineTitle, LinesPage } from "./LinesPage";
 
 vi.mock("@tauri-apps/plugin-dialog", () => ({ open: vi.fn() }));
 
@@ -66,6 +66,10 @@ describe("LinesPage", () => {
   it("titles a card with the 譯文 when there is no 原文", () => {
     expect(lineTitle({ text: "", translation: "El Psy Congroo." })).toBe("El Psy Congroo.");
     expect(lineTitle({ text: "今天的風好舒服呢。", translation: "Lovely breeze." })).toBe("今天的風好舒服呢。");
+    // 詳細: the 譯文 becomes the gray subtitle only when the 原文 is the title.
+    expect(lineSubtitle({ text: "今天的風好舒服呢。", translation: "Lovely breeze." })).toBe("Lovely breeze.");
+    expect(lineSubtitle({ text: "", translation: "El Psy Congroo." })).toBeNull();
+    expect(lineSubtitle({ text: "今天的風好舒服呢。", translation: null })).toBeNull();
   });
 
   it("shows 這裡什麼都沒有 with 匯入台詞 when the character has no lines", async () => {
