@@ -14,7 +14,7 @@
     "manual": "手持ちの動画や音声をそのまま取り込む",
     "title": "セリフの取り込み方法を選んでください",
     "subtitleFormats": "ASS、SRT に対応",
-    "mediaFormats": "MKV、MP4、WEBM、OGG、M4A、MP3 に対応",
+    "mediaFormats": "MKV、MP4、WEBM、WAV、M4A、MP3 に対応",
     "subtitleFilter": "字幕ファイル",
     "mediaFilter": "動画・音声ファイル",
     "unsupported": "この形式にはまだ対応していません",

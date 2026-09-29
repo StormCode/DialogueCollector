@@ -14,7 +14,7 @@
     "manual": "直接匯入現有的影片或音訊",
     "title": "請選擇其中一種匯入台詞的方式",
     "subtitleFormats": "支援 ASS、SRT",
-    "mediaFormats": "支援 MKV、MP4、WEBM、OGG、M4A、MP3",
+    "mediaFormats": "支援 MKV、MP4、WEBM、WAV、M4A、MP3",
     "subtitleFilter": "字幕檔",
     "mediaFilter": "影音檔",
     "unsupported": "尚未支援此格式",

@@ -8,10 +8,11 @@ import { MaterialIcon } from "../components/icons/Icon";
 import { extensionOf, useFileDrop } from "../components/ui/useFileDrop";
 import { useUiStore } from "../stores/uiStore";
 import type { SubtitleImportState } from "./import/SubtitleImportPage";
-import { SOURCE_EXTENSIONS } from "./import/SourceScreen";
 import "./main.css";
 
 const SUBTITLE_EXTENSIONS = ["ass", "srt"];
+/** 直接匯入: videos have their audio encoded; WAV, M4A and MP3 are kept as they are (user 2026-09-29). */
+export const MANUAL_EXTENSIONS = ["mkv", "mp4", "webm", "wav", "m4a", "mp3"];
 
 /**
  * Splits dropped files into the supported ones and a message for the rest: 尚未支援此格式 for a
@@ -52,7 +53,7 @@ export function MainPage() {
     navigate("/import/subtitle", { state: { subtitle: supported[0] } satisfies SubtitleImportState });
   };
   const openManual = (paths: string[]) => {
-    const { supported, skipped } = sortDropped(paths, SOURCE_EXTENSIONS);
+    const { supported, skipped } = sortDropped(paths, MANUAL_EXTENSIONS);
     reportSkipped(paths.length, skipped);
     if (supported.length > 0) navigate("/import/manual", { state: { files: supported } });
   };
@@ -70,7 +71,7 @@ export function MainPage() {
   const browseManual = async () => {
     const picked = await open({
       multiple: true,
-      filters: [{ name: t("main.mediaFilter"), extensions: SOURCE_EXTENSIONS }],
+      filters: [{ name: t("main.mediaFilter"), extensions: MANUAL_EXTENSIONS }],
     });
     if (Array.isArray(picked)) openManual(picked);
   };

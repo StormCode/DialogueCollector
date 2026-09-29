@@ -1,6 +1,6 @@
 //! 直接匯入現有影音 (R6 as corrected 2026-09-28): every file becomes one line.
 //!
-//! - A video's whole first audio stream is encoded to m4a; an audio file (m4a, mp3, ogg) is
+//! - A video's whole first audio stream is encoded to m4a; an audio file (wav, m4a, mp3) is
 //!   copied in as it was, keeping its extension.
 //! - Both go through `commit_cue`, so the ENG2 write order is the same as the subtitle path's.
 //! - A file that fails is skipped and reported; the others carry on.
@@ -362,7 +362,7 @@ mod tests {
                     translation: Some("  Lovely breeze. ".into()),
                     ..item(source(dir.path(), "breeze.MP3"), "  ")
                 },
-                item(source(dir.path(), "voice.ogg"), "我們不會忘記你們的名字。"),
+                item(source(dir.path(), "voice.wav"), "我們不會忘記你們的名字。"),
             ],
         );
         assert_eq!(outcome.status, RunStatus::Complete);
@@ -374,7 +374,7 @@ mod tests {
         assert_eq!(rows[1].0, "", "a translation alone is enough");
         assert_eq!(rows[1].1.as_deref(), Some("Lovely breeze."));
         assert!(rows[1].2.ends_with(".mp3"), "kept as it was: {}", rows[1].2);
-        assert!(rows[2].2.ends_with(".ogg"));
+        assert!(rows[2].2.ends_with(".wav"));
         assert!(rows.iter().all(|r| r.3 == 2500));
         // The copied files are byte for byte the sources.
         assert_eq!(fs::read(root.join(&rows[1].2)).unwrap(), b"source");

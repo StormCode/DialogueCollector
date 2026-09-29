@@ -61,10 +61,10 @@ pub async fn probe_media(paths: Vec<PathBuf>) -> CommandResult<Vec<MediaInfo>> {
 }
 
 /// Files every webview plays as they are; anything else is previewed from an m4a made once.
-const PLAYABLE: &[&str] = &["m4a", "mp3", "mp4"];
+const PLAYABLE: &[&str] = &["m4a", "mp3", "mp4", "wav"];
 
-/// 播放預覽: a path the webview can play for `path`, added to the asset scope. MKV, WebM and Ogg
-/// (which not every macOS webview decodes) get their audio encoded to a cached m4a first.
+/// 播放預覽: a path the webview can play for `path`, added to the asset scope. MKV and WebM (which
+/// not every macOS webview decodes) get their audio encoded to a cached m4a first.
 #[tauri::command]
 pub async fn prepare_preview(app: AppHandle, path: PathBuf) -> CommandResult<PathBuf> {
     let ext = path

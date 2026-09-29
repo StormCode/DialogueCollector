@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import i18n from "../i18n";
-import { sortDropped } from "./MainPage";
+import { MANUAL_EXTENSIONS, sortDropped } from "./MainPage";
 
 describe("dropping files on the main page", () => {
   it("keeps the supported files and counts the rest", () => {
@@ -10,6 +10,13 @@ describe("dropping files on the main page", () => {
       skipped: 2,
     });
     expect(sortDropped(["/a/c.ts"], ["mkv"])).toEqual({ supported: [], skipped: 1 });
+  });
+
+  it("直接匯入 takes WAV but no longer OGG", () => {
+    expect(sortDropped(["/a/v.wav", "/a/v.ogg", "/a/ep.mkv"], MANUAL_EXTENSIONS)).toEqual({
+      supported: ["/a/v.wav", "/a/ep.mkv"],
+      skipped: 1,
+    });
   });
 
   it("words the notice for one file and for several", () => {
