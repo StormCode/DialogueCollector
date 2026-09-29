@@ -290,7 +290,8 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  /* 10px, 2px under the board (user 2026-09-29). */
+  gap: 10px;
 }
 
 /* The name with the CV/飾演 as a chip beside it, then the 作品 below. */
