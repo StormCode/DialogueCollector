@@ -68,6 +68,9 @@
     .ln-card { position: relative; display: flex; align-items: center; gap: 16px; box-sizing: border-box; padding: 16px 20px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-10); border-radius: var(--bento-radius-16); overflow: hidden; transition: background-color 120ms ease, box-shadow 120ms ease, border-color 120ms ease; opacity: 1; transform: translateY(0); animation-name: ln-fade-up; animation-duration: 1100ms; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); animation-fill-mode: forwards; }
     @keyframes ln-fade-up { 0% { opacity: 0; transform: translateY(48px); } 100% { opacity: 1; transform: translateY(0); } }
     @media (prefers-reduced-motion: reduce) { .ln-card { animation: none; } }
+    @keyframes pg-title-fade { from { opacity: 0; } to { opacity: 1; } }
+    .pg-anim-title { animation: pg-title-fade 450ms ease-out backwards; }
+    @media (prefers-reduced-motion: reduce) { .pg-anim-title { animation: none; } }
     .ln-card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
     .ln-card.is-active { border-color: var(--bento-dv-indigo-40); background: var(--bento-dv-indigo-5); }
     .ln-card.is-missing { border-color: var(--bento-negative-40); box-shadow: inset 0 0 0 1px var(--bento-negative-40); }
@@ -151,7 +154,7 @@
         <span class="material-symbol" aria-hidden="true" style="font-size: 20px;">chevron_left</span>
         台詞本
       </a>
-      <h1 style="margin: 0; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">優希的台詞</h1>
+      <h1 class="pg-anim-title" style="margin: 0; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">優希的台詞</h1>
     </div>
 
     <input id="ln-poster-file" class="ln-file" type="file" accept="image/*" onChange="{{handlePosterFile}}">

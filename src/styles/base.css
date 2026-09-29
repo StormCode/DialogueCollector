@@ -85,3 +85,23 @@ body {
 .main-page__zone:hover {
   background: var(--dc-accent-soft);
 }
+
+/* Page titles fade in (ScriptBook, Lines, LinesPoster boards: .pg-anim-title). */
+@keyframes pg-title-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pg-anim-title {
+  animation: pg-title-fade 450ms ease-out backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-anim-title {
+    animation: none;
+  }
+}
