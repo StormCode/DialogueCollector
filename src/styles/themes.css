@@ -149,7 +149,8 @@
   --bento-elevation-md: 0 8px 16px rgba(0, 0, 0, 0.45);
   --bento-elevation-lg: 0 16px 32px rgba(0, 0, 0, 0.5);
 
-  --bento-bg-interactive: #76849a;
+  /* Checked checkboxes and switches: the solid slate, as on the dark boards. */
+  --bento-bg-interactive: #4a5568;
   --bento-border-input-focus: #cbd4e1;
   --bento-action-outline-primary-outline: #cbd4e1;
   --bento-action-outline-primary-outline-hover: #eef1f6;
@@ -201,4 +202,14 @@
   --dc-solid-hover: var(--dc-accent-60);
   --dc-solid-hover-subtle: var(--dc-accent-50);
   --dc-on-solid: var(--bento-white);
+}
+
+/* 夜光黑's empty.png: inverted so its black line art turns light, hue-rotated back, and screened
+   so the inverted white ground drops out (the dark boards' `[data-theme="midnight"] img[…]`).
+   oops.png is left as it is: it is a full-colour drawing whose outlines sit on white fills and
+   reads fine on the dark ground, while the same filter turns it into a negative (checked
+   2026-09-29 against renders of both). */
+:root[data-theme="midnight"] .dc-illus {
+  filter: invert(1) hue-rotate(180deg) brightness(0.85);
+  mix-blend-mode: screen;
 }
