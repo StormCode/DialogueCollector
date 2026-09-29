@@ -69,7 +69,7 @@ export function MainPage() {
           </div>
         </div>
 
-        <div className="main-column pg-anim-up" style={{ animationDelay: "600ms" }}>
+        <div className="main-column pg-anim-up" style={{ animationDelay: "900ms" }}>
           <div className="main-column__head">
             <div className="main-column__title">{t("main.manual")}</div>
             <div className="main-column__formats">{t("main.mediaFormats")}</div>
