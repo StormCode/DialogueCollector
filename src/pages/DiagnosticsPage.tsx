@@ -25,7 +25,7 @@ export function DiagnosticsPage() {
 
   return (
     <section className="page">
-      <h1 className="page__title">{t("diagnostics.title")}</h1>
+      <h1 className="page__title pg-anim-title">{t("diagnostics.title")}</h1>
       <button type="button" onClick={() => void run()} disabled={running}>
         {running ? t("diagnostics.running") : t("diagnostics.run")}
       </button>
