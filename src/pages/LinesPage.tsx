@@ -254,7 +254,7 @@ export function LinesPage() {
             {lineTitle(line)}
           </div>
           {lineSubtitle(line) && (
-            <div className="ln-card-sub" title={lineSubtitle(line) ?? undefined}>
+            <div className="ln-card-trans" title={lineSubtitle(line) ?? undefined}>
               {lineSubtitle(line)}
             </div>
           )}

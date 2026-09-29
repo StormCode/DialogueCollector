@@ -96,10 +96,11 @@
     .ln-pin-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: var(--bento-dv-orange-5); color: var(--bento-dv-orange-60); font: var(--bento-weight-semibold) 12px/16px var(--bento-font-ui); }
     .ln-card-body { display: flex; flex-direction: column; gap: 6px; min-width: 0; flex: 1 1 auto; }
     .ln-card-text { font: var(--bento-weight-regular) 16px/24px 'Chiron GoRound TC', var(--bento-font-ui); color: var(--bento-neutral-60); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .ln-list.is-compact .ln-card-body { gap: 0; }
     .ln-card.is-active .ln-card-text { color: var(--bento-dv-indigo-40); }
-    .ln-list.is-compact .ln-card-text { font-size: 22px; line-height: 48px; -webkit-line-clamp: 1; }
+    .ln-list.is-compact .ln-card-text { font-size: 22px; line-height: 32px; -webkit-line-clamp: 1; }
     .ln-list.is-compact .ln-card-meta { display: none; }
+    .ln-card-trans { font: var(--bento-weight-regular) 13px/18px var(--bento-font-ui); color: var(--bento-content-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ln-list.is-compact .ln-card-body { gap: 2px; }
     .ln-view-group { display: inline-flex; flex-shrink: 0; padding: 4px; gap: 4px; box-sizing: border-box; height: 48px; border-radius: var(--bento-radius-16); background: var(--bento-bg-primary); box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-border-input-enabled); }
     .ln-view-btn { appearance: none; -webkit-appearance: none; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 12px; background: transparent; color: var(--bento-content-secondary); cursor: pointer; transition: background-color 120ms ease, color 120ms ease; }
     .ln-view-btn:hover { background: var(--bento-bg-secondary); }
@@ -263,7 +264,8 @@
               </div>
             </sc-if>
             <div class="ln-card-body">
-              <div class="ln-card-text" title="{{item.text}}">{{item.text}}</div>
+              <div class="ln-card-text" title="{{item.text}}" lang="ja">{{item.text}}</div>
+              <div class="ln-card-trans" title="{{item.translation}}">{{item.translation}}</div>
               <div class="ln-card-meta">
                 <span class="ln-meta-item"><span class="material-symbol" aria-hidden="true" style="font-size: 16px;">schedule</span>{{item.durationLabel}}</span>
                 <span class="ln-meta-item"><span class="material-symbol" aria-hidden="true" style="font-size: 16px;">calendar_today</span>{{item.createdLabel}}</span>
@@ -298,7 +300,8 @@
             </div>
           </sc-if>
           <div class="ln-card-body">
-            <div class="ln-card-text" title="{{item.text}}">{{item.text}}</div>
+            <div class="ln-card-text" title="{{item.text}}" lang="ja">{{item.text}}</div>
+              <div class="ln-card-trans" title="{{item.translation}}">{{item.translation}}</div>
             <div class="ln-card-meta">
               <span class="ln-meta-item"><span class="material-symbol" aria-hidden="true" style="font-size: 16px;">schedule</span>{{item.durationLabel}}</span>
               <span class="ln-meta-item"><span class="material-symbol" aria-hidden="true" style="font-size: 16px;">calendar_today</span>{{item.createdLabel}}</span>
@@ -393,12 +396,14 @@ class Component extends DCLogic {
       '只要還有明天，就還有希望。',
       '晚安，做個好夢。',
     ];
+    const originals = ['今日の風、気持ちいいね。', 'ちょっと待って、まだ話は終わってない！', '何があっても、わたしはあなたの味方だよ。', 'この程度の困難なんて、どうってことない。', 'ありがとう、ずっとそばにいてくれて。', 'えっ？本当に？', 'あの時、もう少しだけ勇気を出せていたら……', '行こう、みんなが待ってる。', 'べ、別にあなたが心配で来たわけじゃないんだからね。', '約束だよ、明日同じ時間にここで会おう。', '今度は、わたしがあなたを守る番。', 'うーん……もう少し考えさせて。', '世界中が無理だって言っても、わたしはやってみる。', '久しぶり、全然変わってないね。', '心配しないで、わたしに任せて。', 'これが、わたしの答え。', 'バカ、いったい何考えてるのよ！', '雨だね、一緒に傘に入って帰ろう。', '今日のこと、ずっと覚えてるから。', '準備はいい？出発するよ！', 'ごめんなさい、わたしが悪かった。', '明日がある限り、希望はある。', 'おやすみ、いい夢を。'];
     const base = new Date(2026, 8, 22, 21, 30).getTime();
     this.LINES = texts.map((text, i) => {
       const durationMs = 1800 + ((i * 1733) % 7200) + text.length * 60;
       return {
         id: i + 1,
-        text,
+        text: originals[i],
+        translation: text,
         durationMs: Math.round(durationMs / 100) * 100,
         createdAt: base - i * (5 * 3600 * 1000 + ((i * 7919) % 3600) * 1000),
       };
@@ -466,7 +471,7 @@ class Component extends DCLogic {
 
   getFiltered = () => {
     const q = (this.state.query || '').trim();
-    const list = q ? this.LINES.filter((l) => l.text.includes(q)) : this.LINES.slice();
+    const list = q ? this.LINES.filter((l) => (l.text.includes(q) || l.translation.includes(q))) : this.LINES.slice();
     const key = this.state.sortKey === 'duration' ? 'durationMs' : 'createdAt';
     const dir = this.state.sortDir === 'asc' ? 1 : -1;
     list.sort((a, b) => (a[key] - b[key]) * dir);
@@ -597,13 +602,14 @@ class Component extends DCLogic {
     const missingLine = (this.props.missingLine ?? '').trim();
     const buildItem = (l, idx) => {
       const isCur = l.id === curId;
-      const isMissing = !!missingLine && l.text === missingLine;
+      const isMissing = !!missingLine && (l.text === missingLine || l.translation === missingLine);
       const isPlaying = isCur && !paused;
       const isPinned = pinnedIds.includes(l.id);
       return {
         delay: (idx * 100) + 'ms',
         id: l.id,
         text: l.text,
+        translation: l.translation,
         durationLabel: this.fmtDuration(l.durationMs),
         createdLabel: this.fmtDate(l.createdAt),
         checked: checked.includes(l.id),
