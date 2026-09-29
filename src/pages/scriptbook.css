@@ -290,6 +290,15 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  gap: 12px;
+}
+
+/* The name with the CV/飾演 as a chip beside it, then the 作品 below. */
+.sb-card__name-row {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .sb-card__name,
@@ -301,6 +310,8 @@
 }
 
 .sb-card__name {
+  flex: 0 1 auto;
+  min-width: 0;
   font: var(--bento-weight-semibold) 18px/24px var(--dc-ui-font);
   color: var(--bento-content-primary);
 }
@@ -311,8 +322,14 @@
 }
 
 .sb-card__cv {
-  font: var(--bento-weight-regular) 13px/18px var(--dc-ui-font);
-  color: var(--bento-neutral-60);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  max-width: 60%;
+  padding: 2px 8px;
+  border-radius: var(--bento-radius-8);
+  background: var(--dc-accent-5);
+  color: var(--dc-accent-60);
+  font: var(--bento-weight-medium) 12px/18px var(--dc-ui-font);
 }
 
 /* Hovering the card reveals the corner arc and the edit button after 1s (and hides them at
