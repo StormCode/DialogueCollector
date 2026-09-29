@@ -152,6 +152,17 @@
   pointer-events: none;
 }
 
+/* With a label it is Bento SelectField in a form: as wide as the fields above and below it
+   (AddCharacter / EditCharacter: 376px, the column), with the fields' 16px value. */
+.ui-field > .ui-select {
+  align-self: stretch;
+  width: auto;
+}
+
+.ui-field > .ui-select select {
+  font-size: 16px;
+}
+
 /* ---- number ---- */
 .ui-number {
   display: inline-flex;
