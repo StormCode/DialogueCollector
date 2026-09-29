@@ -1,11 +1,8 @@
 /* Board: Settings.dc.html. */
-.app-layout__content:has(.settings-page) {
-  padding: 56px 104px;
-  overflow: hidden;
-}
-
 .settings-page {
+  box-sizing: border-box;
   height: 100%;
+  padding: 56px 104px;
   display: flex;
   flex-direction: column;
   gap: 28px;
