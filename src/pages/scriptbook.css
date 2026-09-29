@@ -201,12 +201,15 @@
 }
 
 /* ---- the grid ---- */
+/* 8px of room on every side for the cards' hover shadow, taken back with negative margins so
+   the grid keeps its place and width. */
 .sb-scroll {
   flex: 1 1 0;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  padding-right: calc(4px - var(--st-scrollbar));
+  margin: -8px -8px -8px;
+  padding: 8px calc(16px - var(--st-scrollbar)) 8px 8px;
 }
 
 .sb-grid {
@@ -233,6 +236,7 @@
   overflow: hidden;
   border-radius: var(--bento-radius-16);
   animation: sb-fade-up 1100ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  transition: box-shadow 120ms ease;
 }
 
 .sb-card {
@@ -254,8 +258,9 @@
 }
 
 /* Like a line card on the 台詞 page: a shadow on hover, the background stays (user 2026-09-29;
-   the board also tints it bg-secondary). */
-.sb-card:hover {
+   the board also tints it bg-secondary). It goes on the wrapper, whose overflow would clip a
+   shadow on the card inside it. */
+.sb-card-wrap:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
