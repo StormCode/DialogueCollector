@@ -10,6 +10,9 @@ import type {
   CharacterEdit,
   Cue,
   JobOutcome,
+  ManualEntry,
+  ManualOutcome,
+  MediaInfo,
   Line,
   LineEdit,
   LinesPageData,
@@ -50,6 +53,9 @@ export const ipc = {
   deleteLine: (id: number) => invoke<void>("delete_line", { id }),
   setPoster: (characterId: number, path: string | null) =>
     invoke<string | null>("set_poster", { characterId, path }),
+  probeMedia: (paths: string[]) => invoke<MediaInfo[]>("probe_media", { paths }),
+  preparePreview: (path: string) => invoke<string>("prepare_preview", { path }),
+  startManualImport: (entries: ManualEntry[]) => invoke<ManualOutcome>("start_manual_import", { entries }),
   allowPreview: (path: string) => invoke<void>("allow_preview", { path }),
   createCharacter: (character: NewCharacter) => invoke<Character>("create_character", { character }),
   startSubtitleImport: (subtitle: string, source: string, assignments: Assignment[]) =>

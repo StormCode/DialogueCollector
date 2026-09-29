@@ -396,6 +396,25 @@
       "Line": {
         "NotFound": "This line no longer exists"
       }
-    }
+    },
+    "unassigned": "Unassigned"
+  },
+  "manual": {
+    "title": "Enter the line",
+    "subtitle": "Type what this line says and choose who says it",
+    "translation": "Translation",
+    "import": "Import",
+    "importNext": "Import another",
+    "prev": "Previous",
+    "next": "Next",
+    "pagerLabel": "Switch line",
+    "pendingMany": "{{count}} lines still need filling in (no. {{list}})",
+    "pendingMany_one": "1 line still needs filling in (no. {{list}})",
+    "pendingOne": "Enter the line or its translation and choose a character",
+    "pendingUnassigned": "Choose a character before importing",
+    "unassignedError": "Unassigned lines can't be imported. Choose a character.",
+    "noAudio": "Skipped {{count}} files with no audio",
+    "noAudio_one": "Skipped 1 file with no audio",
+    "partial": "Imported {{imported}}; {{failed}} failed"
   }
 }

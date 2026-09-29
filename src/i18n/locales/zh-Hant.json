@@ -18,7 +18,7 @@
     "subtitleFilter": "字幕檔",
     "mediaFilter": "影音檔",
     "unsupported": "尚未支援此格式",
-    "unsupportedSkipped": "尚未支援此格式，略過了{{count}}個檔案"
+    "unsupportedSkipped": "尚未支援此格式，略過了 {{count}} 個檔案"
   },
   "scriptBook": {
     "title": "台詞本",
@@ -391,6 +391,23 @@
       "Line": {
         "NotFound": "這段台詞已不存在"
       }
-    }
+    },
+    "unassigned": "未指派"
+  },
+  "manual": {
+    "title": "請輸入台詞",
+    "subtitle": "輸入這段台詞的文字內容，並選擇對應的角色",
+    "translation": "台詞譯文",
+    "import": "匯入",
+    "importNext": "匯入下一句",
+    "prev": "上一筆",
+    "next": "下一筆",
+    "pagerLabel": "台詞切換",
+    "pendingMany": "尚有 {{count}} 筆未完成（第 {{list}} 筆）",
+    "pendingOne": "請填寫台詞內容或譯文，並指派角色",
+    "pendingUnassigned": "請指派角色後再匯入",
+    "unassignedError": "未指派角色無法匯入，請選擇角色",
+    "noAudio": "略過了 {{count}} 個沒有音訊的檔案",
+    "partial": "已匯入 {{imported}} 句，{{failed}} 句失敗"
   }
 }

@@ -48,6 +48,8 @@ const MATERIAL = [
   "close",
   "content_cut",
   "domain_add",
+  "forward",
+  "download",
   "error",
   "expand_more:wght300",
   "filter_list",

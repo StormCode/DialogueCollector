@@ -23,16 +23,22 @@
     .input-card-scroll::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; }
     .input-card-scroll:hover { scrollbar-width: thin; scrollbar-color: var(--bento-neutral-20, rgba(0,0,0,0.25)) transparent; }
     .input-card-scroll:hover::-webkit-scrollbar-thumb { background: var(--bento-neutral-20, rgba(0,0,0,0.25)); }
-    .pv-play { background: var(--bento-dv-indigo-40); transition: background-color 120ms ease; }
-    .pv-play:hover { background: var(--bento-dv-indigo-60); }
+    .pv-play { background: var(--solid-bg, var(--bento-dv-indigo-40)); transition: background-color 120ms ease; }
+    .pv-play:hover { background: var(--solid-bg-hover, var(--bento-dv-indigo-60)); }
     .il-pager { display: inline-flex; align-items: center; gap: 4px; }
+    .il-import:disabled { background: var(--bento-action-disabled-bg) !important; color: var(--bento-action-disabled-fg) !important; cursor: not-allowed !important; }
+    .il-pending { position: absolute; top: 100%; right: 0; margin-top: 8px; font: var(--bento-weight-regular) 12px/16px var(--bento-font-ui); color: var(--bento-content-secondary); white-space: nowrap; }
     .il-pager-btn { appearance: none; -webkit-appearance: none; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 999px; background: transparent; color: var(--bento-dv-indigo-40); cursor: pointer; transition: background-color 120ms ease; }
     .il-pager-btn:hover:not(:disabled) { background: var(--bento-dv-indigo-5); }
     .il-pager-btn:disabled { color: var(--bento-action-disabled-fg); opacity: 0.4; cursor: not-allowed; }
     .il-pager-count { min-width: 48px; text-align: center; font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); color: var(--bento-content-secondary); font-variant-numeric: tabular-nums; }
+    @keyframes pg-title-fade { from { opacity: 0; } to { opacity: 1; } }
+    .pg-anim-title { animation: pg-title-fade 450ms ease-out backwards; }
+    @media (prefers-reduced-motion: reduce) { .pg-anim-title { animation: none; } }
+    [data-theme="midnight"] img[src*="a41f06bab49514a736e15468dc1a8344"], [data-theme="midnight"] img[src*="3743135e47e2a77f4bf75b0b0b47f5eb"] { filter: invert(1) hue-rotate(180deg) brightness(0.85); mix-blend-mode: screen !important; }
   </style>
 </helmet>
-<div style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 80px; gap: 40px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0;">
+<div data-theme="{{theme}}" style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 80px; gap: 40px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0; {{themeStyle}}">
 
   <svg viewBox="0 0 1280 800" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
     <path d="M 1020,0 C 1070,56 1100,175 1100,250 C 1100,415 1010,635 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--bento-dv-indigo-5);"></path>
@@ -61,7 +67,7 @@
   <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 32px; min-height: 0;">
 
     <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;">
-      <h1 style="margin: 0; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">請輸入台詞</h1>
+      <h1 class="pg-anim-title" style="margin: 0; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">請輸入台詞</h1>
       <div style="font-family: var(--font-bento-font-ui); font-weight: 400; font-size: 14px; line-height: 20px; color: var(--bento-content-secondary);">輸入這段台詞的文字內容，並選擇對應的角色</div>
     </div>
 
@@ -87,7 +93,7 @@
 
       <x-import component-from-global-scope="BentoDS27_65ebe9.Field" kind="textarea" label="台詞內容" placeholder="請輸入這段台詞的文字…" value="{{lineText}}" on-change="{{handleTextChange}}" width="{{fieldWidth}}" rows="7" error-text="{{textError}}"></x-import>
 
-      <x-import component-from-global-scope="BentoDS27_65ebe9.Field" kind="textarea" label="台詞譯文 (optional)" placeholder="請輸入這段台詞的翻譯文字…" value="{{translationText}}" on-change="{{handleTranslationChange}}" width="{{fieldWidth}}" rows="7"></x-import>
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Field" kind="textarea" label="台詞譯文" placeholder="請輸入這段台詞的翻譯文字…" value="{{translationText}}" on-change="{{handleTranslationChange}}" width="{{fieldWidth}}" rows="7"></x-import>
 
       <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start; width: 560px; max-width: 100%; position: relative;">
         <span style="font: var(--bento-weight-medium) 11px/14px var(--bento-font-ui); color: var(--bento-content-secondary);">角色</span>
@@ -135,14 +141,17 @@
           <span class="il-pager-count" aria-live="polite">{{itemIndex}}/{{itemTotal}}</span>
           <button type="button" class="il-pager-btn" aria-label="下一筆" disabled="{{isLastItem}}" onClick="{{goNextItem}}"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="ChevronRight" size="20"></x-import></button>
         </div>
-        <div style="display: flex; align-items: center; justify-content: flex-end; gap: 12px;">
+        <div style="position: relative; display: flex; align-items: center; justify-content: flex-end; gap: 12px;">
+          <sc-if value="{{importDisabled}}" hint-placeholder-val="{{true}}">
+            <span class="il-pending" aria-live="polite">{{importHint}}</span>
+          </sc-if>
           <sc-if value="{{submitted}}" hint-placeholder-val="{{false}}">
             <span style="display: flex; align-items: center; gap: 6px; font-family: var(--font-bento-font-ui); font-weight: 500; font-size: 14px; line-height: 18px; color: var(--bento-content-positive);">
               <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="PositiveCircle" size="18"></x-import>
               已送出台詞
             </span>
           </sc-if>
-          <button type="button" onClick="{{handleConfirm}}" style="appearance: none; -webkit-appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 24px 13px 20px; border-radius: var(--bento-radius-16); border: none; background: var(--bento-dv-indigo-40); color: var(--bento-white); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer;"><span class="material-symbol" aria-hidden="true">download</span>匯入</button>
+          <button type="button" class="il-import" disabled="{{importDisabled}}" title="{{importHint}}" onClick="{{handleConfirm}}" style="appearance: none; -webkit-appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 24px 13px 20px; border-radius: var(--bento-radius-16); border: none; background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer;"><span class="material-symbol" aria-hidden="true">download</span>匯入</button>
         </div>
       </div>
 
@@ -151,7 +160,7 @@
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","midnight"],"default":"light"},"$preview":{"width":1280,"height":800}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
@@ -168,6 +177,14 @@ class Component extends DCLogic {
       duration: 5,
       itemIndex: 1,
       itemTotal: 6,
+      items: [
+        { text: '', trans: '', character: '' },
+        { text: '人類的壽命真的很短暫呢。', trans: '', character: 'frieren' },
+        { text: '', trans: 'Stark, you are stronger than you think.', character: 'fern' },
+        { text: '我們不會忘記你們的名字。', trans: '', character: '__none' },
+        { text: 'これが運命石の扉の選択だ。', trans: '這就是命運石之門的選擇。', character: 'okabe' },
+        { text: '不殺之誓，拙者不會違背。', trans: '', character: 'kenshin' },
+      ],
     };
     this._timer = null;
     this.CHARACTERS = [
@@ -227,13 +244,22 @@ class Component extends DCLogic {
     return m + ':' + (r < 10 ? '0' : '') + r;
   };
 
-  handleTextChange = (e) => {
-    this.setState({ lineText: e.target.value, submitted: false });
+  updateItem = (patch) => {
+    this.setState((p) => {
+      const i = (p.itemIndex ?? 1) - 1;
+      const items = p.items.slice();
+      items[i] = Object.assign({}, items[i], patch);
+      return { items, submitted: false };
+    });
   };
 
-  handleTranslationChange = (e) => {
-    this.setState({ translationText: e.target.value, submitted: false });
-  };
+  curItem = () => (this.state.items || [])[(this.state.itemIndex ?? 1) - 1] || { text: '', trans: '', character: '' };
+
+  isItemDone = (it) => !!((it.text || '').trim() || (it.trans || '').trim()) && !!it.character && it.character !== '__none';
+
+  handleTextChange = (e) => this.updateItem({ text: e.target.value });
+
+  handleTranslationChange = (e) => this.updateItem({ trans: e.target.value });
 
   handleCharQuery = (e) => this.setState({ charQuery: e.target.value });
   clearCharQuery = () => this.setState({ charQuery: '' });
@@ -248,8 +274,8 @@ class Component extends DCLogic {
   };
 
   selectCharacter = (id) => {
-    this.setState({ charQuery: '' });
-    this.setState({ character: id, charMenuOpen: false, submitted: false });
+    this.setState({ charQuery: '', charMenuOpen: false });
+    this.updateItem({ character: id });
   };
 
   handleAddCharacter = () => {
@@ -264,23 +290,26 @@ class Component extends DCLogic {
   };
 
   handleConfirm = () => {
-    const lineText = this.state.lineText || '';
-    const character = this.state.character || '';
-    const valid = !!lineText.trim() && !!character;
+    const valid = (this.state.items || []).every(this.isItemDone);
     this.setState({ attemptedSubmit: true, submitted: valid });
   };
 
-  renderVals() {
+  _baseRenderVals() {
     const expanded = this.state.expanded ?? true;
-    const lineText = this.state.lineText ?? '';
-    const translationText = this.state.translationText ?? '';
-    const character = this.state.character ?? '';
+    const cur = this.curItem();
+    const lineText = cur.text ?? '';
+    const translationText = cur.trans ?? '';
+    const character = cur.character ?? '';
+    const items = this.state.items || [];
+    const pending = items.map((it, i) => (this.isItemDone(it) ? 0 : i + 1)).filter(Boolean);
+    const importDisabled = pending.length > 0;
+    const importHint = !importDisabled ? '' : (items.length > 1 ? '尚有 ' + pending.length + ' 筆未完成（第 ' + pending.join('、') + ' 筆）' : (character === '__none' ? '請指派角色後再匯入' : '請填寫台詞內容或譯文，並指派角色'));
     const attemptedSubmit = this.state.attemptedSubmit ?? false;
     const playing = this.state.playing ?? false;
     const currentTime = this.state.currentTime ?? 0;
     const duration = this.state.duration ?? 0;
     const charMenuOpen = this.state.charMenuOpen ?? false;
-    const charError = attemptedSubmit && !character ? '請選擇角色' : undefined;
+    const charError = character === '__none' ? '未指派角色無法匯入，請選擇角色' : (attemptedSubmit && !character ? '請選擇角色' : undefined);
     const selectedCharacterObj = this.CHARACTERS.find((c) => c.id === character) || null;
     return {
       expanded,
@@ -301,7 +330,9 @@ class Component extends DCLogic {
       goNextItem: this.goNextItem,
       handleConfirm: this.handleConfirm,
       submitted: this.state.submitted ?? false,
-      textError: attemptedSubmit && !lineText.trim() ? '請輸入台詞內容' : undefined,
+      textError: attemptedSubmit && !lineText.trim() && !translationText.trim() ? '台詞內容或譯文至少填寫一項' : undefined,
+      importDisabled,
+      importHint,
       charError,
       fieldWidth: 560,
       playing,
@@ -343,6 +374,14 @@ class Component extends DCLogic {
         pick: () => this.selectCharacter(c.id),
       })),
     };
+  }
+
+  renderVals() {
+    const v = this._baseRenderVals() || {};
+    const dark = (this.props.theme ?? 'light') === 'midnight';
+    v.theme = dark ? 'midnight' : 'light';
+    v.themeStyle = dark ? "color-scheme: dark; --bento-neutral-1: #1b222c; --bento-neutral-5: #242c37; --bento-neutral-10: #2e3743; --bento-neutral-20: #3d4756; --bento-neutral-30: #566273; --bento-neutral-40: #76849a; --bento-neutral-50: #9aa8bc; --bento-neutral-60: #b6c2d3; --bento-neutral-70: #cbd4e1; --bento-neutral-80: #dee4ed; --bento-neutral-90: #eef1f6; --bento-bg-primary: #1f2630; --bento-bg-secondary: #141a22; --bento-bg-overlay: rgba(255,255,255,0.06); --bento-bg-interactive-overlay: rgba(255,255,255,0.08); --bento-content-primary: #eef1f6; --bento-content-secondary: #9aa8bc; --bento-content-disabled: rgba(255,255,255,0.3); --bento-icon-primary: #eef1f6; --bento-icon-secondary: #9aa8bc; --bento-border-decorative: #3d4756; --bento-border-container: rgba(255,255,255,0.08); --bento-border-input-enabled: #566273; --bento-border-input-hover: #76849a; --bento-border-input-focus: #cbd4e1; --bento-border-input-disabled: rgba(255,255,255,0.12); --bento-action-disabled-bg: rgba(255,255,255,0.1); --bento-action-disabled-fg: #76849a; --bento-bg-negative: rgba(241,74,88,0.16); --bento-negative-1: rgba(241,74,88,0.12); --bento-negative-5: rgba(241,74,88,0.2); --bento-negative-10: rgba(241,74,88,0.32); --bento-content-negative: #fa7d87; --bento-negative-50: #fa7d87; --bento-icon-negative: #fa7d87; --bento-negative-60: #ffb6bc; --bento-bg-positive: rgba(66,215,91,0.16); --bento-content-positive: #7eeb83; --bento-icon-positive: #7eeb83; --bento-positive-60: #7eeb83; --bento-bg-warning: rgba(252,179,59,0.16); --bento-warning-70: #ffcf73; --bento-elevation-sm: 0 4px 8px rgba(0,0,0,0.4); --bento-elevation-md: 0 8px 16px rgba(0,0,0,0.45); --bento-elevation-lg: 0 16px 32px rgba(0,0,0,0.5); --bento-dv-indigo-1: #242c37; --bento-dv-indigo-5: #2a3340; --bento-dv-indigo-10: #2e3743; --bento-dv-indigo-20: #566273; --bento-dv-indigo-30: #9aa8bc; --bento-dv-indigo-40: #cbd4e1; --bento-dv-indigo-50: #dee4ed; --bento-dv-indigo-60: #eef1f6; --bento-dv-indigo-70: #eef1f6; --bento-dv-indigo-80: #eef1f6; --bento-dv-indigo-90: #eef1f6; --solid-bg: #4a5568; --solid-bg-hover: #566273; --bento-bg-interactive: #4a5568; --bento-action-solid-primary-bg: #4a5568; --bento-action-solid-primary-bg-hover: #566273; --bento-action-solid-primary-fg: #ffffff; --bento-action-solid-primary-fg-hover: #ffffff; --bento-action-outline-primary-outline: #cbd4e1; --bento-action-outline-primary-outline-hover: #eef1f6; --bento-action-transparent-primary-fg: #dee4ed; --bento-action-transparent-primary-fg-hover: #ffffff; --bento-action-transparent-primary-bg-hover: rgba(255,255,255,0.08);" : '';
+    return v;
   }
 }
 </script>

@@ -31,9 +31,10 @@
     @keyframes pg-in-up { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
     .pg-anim-up { animation: pg-in-up 920ms cubic-bezier(0.22, 1, 0.36, 1) backwards; }
     @media (prefers-reduced-motion: reduce) { .pg-anim-up { animation: none; } }
+    [data-theme="midnight"] img[src*="a41f06bab49514a736e15468dc1a8344"], [data-theme="midnight"] img[src*="3743135e47e2a77f4bf75b0b0b47f5eb"] { mix-blend-mode: normal !important; }
   </style>
 </helmet>
-<div style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 80px; gap: 40px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0;">
+<div data-theme="{{theme}}" style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 80px; gap: 40px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0; {{themeStyle}}">
 
   <svg viewBox="0 0 1280 800" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
     <path d="M 1020,0 C 1070,56 1100,175 1100,250 C 1100,415 1010,635 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--bento-dv-indigo-5);"></path>
@@ -93,6 +94,16 @@
 
   </div>
 
+  <sc-if value="{{showFormatToast}}" hint-placeholder-val="{{false}}">
+    <div class="lib-toast-wrap" role="alert" style="position: absolute; top: 24px; left: 50%; transform: translateX(-50%); z-index: 50;">
+      <div class="lib-toast" style="width: auto; min-width: 360px;">
+        <span style="display: inline-flex; flex-shrink: 0; color: var(--bento-icon-negative);"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="NegativeSolid" size="16"></x-import></span>
+        <span style="flex: 1 1 auto; min-width: 0; font: var(--bento-weight-regular) 14px/20px var(--bento-font-ui); color: var(--bento-content-negative);">{{formatToastText}}</span>
+        <button type="button" class="lib-toast-close" aria-label="關閉" onClick="{{dismissFormatToast}}"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="XWeightBold" size="16"></x-import></button>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{showLibToast}}" hint-placeholder-val="{{false}}">
     <div class="lib-toast-wrap" role="alert" style="position: absolute; top: 24px; left: 50%; transform: translateX(-50%); z-index: 50;">
       <div class="lib-toast">
@@ -105,7 +116,7 @@
   </sc-if>
 </div>
 </x-dc>
-<script data-dc-script data-props='{"libraryNotFound":{"editor":"boolean","default":false},"$preview":{"width":1280,"height":800}}'>
+<script data-dc-script data-props='{"theme":{"editor":"enum","options":["light","midnight"],"default":"light"},"libraryNotFound":{"editor":"boolean","default":false},"unsupportedFormat":{"editor":"boolean","default":false},"skippedCount":{"editor":"number","default":1},"$preview":{"width":1280,"height":800}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
@@ -117,17 +128,29 @@ class Component extends DCLogic {
   };
 
   dismissLibToast = () => this.setState({ libToastDismissed: true });
+  dismissFormatToast = () => this.setState({ formatToastDismissed: true });
 
-  renderVals() {
+  _baseRenderVals() {
     const expanded = this.state.expanded ?? true;
     return {
       showLibToast: !!(this.props.libraryNotFound ?? false) && !this.state.libToastDismissed,
       dismissLibToast: this.dismissLibToast,
+      showFormatToast: !!(this.props.unsupportedFormat ?? false) && !this.state.formatToastDismissed,
+      dismissFormatToast: this.dismissFormatToast,
+      formatToastText: (() => { const n = Number(this.props.skippedCount ?? 1) || 1; return n > 1 ? '尚未支援此格式，略過了 ' + n + ' 個檔案' : '尚未支援此格式'; })(),
       expanded,
       toggleExpand: this.toggleExpand,
       chevronName: expanded ? 'ChevronRight' : 'ChevronLeft',
       toggleLabel: expanded ? '收合選單' : '展開選單',
     };
+  }
+
+  renderVals() {
+    const v = this._baseRenderVals() || {};
+    const dark = (this.props.theme ?? 'light') === 'midnight';
+    v.theme = dark ? 'midnight' : 'light';
+    v.themeStyle = dark ? "color-scheme: dark; --bento-neutral-1: #1b222c; --bento-neutral-5: #242c37; --bento-neutral-10: #2e3743; --bento-neutral-20: #3d4756; --bento-neutral-30: #566273; --bento-neutral-40: #76849a; --bento-neutral-50: #9aa8bc; --bento-neutral-60: #b6c2d3; --bento-neutral-70: #cbd4e1; --bento-neutral-80: #dee4ed; --bento-neutral-90: #eef1f6; --bento-bg-primary: #1f2630; --bento-bg-secondary: #141a22; --bento-bg-overlay: rgba(255,255,255,0.06); --bento-bg-interactive-overlay: rgba(255,255,255,0.08); --bento-content-primary: #eef1f6; --bento-content-secondary: #9aa8bc; --bento-content-disabled: rgba(255,255,255,0.3); --bento-icon-primary: #eef1f6; --bento-icon-secondary: #9aa8bc; --bento-border-decorative: #3d4756; --bento-border-container: rgba(255,255,255,0.08); --bento-border-input-enabled: #566273; --bento-border-input-hover: #76849a; --bento-border-input-focus: #cbd4e1; --bento-border-input-disabled: rgba(255,255,255,0.12); --bento-action-disabled-bg: rgba(255,255,255,0.1); --bento-action-disabled-fg: #76849a; --bento-bg-negative: rgba(241,74,88,0.16); --bento-negative-1: rgba(241,74,88,0.12); --bento-negative-5: rgba(241,74,88,0.2); --bento-negative-10: rgba(241,74,88,0.32); --bento-content-negative: #fa7d87; --bento-negative-50: #fa7d87; --bento-icon-negative: #fa7d87; --bento-negative-60: #ffb6bc; --bento-bg-positive: rgba(66,215,91,0.16); --bento-content-positive: #7eeb83; --bento-icon-positive: #7eeb83; --bento-positive-60: #7eeb83; --bento-bg-warning: rgba(252,179,59,0.16); --bento-warning-70: #ffcf73; --bento-elevation-sm: 0 4px 8px rgba(0,0,0,0.4); --bento-elevation-md: 0 8px 16px rgba(0,0,0,0.45); --bento-elevation-lg: 0 16px 32px rgba(0,0,0,0.5); --bento-dv-indigo-1: #242c37; --bento-dv-indigo-5: #2a3340; --bento-dv-indigo-10: #2e3743; --bento-dv-indigo-20: #566273; --bento-dv-indigo-30: #9aa8bc; --bento-dv-indigo-40: #cbd4e1; --bento-dv-indigo-50: #dee4ed; --bento-dv-indigo-60: #eef1f6; --bento-dv-indigo-70: #eef1f6; --bento-dv-indigo-80: #eef1f6; --bento-dv-indigo-90: #eef1f6; --solid-bg: #4a5568; --solid-bg-hover: #566273; --bento-bg-interactive: #4a5568; --bento-action-solid-primary-bg: #4a5568; --bento-action-solid-primary-bg-hover: #566273; --bento-action-solid-primary-fg: #ffffff; --bento-action-solid-primary-fg-hover: #ffffff; --bento-action-outline-primary-outline: #cbd4e1; --bento-action-outline-primary-outline-hover: #eef1f6; --bento-action-transparent-primary-fg: #dee4ed; --bento-action-transparent-primary-fg-hover: #ffffff; --bento-action-transparent-primary-bg-hover: rgba(255,255,255,0.08);" : '';
+    return v;
   }
 }
 </script>
