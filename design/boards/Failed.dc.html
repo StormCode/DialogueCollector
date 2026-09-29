@@ -75,7 +75,7 @@
         </div>
         <div class="complete-fade-text" style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
           <div style="font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 28px; line-height: 44px; color: var(--bento-content-primary)">匯入失敗</div>
-          <div style="font-family: var(--font-bento-font-ui); font-weight: 400; font-size: 14px; line-height: 20px; color: var(--bento-content-secondary)">Oops... Something went wrong</div>
+          <div style="font-family: var(--font-bento-font-ui); font-weight: 400; font-size: 14px; line-height: 20px; color: var(--bento-content-secondary)">{{failSubtitle}}</div>
         </div>
       </div>
 
@@ -83,11 +83,14 @@
         <button type="button" class="complete-btn complete-btn-neutral complete-btn-icon" onClick="{{handleBackHome}}"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Home" size="24"></x-import>返回主頁</button>
         <button type="button" class="complete-btn complete-btn-primary complete-btn-icon" onClick="{{handleRetry}}"><span class="material-symbol" aria-hidden="true">refresh</span>再試一次</button>
       </div>
+      <sc-if value="{{isPartial}}" hint-placeholder-val="{{false}}">
+        <div class="complete-fade-actions" style="margin-top: -24px; font: var(--bento-weight-regular) 13px/18px var(--bento-font-ui); color: var(--bento-content-secondary);">「再試一次」只會重新匯入失敗的 {{failedCount}} 句</div>
+      </sc-if>
     </div>
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","midnight"],"default":"light"},"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","midnight"],"default":"light"},"importedCount":{"editor":"number","default":0},"failedCount":{"editor":"number","default":0},"$preview":{"width":1280,"height":800}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
@@ -103,7 +106,7 @@ class Component extends DCLogic {
   };
 
   handleRetry = () => {
-    // TODO: 重新嘗試匯入
+    // TODO: 只重新匯入失敗的那幾筆（部分失敗時），全部失敗則整批重試
   };
 
   _baseRenderVals() {
@@ -115,6 +118,12 @@ class Component extends DCLogic {
       toggleLabel: expanded ? '收合選單' : '展開選單',
       handleBackHome: this.handleBackHome,
       handleRetry: this.handleRetry,
+      ...(() => {
+        const x = Number(this.props.importedCount ?? 0) || 0;
+        const y = Number(this.props.failedCount ?? 0) || 0;
+        const partial = x > 0 && y > 0;
+        return { isPartial: partial, failedCount: y, failSubtitle: partial ? '已匯入 ' + x + ' 句，' + y + ' 句失敗' : 'Oops... Something went wrong' };
+      })(),
     };
   }
 

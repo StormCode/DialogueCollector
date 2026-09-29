@@ -40,6 +40,20 @@
   color: var(--bento-content-informative);
 }
 
+/* MainNoAudio / InputLineNoAudio: the board's .warn-toast, glyph and text in warning-70. */
+.toast--warning {
+  background: var(--bento-bg-warning);
+  color: var(--bento-warning-70);
+}
+
+.toast--warning .toast__text {
+  white-space: nowrap;
+}
+
+.toast--warning .toast__close:hover {
+  background: rgba(242, 147, 13, 0.14);
+}
+
 /* Bento Toast's leading glyph, in the tone's icon colour. */
 .toast__icon {
   display: inline-flex;
@@ -52,6 +66,10 @@
 
 .toast--positive .toast__icon {
   color: var(--bento-icon-positive);
+}
+
+.toast--warning .toast__icon {
+  color: var(--bento-warning-70);
 }
 
 .toast--informative .toast__icon {

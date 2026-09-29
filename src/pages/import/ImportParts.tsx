@@ -18,12 +18,18 @@ export function StatusCard({
   title,
   hint,
   actions,
+  actionsNote,
+  footnote,
   entrance = "fade",
 }: {
   medallion: ReactNode;
   title: string;
   hint?: string;
   actions?: ReactNode;
+  /** A line right under the buttons (ImportingIndex: what 取消 does). */
+  actionsNote?: string;
+  /** A line closing the card, below the buttons (FailedPartial: what 再試一次 redoes). */
+  footnote?: string;
   /** complete-card / failed-card shake the whole card in. */
   entrance?: "fade" | "celebrate" | "shake";
 }) {
@@ -37,7 +43,14 @@ export function StatusCard({
             {hint && <div className="imp-status__hint">{hint}</div>}
           </div>
         </div>
-        {actions && <div className="imp-fade imp-fade--3 imp-status__actions">{actions}</div>}
+        {actions && !actionsNote && <div className="imp-fade imp-fade--3 imp-status__actions">{actions}</div>}
+        {actions && actionsNote && (
+          <div className="imp-fade imp-fade--3 imp-status__stack">
+            <div className="imp-status__actions">{actions}</div>
+            <span className="imp-status__actions-note">{actionsNote}</span>
+          </div>
+        )}
+        {footnote && <div className="imp-fade imp-fade--3 imp-status__footnote">{footnote}</div>}
       </div>
     </div>
   );

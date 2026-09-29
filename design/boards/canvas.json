@@ -2,6 +2,24 @@
   "v": 3,
   "attachments": {},
   "boards": {
+    "AddCharacter.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "新增角色",
+      "w": 1280,
+      "x": 1360,
+      "y": 920
+    },
+    "AddCharacterDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "新增角色（夜光黑）",
+      "w": 1280,
+      "x": 1360,
+      "y": 5880
+    },
     "Complete.dc.html": {
       "h": 800,
       "is_interactive": true,
@@ -10,6 +28,105 @@
       "w": 1280,
       "x": 2720,
       "y": 0
+    },
+    "CompleteDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-2",
+      "title": "匯入完成（夜光黑）",
+      "w": 1280,
+      "x": 2720,
+      "y": 1280
+    },
+    "DeleteConfirm.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "刪除角色",
+      "w": 1280,
+      "x": 4080,
+      "y": 920
+    },
+    "DeleteConfirmDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "刪除角色（夜光黑）",
+      "w": 1280,
+      "x": 4080,
+      "y": 5880
+    },
+    "DeleteLine.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "刪除台詞",
+      "w": 1280,
+      "x": 8160,
+      "y": 920
+    },
+    "DeleteLineDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "刪除台詞（夜光黑）",
+      "w": 1280,
+      "x": 8160,
+      "y": 5880
+    },
+    "DeletePoster.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "刪除橫幅海報",
+      "w": 1280,
+      "x": 6800,
+      "y": 1840
+    },
+    "DeletePosterDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "刪除橫幅海報（夜光黑）",
+      "w": 1280,
+      "x": 6800,
+      "y": 6800
+    },
+    "EditCharacter.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "編輯角色",
+      "w": 1280,
+      "x": 2720,
+      "y": 920
+    },
+    "EditCharacterDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "編輯角色（夜光黑）",
+      "w": 1280,
+      "x": 2720,
+      "y": 5880
+    },
+    "EditLine.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "編輯台詞",
+      "w": 1280,
+      "x": 6800,
+      "y": 920
+    },
+    "EditLineDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "編輯台詞（夜光黑）",
+      "w": 1280,
+      "x": 6800,
+      "y": 5880
     },
     "Failed.dc.html": {
       "h": 800,
@@ -20,6 +137,15 @@
       "x": 4080,
       "y": 0
     },
+    "FailedDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-2",
+      "title": "匯入失敗（夜光黑）",
+      "w": 1280,
+      "x": 4080,
+      "y": 1280
+    },
     "ImportingIndex.dc.html": {
       "h": 800,
       "is_interactive": true,
@@ -28,6 +154,15 @@
       "w": 1280,
       "x": 1360,
       "y": 0
+    },
+    "ImportingIndexDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-2",
+      "title": "匯入中（夜光黑）",
+      "w": 1280,
+      "x": 1360,
+      "y": 1280
     },
     "InputLine.dc.html": {
       "h": 800,
@@ -38,6 +173,96 @@
       "x": 0,
       "y": 0
     },
+    "InputLineDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-2",
+      "title": "請輸入台詞（夜光黑）",
+      "w": 1280,
+      "x": 0,
+      "y": 1280
+    },
+    "Lines.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "台詞",
+      "w": 1280,
+      "x": 5440,
+      "y": 920
+    },
+    "LinesDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "台詞（夜光黑）",
+      "w": 1280,
+      "x": 5440,
+      "y": 5880
+    },
+    "LinesEmpty.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "台詞（空狀態）",
+      "w": 1280,
+      "x": 5440,
+      "y": 2760
+    },
+    "LinesEmptyDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "台詞（空狀態）（夜光黑）",
+      "w": 1280,
+      "x": 5440,
+      "y": 7720
+    },
+    "LinesMissing.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "台詞（遺失的檔案）",
+      "w": 1280,
+      "x": 5440,
+      "y": 4600
+    },
+    "LinesMissingDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "台詞（遺失的檔案）（夜光黑）",
+      "w": 1280,
+      "x": 5440,
+      "y": 8640
+    },
+    "LinesNoResult.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "台詞（搜尋無結果）",
+      "w": 1280,
+      "x": 5440,
+      "y": 3680
+    },
+    "LinesPoster.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "台詞（有海報）",
+      "w": 1280,
+      "x": 5440,
+      "y": 1840
+    },
+    "LinesPosterDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "台詞（有海報）（夜光黑）",
+      "w": 1280,
+      "x": 5440,
+      "y": 6800
+    },
     "Main.dc.html": {
       "h": 800,
       "is_interactive": true,
@@ -46,76 +271,20 @@
       "x": 0,
       "y": 0
     },
-    "SubtitleFailed.dc.html": {
+    "MainDark.dc.html": {
       "h": 800,
       "is_interactive": true,
-      "page": "page-3",
-      "title": "讀取失敗",
-      "w": 1280,
-      "x": 1360,
-      "y": 0
-    },
-    "VideoSelect.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-3",
-      "title": "Step 3. 匯入影片",
-      "w": 1280,
-      "x": 4080,
-      "y": 0
-    },
-    "VideoImportingIndex.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-3",
-      "title": "匯入中",
-      "w": 1280,
-      "x": 6800,
-      "y": 0
-    },
-    "VideoComplete.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-3",
-      "title": "匯入完成",
-      "w": 1280,
-      "x": 8160,
-      "y": 0
-    },
-    "VideoFailed.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-3",
-      "title": "匯入失敗",
-      "w": 1280,
-      "x": 10880,
-      "y": 0
-    },
-    "SubtitleSelect.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-3",
-      "title": "Step 2. 選擇台詞",
-      "w": 1280,
-      "x": 2720,
-      "y": 0
-    },
-    "SubtitleImporting.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-3",
-      "title": "讀取字幕",
+      "title": "起始畫面（夜光黑）",
       "w": 1280,
       "x": 0,
-      "y": 0
+      "y": 1280
     },
-    "VideoCutting.dc.html": {
+    "MainLibraryNotFound.dc.html": {
       "h": 800,
       "is_interactive": true,
-      "page": "page-3",
-      "title": "切割影片中",
+      "title": "找不到收藏庫 Toast",
       "w": 1280,
-      "x": 5440,
+      "x": 1360,
       "y": 0
     },
     "ScriptBook.dc.html": {
@@ -127,77 +296,41 @@
       "x": 0,
       "y": 920
     },
-    "AddCharacter.dc.html": {
+    "ScriptBookDark.dc.html": {
       "h": 800,
       "is_interactive": true,
       "page": "page-4",
-      "title": "新增角色",
+      "title": "台詞本（夜光黑）",
       "w": 1280,
-      "x": 1360,
-      "y": 920
+      "x": 0,
+      "y": 5880
     },
-    "EditCharacter.dc.html": {
+    "ScriptBookEmpty.dc.html": {
       "h": 800,
       "is_interactive": true,
       "page": "page-4",
-      "title": "編輯角色",
+      "title": "台詞本（空狀態）",
       "w": 1280,
-      "x": 2720,
-      "y": 920
-    },
-    "DeleteConfirm.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-4",
-      "title": "刪除角色",
-      "w": 1280,
-      "x": 4080,
-      "y": 920
-    },
-    "Lines.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-4",
-      "title": "台詞",
-      "w": 1280,
-      "x": 5440,
-      "y": 920
-    },
-    "EditLine.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-4",
-      "title": "編輯台詞",
-      "w": 1280,
-      "x": 6800,
-      "y": 920
-    },
-    "DeleteLine.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-4",
-      "title": "刪除台詞",
-      "w": 1280,
-      "x": 8160,
-      "y": 920
-    },
-    "LinesPoster.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-4",
-      "title": "台詞（有海報）",
-      "w": 1280,
-      "x": 5440,
+      "x": 0,
       "y": 1840
     },
-    "DeletePoster.dc.html": {
+    "ScriptBookEmptyDark.dc.html": {
       "h": 800,
       "is_interactive": true,
       "page": "page-4",
-      "title": "刪除橫幅海報",
+      "title": "台詞本（空狀態）（夜光黑）",
       "w": 1280,
-      "x": 6800,
-      "y": 1840
+      "x": 0,
+      "y": 6800
+    },
+    "ScriptBookNoResult.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-4",
+      "title": "台詞本（搜尋無結果）",
+      "w": 1280,
+      "x": 0,
+      "y": 2760
     },
     "Settings.dc.html": {
       "h": 800,
@@ -206,6 +339,24 @@
       "title": "設定",
       "w": 1280,
       "x": 0,
+      "y": 0
+    },
+    "SettingsDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-5",
+      "title": "設定（夜光黑）",
+      "w": 1280,
+      "x": 0,
+      "y": 920
+    },
+    "SettingsExportFailed.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-5",
+      "title": "匯出失敗 Toast",
+      "w": 1280,
+      "x": 4080,
       "y": 0
     },
     "SettingsExportSuccess.dc.html": {
@@ -217,31 +368,13 @@
       "x": 2720,
       "y": 0
     },
-    "SettingsExportFailed.dc.html": {
+    "SettingsExporting.dc.html": {
       "h": 800,
       "is_interactive": true,
       "page": "page-5",
-      "title": "匯出失敗 Toast",
+      "title": "匯出中",
       "w": 1280,
-      "x": 4080,
-      "y": 0
-    },
-    "SettingsImportSuccess.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-5",
-      "title": "匯入完成 Toast",
-      "w": 1280,
-      "x": 6800,
-      "y": 0
-    },
-    "SettingsImportFailed.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-5",
-      "title": "匯入失敗 Toast",
-      "w": 1280,
-      "x": 8160,
+      "x": 1360,
       "y": 0
     },
     "SettingsImportConfirm.dc.html": {
@@ -253,22 +386,22 @@
       "x": 5440,
       "y": 0
     },
-    "VideoPartial.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-3",
-      "title": "部分完成",
-      "w": 1280,
-      "x": 9520,
-      "y": 0
-    },
-    "SettingsExporting.dc.html": {
+    "SettingsImportFailed.dc.html": {
       "h": 800,
       "is_interactive": true,
       "page": "page-5",
-      "title": "匯出中",
+      "title": "匯入失敗 Toast",
       "w": 1280,
-      "x": 1360,
+      "x": 8160,
+      "y": 0
+    },
+    "SettingsImportSuccess.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-5",
+      "title": "匯入完成 Toast",
+      "w": 1280,
+      "x": 6800,
       "y": 0
     },
     "SettingsLibraryNotFound.dc.html": {
@@ -280,66 +413,13 @@
       "x": 9520,
       "y": 0
     },
-    "SettingsNetworkDrive.dc.html": {
+    "SettingsMissingDeleteAll.dc.html": {
       "h": 800,
       "is_interactive": true,
       "page": "page-5",
-      "title": "網路磁碟被拒絕 Toast",
+      "title": "遺失的檔案－全部刪除確認",
       "w": 1280,
-      "x": 10880,
-      "y": 0
-    },
-    "ScriptBookEmpty.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-4",
-      "title": "台詞本（空狀態）",
-      "w": 1280,
-      "x": 0,
-      "y": 1840
-    },
-    "LinesEmpty.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-4",
-      "title": "台詞（空狀態）",
-      "w": 1280,
-      "x": 5440,
-      "y": 2760
-    },
-    "SubtitleSelectEmpty.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-3",
-      "title": "無法提取台詞 Toast",
-      "w": 1280,
-      "x": 2720,
-      "y": 920
-    },
-    "ScriptBookNoResult.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-4",
-      "title": "台詞本（搜尋無結果）",
-      "w": 1280,
-      "x": 0,
-      "y": 2760
-    },
-    "LinesNoResult.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-4",
-      "title": "台詞（搜尋無結果）",
-      "w": 1280,
-      "x": 5440,
-      "y": 3680
-    },
-    "MainLibraryNotFound.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "title": "找不到收藏庫 Toast",
-      "w": 1280,
-      "x": 1360,
+      "x": 14960,
       "y": 0
     },
     "SettingsMissingFiles.dc.html": {
@@ -360,31 +440,226 @@
       "x": 13600,
       "y": 0
     },
-    "SettingsDark.dc.html": {
+    "SettingsNetworkDrive.dc.html": {
       "h": 800,
       "is_interactive": true,
       "page": "page-5",
-      "title": "設定（夜光黑）",
+      "title": "網路磁碟被拒絕 Toast",
+      "w": 1280,
+      "x": 10880,
+      "y": 0
+    },
+    "SubtitleFailed.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "讀取失敗",
+      "w": 1280,
+      "x": 1360,
+      "y": 0
+    },
+    "SubtitleFailedDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "讀取失敗（夜光黑）",
+      "w": 1280,
+      "x": 1360,
+      "y": 2200
+    },
+    "SubtitleImporting.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "讀取字幕",
       "w": 1280,
       "x": 0,
+      "y": 0
+    },
+    "SubtitleImportingDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "讀取字幕（夜光黑）",
+      "w": 1280,
+      "x": 0,
+      "y": 2200
+    },
+    "SubtitleSelect.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "Step 2. 選擇台詞",
+      "w": 1280,
+      "x": 2720,
+      "y": 0
+    },
+    "SubtitleSelectDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "Step 2. 選擇台詞（夜光黑）",
+      "w": 1280,
+      "x": 2720,
+      "y": 2200
+    },
+    "SubtitleSelectEmpty.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "無法提取台詞 Toast",
+      "w": 1280,
+      "x": 2720,
       "y": 920
     },
-    "LinesMissing.dc.html": {
+    "VideoComplete.dc.html": {
       "h": 800,
       "is_interactive": true,
-      "page": "page-4",
-      "title": "台詞（遺失的檔案）",
+      "page": "page-3",
+      "title": "匯入完成",
+      "w": 1280,
+      "x": 8160,
+      "y": 0
+    },
+    "VideoCompleteDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "匯入完成（夜光黑）",
+      "w": 1280,
+      "x": 8160,
+      "y": 2200
+    },
+    "VideoCutting.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "切割影片中",
       "w": 1280,
       "x": 5440,
-      "y": 4600
+      "y": 0
     },
-    "SettingsMissingDeleteAll.dc.html": {
+    "VideoCuttingDark.dc.html": {
       "h": 800,
       "is_interactive": true,
-      "page": "page-5",
-      "title": "遺失的檔案－全部刪除確認",
+      "page": "page-3",
+      "title": "切割影片中（夜光黑）",
       "w": 1280,
-      "x": 14960,
+      "x": 5440,
+      "y": 2200
+    },
+    "VideoFailed.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "匯入失敗",
+      "w": 1280,
+      "x": 10880,
+      "y": 0
+    },
+    "VideoFailedDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "匯入失敗（夜光黑）",
+      "w": 1280,
+      "x": 10880,
+      "y": 2200
+    },
+    "VideoImportingIndex.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "匯入中",
+      "w": 1280,
+      "x": 6800,
+      "y": 0
+    },
+    "VideoImportingIndexDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "匯入中（夜光黑）",
+      "w": 1280,
+      "x": 6800,
+      "y": 2200
+    },
+    "VideoPartial.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "部分完成",
+      "w": 1280,
+      "x": 9520,
+      "y": 0
+    },
+    "VideoPartialDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "部分完成（夜光黑）",
+      "w": 1280,
+      "x": 9520,
+      "y": 2200
+    },
+    "VideoSelect.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "Step 3. 匯入影片",
+      "w": 1280,
+      "x": 4080,
+      "y": 0
+    },
+    "VideoSelectDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "Step 3. 匯入影片（夜光黑）",
+      "w": 1280,
+      "x": 4080,
+      "y": 2200
+    },
+    "MainUnsupportedFormat.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "title": "尚未支援此格式 Toast",
+      "w": 1280,
+      "x": 2720,
+      "y": 0
+    },
+    "MainUnsupportedMulti.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "title": "尚未支援此格式（多檔）Toast",
+      "w": 1280,
+      "x": 4080,
+      "y": 0
+    },
+    "MainNoAudio.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "title": "全部沒有音訊（回主頁）Toast",
+      "w": 1280,
+      "x": 5440,
+      "y": 0
+    },
+    "InputLineNoAudio.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-2",
+      "title": "略過沒有音訊的檔案 Toast",
+      "w": 1280,
+      "x": 5440,
+      "y": 0
+    },
+    "FailedPartial.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-2",
+      "title": "匯入失敗（部分失敗）",
+      "w": 1280,
+      "x": 6800,
       "y": 0
     }
   },
@@ -404,38 +679,105 @@
   "launch": {
     "view": "canvas"
   },
-  "notes": {},
+  "notes": {
+    "midnight-page-1": {
+      "kind": "title1",
+      "maxW": 1280,
+      "text": "夜光黑",
+      "w": 240,
+      "x": 0,
+      "y": 980
+    },
+    "midnight-page-2": {
+      "kind": "title1",
+      "maxW": 5360,
+      "page": "page-2",
+      "text": "夜光黑",
+      "w": 240,
+      "x": 0,
+      "y": 980
+    },
+    "midnight-page-3": {
+      "kind": "title1",
+      "maxW": 8000,
+      "page": "page-3",
+      "text": "夜光黑",
+      "w": 240,
+      "x": 0,
+      "y": 1900
+    },
+    "midnight-page-4": {
+      "kind": "title1",
+      "maxW": 8000,
+      "page": "page-4",
+      "text": "夜光黑",
+      "w": 240,
+      "x": 0,
+      "y": 5580
+    }
+  },
   "order": [
     "Main.dc.html",
+    "MainDark.dc.html",
     "MainLibraryNotFound.dc.html",
+    "MainUnsupportedFormat.dc.html",
+    "MainUnsupportedMulti.dc.html",
+    "MainNoAudio.dc.html",
     "InputLine.dc.html",
+    "InputLineDark.dc.html",
     "ImportingIndex.dc.html",
+    "ImportingIndexDark.dc.html",
     "Complete.dc.html",
+    "CompleteDark.dc.html",
     "Failed.dc.html",
+    "FailedDark.dc.html",
+    "InputLineNoAudio.dc.html",
+    "FailedPartial.dc.html",
     "SubtitleImporting.dc.html",
+    "SubtitleImportingDark.dc.html",
     "SubtitleFailed.dc.html",
+    "SubtitleFailedDark.dc.html",
     "SubtitleSelect.dc.html",
+    "SubtitleSelectDark.dc.html",
     "SubtitleSelectEmpty.dc.html",
     "VideoSelect.dc.html",
+    "VideoSelectDark.dc.html",
     "VideoCutting.dc.html",
+    "VideoCuttingDark.dc.html",
     "VideoImportingIndex.dc.html",
+    "VideoImportingIndexDark.dc.html",
     "VideoComplete.dc.html",
+    "VideoCompleteDark.dc.html",
     "VideoPartial.dc.html",
+    "VideoPartialDark.dc.html",
     "VideoFailed.dc.html",
+    "VideoFailedDark.dc.html",
     "ScriptBook.dc.html",
+    "ScriptBookDark.dc.html",
     "ScriptBookEmpty.dc.html",
+    "ScriptBookEmptyDark.dc.html",
     "ScriptBookNoResult.dc.html",
     "AddCharacter.dc.html",
+    "AddCharacterDark.dc.html",
     "EditCharacter.dc.html",
+    "EditCharacterDark.dc.html",
     "DeleteConfirm.dc.html",
+    "DeleteConfirmDark.dc.html",
     "Lines.dc.html",
+    "LinesDark.dc.html",
     "EditLine.dc.html",
+    "EditLineDark.dc.html",
     "DeleteLine.dc.html",
+    "DeleteLineDark.dc.html",
     "LinesPoster.dc.html",
+    "LinesPosterDark.dc.html",
     "LinesEmpty.dc.html",
+    "LinesEmptyDark.dc.html",
     "LinesNoResult.dc.html",
     "LinesMissing.dc.html",
+    "LinesMissingDark.dc.html",
     "DeletePoster.dc.html",
+    "DeletePosterDark.dc.html",
     "Settings.dc.html",
     "SettingsDark.dc.html",
     "SettingsExporting.dc.html",

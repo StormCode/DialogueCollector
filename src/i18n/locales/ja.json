@@ -408,6 +408,8 @@
     "pendingUnassigned": "キャラクターを選んでからインポートしてください",
     "unassignedError": "未指定のままではインポートできません。キャラクターを選んでください",
     "noAudio": "音声のないファイルを {{count}} 件スキップしました",
-    "partial": "{{imported}} 件をインポートし、{{failed}} 件が失敗しました"
+    "partial": "{{imported}} 件をインポートし、{{failed}} 件が失敗しました",
+    "cancelNote": "キャンセルすると今回書き込んだセリフを取り消し、フォームに戻ります",
+    "retryNote": "「もう一度」は失敗した {{count}} 件だけを再インポートします"
   }
 }

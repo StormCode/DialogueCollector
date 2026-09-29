@@ -415,6 +415,9 @@
     "unassignedError": "Unassigned lines can't be imported. Choose a character.",
     "noAudio": "Skipped {{count}} files with no audio",
     "noAudio_one": "Skipped 1 file with no audio",
-    "partial": "Imported {{imported}}; {{failed}} failed"
+    "partial": "Imported {{imported}}; {{failed}} failed",
+    "cancelNote": "Cancelling takes back the lines written so far and returns to the form",
+    "retryNote": "Try again re-imports only the {{count}} failed lines",
+    "retryNote_one": "Try again re-imports only the failed line"
   }
 }
