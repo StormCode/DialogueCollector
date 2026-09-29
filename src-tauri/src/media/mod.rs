@@ -18,8 +18,8 @@ pub const SOURCE_EXTENSIONS: &[&str] = &["mkv", "mp4", "webm", "ogg", "m4a", "mp
 pub const CLIP_EXTENSION: &str = "m4a";
 
 /// Extensions a clip in the library may have: `m4a` from ffmpeg, or an audio file that 直接匯入
-/// copied in as it was (user decision 2026-09-28; schema v2 allows these three).
-pub const CLIP_EXTENSIONS: &[&str] = &["m4a", "mp3", "ogg"];
+/// copied in as it was: WAV, M4A, MP3 (user decisions 2026-09-28 and 2026-09-29; schema v3).
+pub const CLIP_EXTENSIONS: &[&str] = &["m4a", "mp3", "wav"];
 const CLIP_NAME_LEN: usize = 12;
 const CLIP_NAME_ALPHABET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -72,9 +72,10 @@ mod tests {
     #[test]
     fn clip_names_keep_one_of_the_clip_extensions() {
         assert!(new_clip_filename_with("mp3").ends_with(".mp3"));
-        assert!(is_clip_name(&new_clip_filename_with("ogg")));
+        assert!(is_clip_name(&new_clip_filename_with("wav")));
+        assert!(!is_clip_name("ABCDEFGHIJKL.ogg"));
         assert!(is_clip_name("ABCDEFGHIJKL.m4a"));
-        assert!(!is_clip_name("ABCDEFGHIJKL.wav"));
+        assert!(!is_clip_name("ABCDEFGHIJKL.flac"));
         assert!(!is_clip_name("abcdefghijkl.mp3"));
         assert!(!is_clip_name("ABCDEFGHIJK.mp3"));
         assert!(!is_clip_name("ABCDEFGHIJKL.m4a.tmp"));

@@ -37,10 +37,14 @@ pub const MIGRATIONS: &[Migration] = &[
         version: 2,
         sql: include_str!("migrations/0002_line_text_optional.sql"),
     },
+    Migration {
+        version: 3,
+        sql: include_str!("migrations/0003_wav_clips.sql"),
+    },
 ];
 
 /// The schema version this build writes. Opening a newer library is refused by name.
-pub const SCHEMA_VERSION: u32 = 2;
+pub const SCHEMA_VERSION: u32 = 3;
 
 #[derive(Debug, thiserror::Error)]
 pub enum StoreError {

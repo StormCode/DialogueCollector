@@ -261,7 +261,7 @@ fn audio_filename_must_be_twelve_uppercase_alphanumerics_dot_m4a() {
         "abcdefghijkl.m4a",
         "ABCDEFGHIJK.m4a",
         "ABCDEFGHIJKLM.m4a",
-        "ABCDEFGHIJKL.wav",
+        "ABCDEFGHIJKL.flac",
         "ABCDEF/HIJKL.m4a",
         "../ABCDEFGHI.m4a",
     ] {
@@ -329,11 +329,11 @@ fn line_checks_reject_bad_input() {
 }
 
 #[test]
-fn v2_keeps_existing_lines_and_accepts_a_translation_without_text() {
+fn v2_and_v3_keep_existing_lines_and_accept_a_translation_without_text() {
     let (_dir, mut conn) = fresh_v1();
     let id = insert_character(&conn);
     insert_line(&conn, id, "ABCDEFGHIJKL.m4a").unwrap();
-    assert_eq!(migrate(&mut conn, MIGRATIONS).unwrap(), 2);
+    assert_eq!(migrate(&mut conn, MIGRATIONS).unwrap(), SCHEMA_VERSION);
 
     let kept: i64 = conn
         .query_row("SELECT COUNT(*) FROM lines", [], |r| r.get(0))
@@ -365,6 +365,15 @@ fn v2_keeps_existing_lines_and_accepts_a_translation_without_text() {
         "",
         None,
         "CCCCCCCCCCCC.m4a"
+    )));
+    // 直接匯入 keeps WAV, M4A and MP3 as they are (v3; '.ogg' stays readable from v2).
+    insert("ok", None, "DDDDDDDDDDDD.mp3").unwrap();
+    insert("ok", None, "EEEEEEEEEEEE.wav").unwrap();
+    insert("ok", None, "FFFFFFFFFFFF.ogg").unwrap();
+    assert!(is_constraint_violation(insert(
+        "ok",
+        None,
+        "GGGGGGGGGGGG.flac"
     )));
     // The character is still guarded by the rebuilt table's foreign key.
     assert!(is_constraint_violation(

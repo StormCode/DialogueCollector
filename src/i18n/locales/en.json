@@ -14,7 +14,7 @@
     "manual": "Import existing video or audio as is",
     "title": "Choose how to bring in lines",
     "subtitleFormats": "ASS and SRT",
-    "mediaFormats": "MKV, MP4, WEBM, OGG, M4A, MP3",
+    "mediaFormats": "MKV, MP4, WEBM, WAV, M4A, MP3",
     "subtitleFilter": "Subtitles",
     "mediaFilter": "Video and audio",
     "unsupported": "This file type isn’t supported yet",
