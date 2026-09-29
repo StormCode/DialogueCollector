@@ -81,7 +81,9 @@ describe("ScriptBookPage", () => {
   });
 
   it("opens a character's lines, and deletes one after confirming from 編輯角色", async () => {
-    vi.spyOn(ipc, "listCharacters").mockResolvedValue(CAST);
+    vi.spyOn(ipc, "listCharacters").mockResolvedValue(
+      CAST.map((c) => (c.name === "周公旦" ? { ...c, lineCount: 12 } : c)),
+    );
     const del = vi.spyOn(ipc, "deleteCharacter").mockResolvedValue();
     renderPage();
     fireEvent.click(await screen.findByRole("button", { name: "編輯周公旦" }));
@@ -90,12 +92,21 @@ describe("ScriptBookPage", () => {
     fireEvent.click(within(edit).getByRole("button", { name: "刪除角色" }));
 
     const confirm = screen.getByRole("dialog", { name: "確認" });
-    expect(confirm).toHaveTextContent("刪除「周公旦」後，此角色的所有台詞資料將一併移除，且無法復原。");
+    // DT3: how many lines go with it.
+    expect(confirm).toHaveTextContent("刪除「周公旦」後，此角色的 12 句台詞將一併移除，且無法復原。");
     expect(within(confirm).getByRole("button", { name: "取消" })).toHaveFocus();
     fireEvent.click(within(confirm).getByRole("button", { name: "刪除" }));
     await vi.waitFor(() => expect(del).toHaveBeenCalledWith(4));
 
     fireEvent.click(screen.getByText("芙莉蓮"));
     expect(await screen.findByText("lines page")).toBeInTheDocument();
+  });
+
+  it("a character without lines just says deleting can't be undone", async () => {
+    vi.spyOn(ipc, "listCharacters").mockResolvedValue(CAST);
+    renderPage();
+    fireEvent.click(await screen.findByRole("button", { name: "編輯周公旦" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "編輯角色" })).getByRole("button", { name: "刪除角色" }));
+    expect(screen.getByRole("dialog", { name: "確認" })).toHaveTextContent("刪除「周公旦」後將無法復原。");
   });
 });
