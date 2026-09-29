@@ -50,7 +50,7 @@ export function MainPage() {
     <section className="main-page">
       <h1 className="main-title pg-anim-title">{t("main.title")}</h1>
       <div className="main-columns">
-        <div className="main-column">
+        <div className="main-column pg-anim-up" style={{ animationDelay: "450ms" }}>
           <div className="main-column__head">
             <div className="main-column__title">{t("main.fromSubtitle")}</div>
             <div className="main-column__formats">{t("main.subtitleFormats")}</div>
@@ -69,7 +69,7 @@ export function MainPage() {
           </div>
         </div>
 
-        <div className="main-column">
+        <div className="main-column pg-anim-up" style={{ animationDelay: "600ms" }}>
           <div className="main-column__head">
             <div className="main-column__title">{t("main.manual")}</div>
             <div className="main-column__formats">{t("main.mediaFormats")}</div>
