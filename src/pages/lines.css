@@ -216,21 +216,15 @@
   gap: 12px;
 }
 
-/* The sort button sits inside the search field's right end, as on ScriptBook. */
+/* The sort button sits right after the search field, as on ScriptBook (no board offset). */
 .ln-search {
   width: 400px;
   flex-shrink: 0;
 }
 
-.ln-search .ui-search {
-  padding-right: 70px;
-}
-
 .ln-sort {
   position: relative;
   flex-shrink: 0;
-  margin-left: -12px;
-  transform: translateX(-62px);
 }
 
 .ln-sort-btn {
