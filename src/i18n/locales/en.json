@@ -321,7 +321,6 @@
       "or": "or",
       "browse": "Browse files",
       "formats": "JPG, PNG, GIF",
-      "pngHint": "A PNG with a transparent background works best",
       "changePhoto": "Change photo",
       "removePhoto": "Remove photo",
       "imageFilter": "Images",
@@ -340,7 +339,8 @@
             "category": "Choose a category"
           }
         }
-      }
+      },
+      "photoHint": "A square (1:1) image works best"
     },
     "fields": {
       "name": "Character name",
@@ -360,7 +360,7 @@
       "title": "Edit character",
       "submit": "Save",
       "delete": "Delete character",
-      "pngHint": "A png with a transparent background works best"
+      "photoHint": "A square (1:1) image works best"
     }
   },
   "pagination": {

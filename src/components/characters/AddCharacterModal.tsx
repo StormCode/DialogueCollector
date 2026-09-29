@@ -175,7 +175,7 @@ function CharacterFormModal({ mode, onClose }: { mode: Mode; onClose: () => void
         {photoBlock}
         <div className="char-hint">
           <BentoIcon name="LightbulbWeightRegular" size={14} />
-          <span>{t(mode.kind === "edit" ? "characters.edit.pngHint" : "characters.add.pngHint")}</span>
+          <span>{t(mode.kind === "edit" ? "characters.edit.photoHint" : "characters.add.photoHint")}</span>
         </div>
         {error && (
           <div className="char-error" role="alert">
