@@ -434,11 +434,11 @@
   box-sizing: border-box;
   flex-shrink: 0;
   align-self: center;
-  width: 20vw;
+  width: 10vw;
   height: 5px;
   margin: 12px 0 0;
-  border-top: 1px solid var(--dc-accent-20);
-  border-bottom: 1px solid var(--dc-accent-20);
+  border-radius: 999px;
+  background: var(--dc-accent-20);
 }
 
 /* ---- cards ---- */
