@@ -20,10 +20,11 @@
 
 /* ---- 新增角色 / 編輯角色 (AddCharacter.dc.html, EditCharacter.dc.html) ---- */
 
-/* The boards retint the solid primary action with the accent's step 40. */
+/* The boards retint the solid primary action with the accent's step 40 (--dc-solid, which
+   夜光黑 turns into its slate). */
 .char-form-modal {
-  --bento-action-solid-primary-bg: var(--dc-accent-40);
-  --bento-action-solid-primary-bg-hover: var(--dc-accent-50);
+  --bento-action-solid-primary-bg: var(--dc-solid);
+  --bento-action-solid-primary-bg-hover: var(--dc-solid-hover-subtle);
 }
 
 .char-form {
