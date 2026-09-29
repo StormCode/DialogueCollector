@@ -66,7 +66,7 @@ describe("LinesPage", () => {
   it("titles a card with the 譯文 when there is no 原文", () => {
     expect(lineTitle({ text: "", translation: "El Psy Congroo." })).toBe("El Psy Congroo.");
     expect(lineTitle({ text: "今天的風好舒服呢。", translation: "Lovely breeze." })).toBe("今天的風好舒服呢。");
-    // 詳細: the 譯文 becomes the gray subtitle only when the 原文 is the title.
+    // The 譯文 becomes the gray subtitle only when the 原文 is the title.
     expect(lineSubtitle({ text: "今天的風好舒服呢。", translation: "Lovely breeze." })).toBe("Lovely breeze.");
     expect(lineSubtitle({ text: "", translation: "El Psy Congroo." })).toBeNull();
     expect(lineSubtitle({ text: "今天的風好舒服呢。", translation: null })).toBeNull();

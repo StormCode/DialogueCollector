@@ -612,7 +612,7 @@
   color: var(--bento-neutral-60);
 }
 
-/* The 譯文 under the 原文 in 詳細 (user decision 2026-09-29; not on the board). */
+/* The 譯文 under the 原文, in both views (user decision 2026-09-29; not on the board). */
 .ln-card-sub {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -637,7 +637,10 @@
   line-height: 48px;
 }
 
-.ln-list.is-compact .ln-card-sub,
+.ln-list.is-compact .ln-card-sub {
+  -webkit-line-clamp: 1;
+}
+
 .ln-list.is-compact .ln-card-meta {
   display: none;
 }
