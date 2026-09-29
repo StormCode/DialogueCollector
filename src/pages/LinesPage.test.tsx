@@ -40,7 +40,6 @@ function renderPage(entry = "/characters/1") {
     <MemoryRouter initialEntries={[entry]}>
       <Routes>
         <Route path="/characters/:characterId" element={<LinesPage />} />
-        <Route path="/characters/:characterId/lines/:lineId/edit" element={<p>edit page</p>} />
         <Route path="/" element={<p>main page</p>} />
       </Routes>
     </MemoryRouter>,
@@ -129,7 +128,7 @@ describe("LinesPage", () => {
     expect(screen.getByRole("button", { name: /停止依序播放/ })).toBeInTheDocument();
   });
 
-  it("edit mode pins, links to EditLine and deletes after confirming", async () => {
+  it("edit mode pins, opens EditLine and deletes after confirming", async () => {
     vi.spyOn(ipc, "openLines").mockResolvedValue(page(LINES));
     const pin = vi.spyOn(ipc, "setLinePinned").mockResolvedValue();
     const del = vi.spyOn(ipc, "deleteLine").mockResolvedValue();
@@ -145,8 +144,9 @@ describe("LinesPage", () => {
     fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "刪除" }));
     await waitFor(() => expect(del).toHaveBeenCalledWith(4));
 
-    fireEvent.click(within(mainList()).getAllByRole("link", { name: "編輯" })[0]);
-    expect(screen.getByText("edit page")).toBeInTheDocument();
+    vi.spyOn(ipc, "listCharacters").mockResolvedValue([]);
+    fireEvent.click(within(mainList()).getAllByRole("button", { name: "編輯" })[0]);
+    expect(await screen.findByRole("dialog", { name: "編輯台詞" })).toBeInTheDocument();
   });
 
   it("opens on the page of a missing line and marks it (LinesMissing)", async () => {
