@@ -33,10 +33,12 @@
     "noResult": "No matching character",
     "edit": "Edit {{name}}",
     "deleteTitle": "Delete this character?",
-    "deleteBody": "Deleting {{name}} removes all of their lines too, and can’t be undone.",
+    "deleteBody": "Deleting {{name}} removes their {{count}} lines too, and can’t be undone.",
     "deleteConfirm": "Delete",
     "fileRemovalFailed": "The character is deleted, but some files couldn’t be removed; they’ll be retried next time the library opens.",
-    "deleteFailed": "Couldn’t delete the character. Try again later."
+    "deleteFailed": "Couldn’t delete the character. Try again later.",
+    "deleteBodyNoLines": "Deleting {{name}} can’t be undone.",
+    "deleteBody_one": "Deleting {{name}} removes their 1 line too, and can’t be undone."
   },
   "lines": {
     "title": "{{name}}'s lines",

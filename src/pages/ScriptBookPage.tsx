@@ -237,7 +237,12 @@ export function ScriptBookPage() {
         // DeleteConfirm.dc.html
         <ConfirmDialog
           title={t("scriptBook.deleteTitle")}
-          body={t("scriptBook.deleteBody", { name: deleting.name })}
+          // DT3: the number of lines that go with the character (user 2026-09-29: the count only).
+          body={
+            deleting.lineCount > 0
+              ? t("scriptBook.deleteBody", { name: deleting.name, count: deleting.lineCount })
+              : t("scriptBook.deleteBodyNoLines", { name: deleting.name })
+          }
           confirmLabel={t("scriptBook.deleteConfirm")}
           onCancel={() => setDeleting(null)}
           onConfirm={async () => {

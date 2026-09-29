@@ -32,10 +32,11 @@
     "noResult": "找不到符合的角色",
     "edit": "编辑{{name}}",
     "deleteTitle": "确定要删除角色吗？",
-    "deleteBody": "删除「{{name}}」后，此角色的所有台词数据将一并移除，且无法恢复。",
+    "deleteBody": "删除「{{name}}」后，此角色的 {{count}} 句台词将一并移除，且无法恢复。",
     "deleteConfirm": "删除",
     "fileRemovalFailed": "角色已删除，但有部分文件无法移除，之后打开收藏库时会再试一次",
-    "deleteFailed": "无法删除角色，请稍后再试"
+    "deleteFailed": "无法删除角色，请稍后再试",
+    "deleteBodyNoLines": "删除「{{name}}」后将无法恢复。"
   },
   "lines": {
     "title": "{{name}}的台词",
