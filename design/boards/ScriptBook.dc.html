@@ -58,16 +58,18 @@
     .sb-card-avatar { flex-shrink: 0; width: 72px; height: 72px; border-radius: var(--bento-radius-12); background: var(--bento-bg-secondary); display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .sb-card-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-    .sb-card-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .sb-card-body { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
     .sb-card-name { font: var(--bento-weight-semibold) 18px/24px var(--bento-font-ui); color: var(--bento-content-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .sb-card-source { font: var(--bento-weight-medium) 14px/20px var(--bento-font-ui); color: var(--bento-content-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .sb-card-cv { font: var(--bento-weight-regular) 13px/18px var(--bento-font-ui); color: var(--bento-neutral-60); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sb-card-name-row { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .sb-card-name-row .sb-card-name { min-width: 0; flex: 0 1 auto; }
+    .sb-card-cv { flex-shrink: 0; max-width: 60%; box-sizing: border-box; padding: 2px 8px; border-radius: var(--bento-radius-8); background: var(--bento-dv-indigo-5); color: var(--bento-dv-indigo-60); font: var(--bento-weight-medium) 12px/18px var(--bento-font-ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     .sb-filter-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; flex-shrink: 0; border-radius: var(--bento-radius-16); border: none; box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-border-input-enabled); background: var(--bento-bg-primary); color: var(--bento-content-secondary); cursor: pointer; }
     .sb-filter-btn:hover { background: var(--bento-bg-secondary); box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-border-input-hover); }
     .sb-filter-btn.is-active { background: var(--bento-dv-indigo-5); box-shadow: inset 0 0 0 var(--bento-border-width-strong) var(--bento-border-input-focus); color: var(--bento-dv-indigo-40); }
 
-    .sb-filter-panel { position: absolute; top: calc(100% + 8px); left: 0; z-index: 999; transform: translateZ(0); will-change: transform; width: 560px; max-height: 50vh; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-10); border-radius: var(--bento-radius-16); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16); }
+    .sb-filter-panel { position: absolute; top: calc(100% + 8px); left: 0; z-index: 999; transform: translateZ(0); will-change: transform; width: 560px; max-height: 50vh; box-sizing: border-box; padding: 12px; display: flex; flex-direction: column; overflow: hidden; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-10); border-radius: var(--bento-radius-16); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16); }
     .sb-filter-cols { display: grid; grid-template-columns: 1fr 1fr; flex: 1 1 auto; min-height: 0; }
     .sb-filter-col { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
     .sb-filter-col + .sb-filter-col { border-left: 1px solid var(--bento-neutral-10); }
@@ -198,9 +200,11 @@
               </sc-if>
             </span>
             <span class="sb-card-body">
-              <span class="sb-card-name">{{item.name}}</span>
+              <span class="sb-card-name-row">
+                <span class="sb-card-name">{{item.name}}</span>
+                <span class="sb-card-cv">{{item.cv}}</span>
+              </span>
               <span class="sb-card-source">{{item.source}}</span>
-              <span class="sb-card-cv">{{item.cv}}</span>
             </span>
           </button>
           <span class="sb-card-corner" aria-hidden="true"></span>

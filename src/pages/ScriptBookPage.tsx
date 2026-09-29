@@ -187,9 +187,11 @@ export function ScriptBookPage() {
                       )}
                     </span>
                     <span className="sb-card__body">
-                      <span className="sb-card__name">{c.name}</span>
+                      <span className="sb-card__name-row">
+                        <span className="sb-card__name">{c.name}</span>
+                        {c.cv && <span className="sb-card__cv">{c.cv}</span>}
+                      </span>
                       <span className="sb-card__source">{c.source}</span>
-                      {c.cv && <span className="sb-card__cv">{c.cv}</span>}
                     </span>
                   </button>
                   <span className="sb-card__corner" aria-hidden="true" />
