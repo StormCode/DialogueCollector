@@ -1,5 +1,11 @@
 /* Board: Lines.dc.html (+ LinesPoster, LinesEmpty, LinesNoResult, LinesMissing).
    `--bento-dv-indigo-N` there is `--dc-accent-N` here. */
+/* The page scrolls itself and carries the board's padding, so the layout's default 80px goes. */
+.app-layout__content:has(.ln-page) {
+  padding: 0;
+  overflow: hidden;
+}
+
 .ln-page {
   box-sizing: border-box;
   height: 100%;
