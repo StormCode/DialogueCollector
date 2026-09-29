@@ -49,6 +49,36 @@ export function ManualImportPage() {
   const [adding, setAdding] = useState(false);
   const [outcome, setOutcome] = useState<ManualOutcome | null>(null);
 
+  // 播放預覽 of a file the webview may not decode needs an m4a made first. They are made in the
+  // background, one at a time in card order, as soon as the form opens (user 2026-09-29), so
+  // one is usually ready by the time 播放 is pressed; pressing it earlier joins the same work.
+  const previews = useRef(new Map<string, Promise<string>>());
+  const preview = useCallback((path: string) => {
+    let pending = previews.current.get(path);
+    if (!pending) {
+      pending = ipc.preparePreview(path);
+      previews.current.set(path, pending);
+      // A failure is not cached: 播放 may try again.
+      pending.catch(() => previews.current.delete(path));
+    }
+    return pending;
+  }, []);
+  const inputOpen = screen === "input";
+  const paths = useMemo(() => cards.map((c) => c.media.path).join("\n"), [cards]);
+  useEffect(() => {
+    if (!inputOpen || !paths) return;
+    let stopped = false;
+    void (async () => {
+      for (const path of paths.split("\n")) {
+        if (stopped) return;
+        await preview(path).catch(() => {});
+      }
+    })();
+    return () => {
+      stopped = true;
+    };
+  }, [inputOpen, paths, preview]);
+
   useEffect(() => {
     if (!files || files.length === 0) {
       navigate("/", { replace: true });
@@ -111,6 +141,7 @@ export function ManualImportPage() {
           setIndex={setIndex}
           update={update}
           characters={characters}
+          preview={preview}
           onAddCharacter={() => setAdding(true)}
           onBack={home}
           onImport={() => void startImport()}
@@ -204,6 +235,7 @@ function InputScreen({
   setIndex,
   update,
   characters,
+  preview,
   onAddCharacter,
   onBack,
   onImport,
@@ -214,6 +246,7 @@ function InputScreen({
   setIndex: (i: number) => void;
   update: (patch: Partial<Card>) => void;
   characters: Character[];
+  preview: (path: string) => Promise<string>;
   onAddCharacter: () => void;
   onBack: () => void;
   onImport: () => void;
@@ -225,7 +258,7 @@ function InputScreen({
   const card = cards[index];
   const several = cards.length > 1;
   const path = card.media.path;
-  const resolve = useCallback(() => ipc.preparePreview(path), [path]);
+  const resolve = useCallback(() => preview(path), [preview, path]);
 
   const pending = useMemo(() => cards.flatMap((c, i) => (cardReady(c) ? [] : [i + 1])), [cards]);
   const hint =

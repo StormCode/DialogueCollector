@@ -43,6 +43,8 @@ describe("ManualImportPage", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => {});
+    vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue();
+    vi.spyOn(ipc, "preparePreview").mockImplementation((p) => Promise.resolve(p));
     vi.spyOn(ipc, "listCharacters").mockResolvedValue([FRIEREN]);
     useUiStore.setState({ notice: null });
   });
@@ -117,6 +119,25 @@ describe("ManualImportPage", () => {
     await waitFor(() => expect(start).toHaveBeenCalledTimes(2));
     expect(start.mock.calls[1][0]).toEqual([{ path: "/b.mkv", characterId: 1, text: "二", translation: null }]);
     expect(await screen.findByText("匯入完成")).toBeInTheDocument();
+  });
+
+  it("makes the previews in the background, one at a time, and 播放 joins them", async () => {
+    vi.spyOn(ipc, "probeMedia").mockResolvedValue([media("/a.mkv"), media("/b.webm")]);
+    const done: Array<(p: string) => void> = [];
+    const prepare = vi.spyOn(ipc, "preparePreview").mockImplementation(
+      () => new Promise<string>((resolve) => done.push(resolve)),
+    );
+    renderPage(["/a.mkv", "/b.webm"]);
+    await screen.findByText("1/2");
+    // Only the first is being made; the second waits for it.
+    await waitFor(() => expect(prepare).toHaveBeenCalledTimes(1));
+    expect(prepare).toHaveBeenLastCalledWith("/a.mkv");
+    // 播放 on the first card joins that work instead of starting another.
+    fireEvent.click(screen.getByRole("button", { name: "播放" }));
+    expect(prepare).toHaveBeenCalledTimes(1);
+    done[0]("/cache/a.m4a");
+    await waitFor(() => expect(prepare).toHaveBeenCalledTimes(2));
+    expect(prepare).toHaveBeenLastCalledWith("/b.webm");
   });
 
   it("goes back to the main page when no file has audio", async () => {
