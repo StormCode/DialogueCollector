@@ -213,3 +213,20 @@
   filter: invert(1) hue-rotate(180deg) brightness(0.85);
   mix-blend-mode: screen;
 }
+
+/* 夜光黑: a hover shadow barely shows on the dark ground, so a hovered card lights up 5%
+   instead — 台詞本's character cards and the 台詞 page's line cards (user 2026-09-29). */
+:root[data-theme="midnight"] .sb-card-wrap:hover,
+:root[data-theme="midnight"] .ln-card:hover {
+  box-shadow: none;
+}
+
+:root[data-theme="midnight"] .sb-card-wrap:hover .sb-card,
+:root[data-theme="midnight"] .ln-card:not(.is-active):hover {
+  /* #1f2630 mixed 5% towards white, written out for webviews without color-mix(). */
+  background: #2a313a;
+}
+
+:root[data-theme="midnight"] .ln-card.is-missing:hover {
+  box-shadow: inset 0 0 0 1px var(--bento-negative-40);
+}
