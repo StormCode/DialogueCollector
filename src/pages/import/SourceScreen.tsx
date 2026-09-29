@@ -36,7 +36,7 @@ export function SourceScreen({ onPick, onBack }: { onPick: (path: string) => voi
   return (
     <div className="imp-page imp-page--list imp-page--centered">
       <header className="imp-header">
-        <h1 className="imp-title">{t("import.source.title")}</h1>
+        <h1 className="imp-title pg-anim-title">{t("import.source.title")}</h1>
         <Stepper current={3} />
       </header>
       <div className="src-card">

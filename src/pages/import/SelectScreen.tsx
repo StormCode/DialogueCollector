@@ -85,7 +85,7 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
   return (
     <div className="imp-page imp-page--list">
       <header className="imp-header">
-        <h1 className="imp-title">{t("import.select.title")}</h1>
+        <h1 className="imp-title pg-anim-title">{t("import.select.title")}</h1>
         <Stepper current={2} />
       </header>
 

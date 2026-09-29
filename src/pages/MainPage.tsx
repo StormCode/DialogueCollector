@@ -48,7 +48,7 @@ export function MainPage() {
 
   return (
     <section className="main-page">
-      <h1 className="main-title">{t("main.title")}</h1>
+      <h1 className="main-title pg-anim-title">{t("main.title")}</h1>
       <div className="main-columns">
         <div className="main-column">
           <div className="main-column__head">
