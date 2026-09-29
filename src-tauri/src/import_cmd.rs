@@ -43,7 +43,13 @@ pub struct ImportProgress {
 /// Step 1: read the subtitle file.
 #[tauri::command]
 pub fn parse_subtitle(path: PathBuf) -> CommandResult<Vec<Cue>> {
-    Ok(subs::parse_file(&path)?)
+    let cues = subs::parse_file(&path);
+    // Left in the log so an odd count can be traced back to the file it came from.
+    match &cues {
+        Ok(c) => log::info!("parsed {}: {} cues", path.display(), c.len()),
+        Err(e) => log::warn!("could not parse {}: {e}", path.display()),
+    }
+    Ok(cues?)
 }
 
 #[tauri::command]
