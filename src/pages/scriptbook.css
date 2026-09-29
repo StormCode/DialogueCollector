@@ -28,22 +28,17 @@
   flex: 1 1 auto;
 }
 
-/* The filter button sits inside the search field's right end; the field keeps its clear
-   button clear of it. */
+/* The filter button sits right after the search field. The board pulls it back over the
+   field only because its SearchBar component carries empty space on the right (user
+   2026-09-29), so there is no offset here. */
 .sb-search {
   width: 400px;
-}
-
-.sb-search .ui-search {
-  padding-right: 70px;
 }
 
 .sb-filter {
   position: relative;
   z-index: 30;
   flex-shrink: 0;
-  margin-left: -12px;
-  transform: translateX(-62px);
 }
 
 .sb-filter__btn {
