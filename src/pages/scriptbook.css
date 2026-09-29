@@ -136,7 +136,7 @@
 }
 
 .sb-filter__item {
-  --bento-bg-interactive: var(--dc-accent-40);
+  --bento-bg-interactive: var(--dc-solid);
   --bento-border-input-enabled: var(--dc-accent-20);
   --bento-border-input-hover: var(--dc-accent-40);
   box-sizing: border-box;
