@@ -85,6 +85,8 @@
   max-height: 50vh;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  /* 12px inside the panel (user 2026-09-29; the board has none). */
+  padding: 12px;
   overflow: hidden;
   border: 1px solid var(--bento-neutral-10);
   border-radius: var(--bento-radius-16);
