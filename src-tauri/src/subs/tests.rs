@@ -178,3 +178,114 @@ fn parse_file_names_its_failures() {
     std::fs::write(&ok, SRT).unwrap();
     assert_eq!(parse_file(&ok).unwrap().len(), 3);
 }
+
+fn events(lines: &[&str]) -> String {
+    let mut s = String::from(
+        "[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n",
+    );
+    for l in lines {
+        s.push_str(l);
+        s.push('\n');
+    }
+    s
+}
+
+#[test]
+fn bilingual_events_with_the_same_timing_become_one_cue() {
+    let cues = parse_ass(&events(&[
+        // The Chinese comes first in the file; the JP style still makes the Japanese the 原文.
+        "Dialogue: 9,0:00:29.47,0:00:31.76,OP - CN,,0,0,0,,{\\blur2}故事迎來完結",
+        "Dialogue: 9,0:00:29.47,0:00:31.76,OP - JP,,0,0,0,,{\\blur2}物語は終わり",
+        "Dialogue: 0,0:01:00.00,0:01:02.00,Text - JP,,0,0,0,,勇者は眠りにつく",
+        "Dialogue: 0,0:01:00.00,0:01:02.00,Text - CN,,0,0,0,,勇者進入長眠",
+    ]))
+    .unwrap();
+    let got: Vec<_> = cues
+        .iter()
+        .map(|c| (c.text.as_str(), c.translation.as_deref()))
+        .collect();
+    assert_eq!(
+        got,
+        [
+            ("物語は終わり", Some("故事迎來完結")),
+            ("勇者は眠りにつく", Some("勇者進入長眠"))
+        ]
+    );
+}
+
+#[test]
+fn without_style_tags_the_kana_line_is_the_original() {
+    let cues = parse_ass(&events(&[
+        "Dialogue: 0,0:00:01.00,0:00:02.00,Upper,,0,0,0,,在這片土地留下的",
+        "Dialogue: 0,0:00:01.00,0:00:02.00,Lower,,0,0,0,,この地に残して",
+        "Dialogue: 0,0:00:03.00,0:00:04.00,Upper,,0,0,0,,Hello there",
+        "Dialogue: 0,0:00:03.00,0:00:04.00,Lower,,0,0,0,,你好",
+    ]))
+    .unwrap();
+    assert_eq!(cues[0].text, "この地に残して");
+    assert_eq!(cues[0].translation.as_deref(), Some("在這片土地留下的"));
+    // Nothing says which is the original (like 86's 「下一話」「先鋒」 title card): kept apart.
+    assert_eq!(cues.len(), 3);
+    assert!(cues[1..].iter().all(|c| c.translation.is_none()));
+}
+
+#[test]
+fn other_shared_timings_are_left_alone() {
+    let cues = parse_ass(&events(&[
+        // Two lines in one style (credits, two speakers at once).
+        "Dialogue: 0,0:02:01.02,0:02:04.02,Title,,0,0,0,,字幕製作：北宇治字幕組",
+        "Dialogue: 0,0:02:01.02,0:02:04.02,Title,,0,0,0,,斷頭台阿烏拉",
+        // Three events of no plain language at one time.
+        "Dialogue: 0,0:03:00.00,0:03:01.00,A,,0,0,0,,一",
+        "Dialogue: 0,0:03:00.00,0:03:01.00,B,,0,0,0,,二",
+        "Dialogue: 0,0:03:00.00,0:03:01.00,C,,0,0,0,,三",
+        // Two speakers at once, each in its own tagged style.
+        "Dialogue: 0,0:05:00.00,0:05:01.00,Text - CN,,0,0,0,,甲說的話",
+        "Dialogue: 0,0:05:00.00,0:05:01.00,Text - CN - UP,,0,0,0,,乙說的話",
+        "Dialogue: 0,0:06:00.00,0:06:01.00,Text - JP,,0,0,0,,行こう",
+        "Dialogue: 0,0:06:00.00,0:06:01.00,Text - JP - UP,,0,0,0,,待って",
+        // Already bilingual through \N.
+        "Dialogue: 0,0:04:00.00,0:04:01.00,JP,,0,0,0,,原文\\N譯文",
+        "Dialogue: 0,0:04:00.00,0:04:01.00,CN,,0,0,0,,另一句",
+    ]))
+    .unwrap();
+    assert_eq!(cues.len(), 11);
+    let translated: Vec<_> = cues
+        .iter()
+        .filter(|c| c.translation.is_some())
+        .map(|c| c.text.as_str())
+        .collect();
+    assert_eq!(
+        translated,
+        ["原文"],
+        "only the \\N line carries a translation"
+    );
+}
+
+#[test]
+fn a_line_split_over_several_events_pairs_as_a_whole() {
+    let cues = parse_ass(&events(&[
+        "Dialogue: 9,0:00:47.74,0:00:51.82,OP - CN,,0,0,0,,可是你的話語  你的願望與勇氣",
+        "Dialogue: 8,0:00:47.74,0:00:51.82,OP - JP,,0,0,0,,それでも君の言葉も",
+        "Dialogue: 8,0:00:47.74,0:00:51.82,OP - JP,,0,0,0,,願いも勇気も",
+        // A spell name with its reading, over the Japanese.
+        "Dialogue: 9,0:16:00.23,0:16:01.23,Text - CN,,0,0,0,,Baruterie",
+        "Dialogue: 8,0:16:00.23,0:16:01.23,Text - CN,,0,0,0,,驅血魔法",
+        "Dialogue: 7,0:16:00.23,0:16:01.23,Text - JP,,0,0,0,,血を操る魔法",
+    ]))
+    .unwrap();
+    let got: Vec<_> = cues
+        .iter()
+        .map(|c| (c.text.as_str(), c.translation.as_deref()))
+        .collect();
+    assert_eq!(
+        got,
+        [
+            (
+                "それでも君の言葉も 願いも勇気も",
+                Some("可是你的話語  你的願望與勇氣")
+            ),
+            ("血を操る魔法", Some("Baruterie 驅血魔法")),
+        ]
+    );
+}
