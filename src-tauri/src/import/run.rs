@@ -232,6 +232,7 @@ fn process(pass: &Pass<'_>, job: &PlannedCue, encoded: &dyn Fn()) -> Outcome {
         text: cue.text.clone(),
         translation: cue.translation.clone(),
         duration_ms: (cue.end_ms - cue.start_ms) as i64,
+        extension: crate::media::CLIP_EXTENSION,
     };
     let committed = match commit_cue(pass.library, pass.writer, &tmp, line) {
         Ok(c) => c,
@@ -302,7 +303,7 @@ pub fn classify_media(err: &MediaError) -> (Reason, Option<String>) {
     }
 }
 
-fn classify_import(err: &ImportError) -> (Reason, Option<String>) {
+pub(crate) fn classify_import(err: &ImportError) -> (Reason, Option<String>) {
     let reason = match err {
         ImportError::Io { source, .. } if is_disk_full(source) => Reason::DiskFull,
         _ => Reason::WriteFailed,

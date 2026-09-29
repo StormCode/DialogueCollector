@@ -15,6 +15,7 @@ mod error;
 mod import_cmd;
 mod library;
 mod lines_cmd;
+mod manual_cmd;
 mod smoke;
 mod updater;
 
@@ -65,6 +66,8 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
             use tauri::Manager;
+
+            manual_cmd::clear_previews_at_startup(app.handle());
 
             let smoke = smoke::SmokeMode::from_args();
             smoke.arm_watchdog();
@@ -128,6 +131,9 @@ pub fn run() {
             import_cmd::start_subtitle_import,
             import_cmd::retry_import,
             import_cmd::cancel_import,
+            manual_cmd::probe_media,
+            manual_cmd::prepare_preview,
+            manual_cmd::start_manual_import,
             smoke::smoke_mode,
             smoke::run_smoke,
             smoke::smoke_finish,

@@ -14,16 +14,6 @@ use crate::store;
 /// OS clutter that does not make a folder "non-empty" for our purposes.
 const IGNORABLE: &[&str] = &[".DS_Store", "Thumbs.db", "desktop.ini", ".localized"];
 
-/// `<12 × A-Z0-9>.m4a`, the only files `import::commit_cue` puts in the library root.
-fn is_clip_name(name: &str) -> bool {
-    name.strip_suffix(".m4a").is_some_and(|stem| {
-        stem.len() == 12
-            && stem
-                .bytes()
-                .all(|b| b.is_ascii_uppercase() || b.is_ascii_digit())
-    })
-}
-
 /// A line whose clip is gone from disk (T20), with what 遺失的檔案 shows for it.
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -183,7 +173,7 @@ impl Library {
             .flatten()
             .filter(|e| e.file_type().is_ok_and(|t| t.is_file()))
             .filter_map(|e| e.file_name().into_string().ok())
-            .filter(|name| is_clip_name(name) && !known.contains(name))
+            .filter(|name| crate::media::is_clip_name(name) && !known.contains(name))
             .collect();
         orphans.sort();
         Ok(orphans)

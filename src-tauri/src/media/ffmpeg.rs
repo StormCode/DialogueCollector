@@ -74,6 +74,48 @@ pub fn encode_cue(
     Ok(process::run(process::command(ffmpeg, &args), cancel)?.elapsed)
 }
 
+/// 直接匯入 of a video: its whole first audio stream, encoded as `cut_cue_args` does.
+pub(crate) fn extract_audio_args(source: &Path, out: &Path) -> Vec<String> {
+    [
+        "-hide_banner",
+        "-nostdin",
+        "-v",
+        "error",
+        "-i",
+        &source.to_string_lossy(),
+        "-map",
+        "0:a:0",
+        "-vn",
+        "-sn",
+        "-dn",
+        "-c:a",
+        "aac",
+        "-b:a",
+        "160k",
+        "-movflags",
+        "+faststart",
+        "-f",
+        "ipod",
+        "-y",
+        &out.to_string_lossy(),
+    ]
+    .into_iter()
+    .map(str::to_owned)
+    .collect()
+}
+
+/// Encodes the whole of `source`'s first audio stream to m4a at `out`; killed at once if
+/// `cancel` is set.
+pub fn extract_audio(
+    ffmpeg: &Path,
+    source: &Path,
+    out: &Path,
+    cancel: &AtomicBool,
+) -> Result<Duration, MediaError> {
+    let args = extract_audio_args(source, out);
+    Ok(process::run(process::command(ffmpeg, &args), cancel)?.elapsed)
+}
+
 /// What an import needs to know about a video before cutting it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Probe {
@@ -165,6 +207,17 @@ pub async fn run(app: &AppHandle, args: &[String]) -> Result<Duration, MediaErro
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn extract_args_take_the_whole_first_audio_stream() {
+        let args = extract_audio_args(Path::new("/v/ep01.mkv"), Path::new("/l/.tmp/A.tmp"));
+        assert!(!args.iter().any(|a| a == "-ss" || a == "-t"));
+        let map = args.iter().position(|a| a == "-map").unwrap();
+        assert_eq!(args[map + 1], "0:a:0");
+        assert_eq!(args.last().unwrap(), "/l/.tmp/A.tmp");
+        let format = args.iter().position(|a| a == "-f").unwrap();
+        assert_eq!(args[format + 1], "ipod");
+    }
 
     #[test]
     fn cut_args_seek_on_input_and_encode_audio_only() {

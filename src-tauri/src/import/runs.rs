@@ -28,6 +28,8 @@ pub enum Reason {
     /// ffmpeg was killed by something other than our cancel.
     Killed,
     Other,
+    /// 直接匯入: the file has no audio stream.
+    NoAudio,
     /// The user cancelled with this cue in flight or queued (ENG6); shown apart from failures.
     Cancelled,
 }
@@ -43,6 +45,7 @@ impl Reason {
             Self::SidecarUnusable => "sidecarUnusable",
             Self::Killed => "killed",
             Self::Other => "other",
+            Self::NoAudio => "noAudio",
             Self::Cancelled => "cancelled",
         }
     }
