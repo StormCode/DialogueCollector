@@ -166,7 +166,7 @@ export function ScriptBookPage() {
 
       {(isEmpty || noResult) && (
         <div className="sb-empty" role={noResult ? "status" : undefined}>
-          <img src={emptyArt} alt="" aria-hidden="true" className={noResult ? "is-noresult" : undefined} />
+          <img src={emptyArt} alt="" aria-hidden="true" className={`dc-illus${noResult ? " is-noresult" : ""}`} />
           <p>{t(isEmpty ? "scriptBook.empty" : "scriptBook.noResult")}</p>
         </div>
       )}

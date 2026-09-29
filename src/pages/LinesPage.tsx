@@ -398,7 +398,7 @@ export function LinesPage() {
 
       {noLines ? (
         <div className="ln-nothing">
-          <img src={emptyArt} alt="" aria-hidden="true" />
+          <img className="dc-illus" src={emptyArt} alt="" aria-hidden="true" />
           <p>{t("lines.empty")}</p>
           <button type="button" className="ln-btn ln-btn-primary" onClick={() => navigate("/")}>
             <MaterialIcon name="add" />
@@ -429,7 +429,7 @@ export function LinesPage() {
             {shown.map(card)}
             {noResult && (
               <div className="ln-empty" role="status">
-                <img src={emptyArt} alt="" aria-hidden="true" />
+                <img className="dc-illus" src={emptyArt} alt="" aria-hidden="true" />
                 <p>{t("lines.noResult")}</p>
               </div>
             )}
