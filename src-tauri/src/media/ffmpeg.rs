@@ -44,6 +44,9 @@ pub(crate) fn cut_cue_args(source: &Path, start_ms: u64, end_ms: u64, out: &Path
         "-vn",
         "-sn",
         "-dn",
+        // An mkv's chapters would come along as a data track spanning the whole episode.
+        "-map_chapters",
+        "-1",
         "-c:a",
         "aac",
         "-b:a",
@@ -85,6 +88,9 @@ pub(crate) fn cut_segments_args(source: &Path, segments: &[(u64, u64)], out: &Pa
         format!("{inputs}concat=n={}:v=0:a=1[out]", segments.len()),
         "-map".into(),
         "[out]".into(),
+        // Without this the merged clip reports the episode's length and never ends in the player.
+        "-map_chapters".into(),
+        "-1".into(),
     ]);
     args.extend(
         [
@@ -148,6 +154,9 @@ pub(crate) fn extract_audio_args(source: &Path, out: &Path) -> Vec<String> {
         "-vn",
         "-sn",
         "-dn",
+        // An mkv's chapters would come along as a data track spanning the whole episode.
+        "-map_chapters",
+        "-1",
         "-c:a",
         "aac",
         "-b:a",
@@ -460,6 +469,7 @@ mod tests {
         assert_eq!(at("-map"), "0:a:0");
         assert_eq!(at("-c:a"), "aac");
         assert!(args.contains(&"-vn".to_owned()));
+        assert_eq!(at("-map_chapters"), "-1");
         assert_eq!(args.last().unwrap(), "/l/A.m4a");
     }
 
@@ -580,19 +590,18 @@ mod real_sidecars {
             return;
         }
         let dir = tempfile::tempdir().unwrap();
-        let video = dir.path().join("tone.mp4");
+        // An episode-long chapter, as an mkv carries: it must not end up in the clip.
+        let chapters = dir.path().join("chapters.txt");
+        std::fs::write(
+            &chapters,
+            ";FFMETADATA1\n[CHAPTER]\nTIMEBASE=1/1000\nSTART=0\nEND=600000\ntitle=A\n",
+        )
+        .unwrap();
+        let video = dir.path().join("tone.mkv");
         let ok = std::process::Command::new(&ffmpeg)
-            .args([
-                "-v",
-                "error",
-                "-f",
-                "lavfi",
-                "-i",
-                "sine=duration=6",
-                "-c:a",
-                "aac",
-                "-y",
-            ])
+            .args(["-v", "error", "-f", "lavfi", "-i", "sine=duration=6", "-i"])
+            .arg(&chapters)
+            .args(["-map_chapters", "1", "-c:a", "aac", "-y"])
             .arg(&video)
             .status()
             .unwrap()
@@ -608,5 +617,18 @@ mod real_sidecars {
             (2100..=2350).contains(&ms),
             "1.0 s + 1.2 s joined, got {ms} ms"
         );
+        let streams = std::process::Command::new(&ffprobe)
+            .args([
+                "-v",
+                "error",
+                "-show_entries",
+                "stream=codec_type",
+                "-of",
+                "csv=p=0",
+            ])
+            .arg(&out)
+            .output()
+            .unwrap();
+        assert_eq!(String::from_utf8_lossy(&streams.stdout).trim(), "audio");
     }
 }
