@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { BOARD_ART } from "./iconData";
 import { WaveBackdrop } from "./WaveBackdrop";
-import { BOARD_CURVE, WAVE_AMPLITUDE, WAVE_CENTER, WAVE_LENGTH, wavePath, waveX } from "./waveFrames";
+import { BOARD_CURVE, WAVE_AMPLITUDE, WAVE_CENTER, WAVE_CREST_Y, WAVE_LENGTH, wavePath, waveX } from "./waveFrames";
 
 /** The edge's points at whole steps down the page, as drawn. */
 const edge = (d: string) =>
@@ -16,20 +16,20 @@ const edge = (d: string) =>
 describe("WaveBackdrop", () => {
   afterEach(() => vi.unstubAllGlobals());
 
-  it("stays within the boards' curve, cresting where it bulges", () => {
+  it("is the boards' backdrop, a low wave with more than one crest on the page", () => {
     expect(BOARD_ART.backdrop.body).toContain(`d="${BOARD_CURVE}"`);
-    const start = edge(wavePath(0));
-    expect(waveX(250, 0)).toBeCloseTo(WAVE_CENTER + WAVE_AMPLITUDE);
-    // It never leaves the span the board's curve covers.
-    for (const x of start.values()) {
-      expect(x).toBeGreaterThanOrEqual(1000);
-      expect(x).toBeLessThanOrEqual(1100);
+    expect(waveX(WAVE_CREST_Y, 0)).toBeCloseTo(WAVE_CENTER + WAVE_AMPLITUDE);
+    for (const x of edge(wavePath(0)).values()) {
+      expect(Math.abs(x - WAVE_CENTER)).toBeLessThanOrEqual(WAVE_AMPLITUDE + 0.1);
     }
+    // More than one wave shows on the page, so the climb is visible.
+    expect(800 / WAVE_LENGTH).toBeGreaterThan(1);
+    expect(edge(wavePath(0)).size).toBeGreaterThan(30);
   });
 
   it("turns its bulge into a dip half a turn later, and returns after a full turn", () => {
-    expect(waveX(250, 0)).toBeGreaterThan(WAVE_CENTER);
-    expect(waveX(250, Math.PI)).toBeLessThan(WAVE_CENTER);
+    expect(waveX(WAVE_CREST_Y, 0)).toBeGreaterThan(WAVE_CENTER);
+    expect(waveX(WAVE_CREST_Y, Math.PI)).toBeLessThan(WAVE_CENTER);
     expect(wavePath(0.7 + 2 * Math.PI)).toBe(wavePath(0.7));
     expect(wavePath(0).endsWith("L 1284,804 L 1284,-4 Z")).toBe(true);
   });

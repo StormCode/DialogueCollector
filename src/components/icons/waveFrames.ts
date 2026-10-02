@@ -1,30 +1,31 @@
 /**
  * WaveBackdrop's geometry. The curve on the page is a stretch of an endless sine curve that keeps
  * moving, so the whole line writhes: wherever it bulges now it will dip later, and the other way
- * round (user 2026-10-02). At phase 0 its crest sits where
- * the boards' curve bulges, so the moving edge starts out close to the drawn one; one full turn
- * of `phase` brings it back exactly.
+ * round (user 2026-10-02). The wave is short, so more than one shows and the climb reads clearly
+ * (user's pick over a fainter second wave), and low, so the edge stays nearly straight. The
+ * boards are to be redrawn with this wave at phase 0. One full turn of `phase` brings it back
+ * exactly.
  */
 
 /** The curve every board draws behind its page (`backdrop` in iconData, from Settings.dc.html). */
 export const BOARD_CURVE =
-  "M 1020,0 C 1070,56 1100,175 1100,250 C 1100,415 1010,635 1000,800 L 1284,804 L 1284,-4 Z";
+  "M 1020,0 C 870,220 1140,480 1000,800 L 1284,804 L 1284,-4 Z";
 
-/** The edge's middle line, in the board's 1280×800 units: the middle of the board curve's span. */
-export const WAVE_CENTER = 1050;
-/** How far the edge swings either way (user 2026-10-02: gentler than the board's 1000–1100). */
-export const WAVE_AMPLITUDE = 25;
-/** Crest to crest: one bulge and one dip down the page. */
-export const WAVE_LENGTH = 900;
-/** Where the board's curve bulges, so phase 0 puts the crest there. */
-const BOARD_CREST_Y = 250;
+/** The edge's middle line, in the board's 1280×800 units. */
+export const WAVE_CENTER = 1010;
+/** How far the edge swings either way. */
+export const WAVE_AMPLITUDE = 22;
+/** Crest to crest: more than one wave shows, so it visibly climbs. */
+export const WAVE_LENGTH = 600;
+/** The crest's height at phase 0. */
+export const WAVE_CREST_Y = 600;
 
 /** Height between the points the edge is drawn through. */
 const STEP = 20;
 
 /** The edge's x at height `y` and `phase` (radians); growing phase moves the wave up. */
 export function waveX(y: number, phase: number): number {
-  const angle = (2 * Math.PI * (y - BOARD_CREST_Y)) / WAVE_LENGTH + Math.PI / 2 + phase;
+  const angle = (2 * Math.PI * (y - WAVE_CREST_Y)) / WAVE_LENGTH + Math.PI / 2 + phase;
   return WAVE_CENTER + WAVE_AMPLITUDE * Math.sin(angle);
 }
 
