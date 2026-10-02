@@ -1,8 +1,9 @@
-/* Board: Main.dc.html. The subtitle zone uses Bento's interactive colour and the manual zone
-   its own green (#16C459), exactly as the board draws them. */
+/* Board: Main.dc.html (--dz-left / --dz-right). The subtitle zone uses Bento's interactive
+   colour and the manual zone its own green, exactly as the board draws them; 夜光黑 lightens
+   both (themes.css). */
 .main-page {
   --main-subtitle: var(--bento-interactive-40);
-  --main-manual: #16c459;
+  --main-manual: #108a42;
   box-sizing: border-box;
   height: 100%;
   display: flex;

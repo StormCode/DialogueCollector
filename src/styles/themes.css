@@ -230,3 +230,9 @@
 :root[data-theme="midnight"] .ln-card.is-missing:hover {
   box-shadow: inset 0 0 0 1px var(--bento-negative-40);
 }
+
+/* 夜光黑: the main page's drop zones in lighter tones (MainDark: --dz-left, --dz-right). */
+:root[data-theme="midnight"] .main-page {
+  --main-subtitle: #b4bcfd;
+  --main-manual: #4ade80;
+}
