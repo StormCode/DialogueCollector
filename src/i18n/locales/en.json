@@ -9,6 +9,25 @@
     "collapse": "Collapse menu",
     "expand": "Expand menu"
   },
+  "menu": {
+    "go": "Go",
+    "about": "About {{name}}",
+    "hide": "Hide {{name}}",
+    "hideOthers": "Hide Others",
+    "showAll": "Show All",
+    "quit": "Quit {{name}}",
+    "edit": "Edit",
+    "undo": "Undo",
+    "redo": "Redo",
+    "cut": "Cut",
+    "copy": "Copy",
+    "paste": "Paste",
+    "selectAll": "Select All",
+    "window": "Window",
+    "minimize": "Minimize",
+    "zoom": "Zoom",
+    "close": "Close Window"
+  },
   "main": {
     "fromSubtitle": "Cut a video into clips along its subtitles",
     "manual": "Import existing video or audio as is",

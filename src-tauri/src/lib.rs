@@ -16,6 +16,7 @@ mod import_cmd;
 mod library;
 mod lines_cmd;
 mod manual_cmd;
+mod menu;
 mod smoke;
 mod updater;
 
@@ -66,10 +67,19 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
+        .on_menu_event(|app, event| {
+            use tauri::Emitter;
+            if let Some(route) = event.id().as_ref().strip_prefix(menu::GO_PREFIX) {
+                let _ = app.emit(menu::NAVIGATE_EVENT, route);
+            }
+        })
         .setup(|app| {
             use tauri::Manager;
 
             manual_cmd::clear_temp_files(app.handle());
+
+            #[cfg(target_os = "macos")]
+            app.set_menu(menu::build(app.handle())?)?;
 
             let smoke = smoke::SmokeMode::from_args();
             smoke.arm_watchdog();

@@ -1,0 +1,3 @@
+/* The app name Finder, the Dock and the menu bar show for this language. */
+"CFBundleDisplayName" = "台詞コレクター";
+"CFBundleName" = "台詞コレクター";

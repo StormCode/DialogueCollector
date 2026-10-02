@@ -75,6 +75,31 @@ Var UpdateMode
 Var NoShortcutMode
 Var WixMode
 Var OldMainBinaryName
+; The name shortcuts and Apps & Features show, in the installer's language (user 2026-10-02),
+; and the one an earlier install gave them.
+Var AppName
+Var OldAppName
+
+; $LANGUAGE is the user's UI language when the installer carries it, else the first listed.
+!macro SetAppName
+  ${If} $LANGUAGE == 1028 ; TradChinese
+    StrCpy $AppName "台詞收藏家"
+  ${ElseIf} $LANGUAGE == 2052 ; SimpChinese
+    StrCpy $AppName "台词收藏家"
+  ${ElseIf} $LANGUAGE == 1041 ; Japanese
+    StrCpy $AppName "台詞コレクター"
+  ${Else}
+    StrCpy $AppName "Dialogue Collector"
+  ${EndIf}
+!macroend
+
+; The name the last install recorded; installs before it used the product name.
+!macro ReadInstalledAppName out
+  ReadRegStr ${out} SHCTX "${UNINSTKEY}" "ShortcutName"
+  ${If} ${out} == ""
+    StrCpy ${out} "${PRODUCTNAME}"
+  ${EndIf}
+!macroend
 
 Name "${PRODUCTNAME}"
 BrandingText "${COPYRIGHT}"
@@ -496,6 +521,9 @@ Function .onInit
 
   !insertmacro SetContext
 
+  !insertmacro SetAppName
+  !insertmacro ReadInstalledAppName $OldAppName
+
   ${If} $INSTDIR == "${PLACEHOLDER_INSTALL_DIR}"
     ; Set default install location
     !if "${INSTALLMODE}" == "perMachine"
@@ -698,7 +726,8 @@ Section Install
   WriteRegStr SHCTX "${UNINSTKEY}" "MainBinaryName" "${MAINBINARYNAME}.exe"
 
   ; Registry information for add/remove programs
-  WriteRegStr SHCTX "${UNINSTKEY}" "DisplayName" "${PRODUCTNAME}"
+  WriteRegStr SHCTX "${UNINSTKEY}" "DisplayName" "$AppName"
+  WriteRegStr SHCTX "${UNINSTKEY}" "ShortcutName" "$AppName"
   WriteRegStr SHCTX "${UNINSTKEY}" "DisplayIcon" "$\"$INSTDIR\${MAINBINARYNAME}.exe$\""
   WriteRegStr SHCTX "${UNINSTKEY}" "DisplayVersion" "${VERSION}"
   WriteRegStr SHCTX "${UNINSTKEY}" "Publisher" "${MANUFACTURER}"
@@ -717,6 +746,19 @@ Section Install
     WriteRegStr SHCTX "${UNINSTKEY}" "URLUpdateInfo" "${HOMEPAGE}"
     WriteRegStr SHCTX "${UNINSTKEY}" "HelpLink" "${HOMEPAGE}"
   !endif
+
+  ; Shortcuts an earlier install named otherwise take this install's name, so updates keep them.
+  ${If} $OldAppName != $AppName
+    ${If} ${FileExists} "$SMPROGRAMS\$AppStartMenuFolder\$OldAppName.lnk"
+      Rename "$SMPROGRAMS\$AppStartMenuFolder\$OldAppName.lnk" "$SMPROGRAMS\$AppStartMenuFolder\$AppName.lnk"
+    ${EndIf}
+    ${If} ${FileExists} "$SMPROGRAMS\$OldAppName.lnk"
+      Rename "$SMPROGRAMS\$OldAppName.lnk" "$SMPROGRAMS\$AppName.lnk"
+    ${EndIf}
+    ${If} ${FileExists} "$DESKTOP\$OldAppName.lnk"
+      Rename "$DESKTOP\$OldAppName.lnk" "$DESKTOP\$AppName.lnk"
+    ${EndIf}
+  ${EndIf}
 
   ; Create start menu shortcut
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -761,6 +803,9 @@ Function un.onInit
   !endif
 
   !insertmacro MUI_UNGETLANGUAGE
+
+  ; The shortcuts carry the name the install gave them, whatever the language now.
+  !insertmacro ReadInstalledAppName $AppName
 
   ${GetOptions} $CMDLINE "/P" $PassiveMode
   ${IfNot} ${Errors}
@@ -825,26 +870,26 @@ Section Uninstall
 
     ; Remove start menu shortcut
     !insertmacro MUI_STARTMENU_GETFOLDER Application $AppStartMenuFolder
-    !insertmacro IsShortcutTarget "$SMPROGRAMS\$AppStartMenuFolder\${PRODUCTNAME}.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
+    !insertmacro IsShortcutTarget "$SMPROGRAMS\$AppStartMenuFolder\$AppName.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
     Pop $0
     ${If} $0 = 1
-      !insertmacro UnpinShortcut "$SMPROGRAMS\$AppStartMenuFolder\${PRODUCTNAME}.lnk"
-      Delete "$SMPROGRAMS\$AppStartMenuFolder\${PRODUCTNAME}.lnk"
+      !insertmacro UnpinShortcut "$SMPROGRAMS\$AppStartMenuFolder\$AppName.lnk"
+      Delete "$SMPROGRAMS\$AppStartMenuFolder\$AppName.lnk"
       RMDir "$SMPROGRAMS\$AppStartMenuFolder"
     ${EndIf}
-    !insertmacro IsShortcutTarget "$SMPROGRAMS\${PRODUCTNAME}.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
+    !insertmacro IsShortcutTarget "$SMPROGRAMS\$AppName.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
     Pop $0
     ${If} $0 = 1
-      !insertmacro UnpinShortcut "$SMPROGRAMS\${PRODUCTNAME}.lnk"
-      Delete "$SMPROGRAMS\${PRODUCTNAME}.lnk"
+      !insertmacro UnpinShortcut "$SMPROGRAMS\$AppName.lnk"
+      Delete "$SMPROGRAMS\$AppName.lnk"
     ${EndIf}
 
     ; Remove desktop shortcuts
-    !insertmacro IsShortcutTarget "$DESKTOP\${PRODUCTNAME}.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
+    !insertmacro IsShortcutTarget "$DESKTOP\$AppName.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
     Pop $0
     ${If} $0 = 1
-      !insertmacro UnpinShortcut "$DESKTOP\${PRODUCTNAME}.lnk"
-      Delete "$DESKTOP\${PRODUCTNAME}.lnk"
+      !insertmacro UnpinShortcut "$DESKTOP\$AppName.lnk"
+      Delete "$DESKTOP\$AppName.lnk"
     ${EndIf}
   ${EndIf}
 
@@ -916,17 +961,17 @@ Function CreateOrUpdateStartMenuShortcut
   ; migrate old shortcuts to target the new MAINBINARYNAME
   StrCpy $R0 0
 
-  !insertmacro IsShortcutTarget "$SMPROGRAMS\$AppStartMenuFolder\${PRODUCTNAME}.lnk" "$INSTDIR\$OldMainBinaryName"
+  !insertmacro IsShortcutTarget "$SMPROGRAMS\$AppStartMenuFolder\$AppName.lnk" "$INSTDIR\$OldMainBinaryName"
   Pop $0
   ${If} $0 = 1
-    !insertmacro SetShortcutTarget "$SMPROGRAMS\$AppStartMenuFolder\${PRODUCTNAME}.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
+    !insertmacro SetShortcutTarget "$SMPROGRAMS\$AppStartMenuFolder\$AppName.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
     StrCpy $R0 1
   ${EndIf}
 
-  !insertmacro IsShortcutTarget "$SMPROGRAMS\${PRODUCTNAME}.lnk" "$INSTDIR\$OldMainBinaryName"
+  !insertmacro IsShortcutTarget "$SMPROGRAMS\$AppName.lnk" "$INSTDIR\$OldMainBinaryName"
   Pop $0
   ${If} $0 = 1
-    !insertmacro SetShortcutTarget "$SMPROGRAMS\${PRODUCTNAME}.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
+    !insertmacro SetShortcutTarget "$SMPROGRAMS\$AppName.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
     StrCpy $R0 1
   ${EndIf}
 
@@ -945,21 +990,21 @@ Function CreateOrUpdateStartMenuShortcut
 
   !if "${STARTMENUFOLDER}" != ""
     CreateDirectory "$SMPROGRAMS\$AppStartMenuFolder"
-    CreateShortcut "$SMPROGRAMS\$AppStartMenuFolder\${PRODUCTNAME}.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
-    !insertmacro SetLnkAppUserModelId "$SMPROGRAMS\$AppStartMenuFolder\${PRODUCTNAME}.lnk"
+    CreateShortcut "$SMPROGRAMS\$AppStartMenuFolder\$AppName.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
+    !insertmacro SetLnkAppUserModelId "$SMPROGRAMS\$AppStartMenuFolder\$AppName.lnk"
   !else
-    CreateShortcut "$SMPROGRAMS\${PRODUCTNAME}.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
-    !insertmacro SetLnkAppUserModelId "$SMPROGRAMS\${PRODUCTNAME}.lnk"
+    CreateShortcut "$SMPROGRAMS\$AppName.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
+    !insertmacro SetLnkAppUserModelId "$SMPROGRAMS\$AppName.lnk"
   !endif
 FunctionEnd
 
 Function CreateOrUpdateDesktopShortcut
   ; We used to use product name as MAINBINARYNAME
   ; migrate old shortcuts to target the new MAINBINARYNAME
-  !insertmacro IsShortcutTarget "$DESKTOP\${PRODUCTNAME}.lnk" "$INSTDIR\$OldMainBinaryName"
+  !insertmacro IsShortcutTarget "$DESKTOP\$AppName.lnk" "$INSTDIR\$OldMainBinaryName"
   Pop $0
   ${If} $0 = 1
-    !insertmacro SetShortcutTarget "$DESKTOP\${PRODUCTNAME}.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
+    !insertmacro SetShortcutTarget "$DESKTOP\$AppName.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
     Return
   ${EndIf}
 
@@ -972,6 +1017,6 @@ Function CreateOrUpdateDesktopShortcut
     ${EndIf}
   ${EndIf}
 
-  CreateShortcut "$DESKTOP\${PRODUCTNAME}.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
-  !insertmacro SetLnkAppUserModelId "$DESKTOP\${PRODUCTNAME}.lnk"
+  CreateShortcut "$DESKTOP\$AppName.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
+  !insertmacro SetLnkAppUserModelId "$DESKTOP\$AppName.lnk"
 FunctionEnd
