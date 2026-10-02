@@ -7,6 +7,7 @@ import { unavailableMessageKey } from "../../components/LibraryUnavailableToast"
 import { Toast } from "../../components/feedback/Toast";
 import { Button } from "../../components/ui/Button";
 import { Modal } from "../../components/ui/Modal";
+import { useBusyReveal } from "../../hooks/useBusyReveal";
 import { formatBytes, formatCount } from "../../lib/format";
 import { errorKind, ipc } from "../../lib/ipc";
 import type { BackupPreview, MissingFile } from "../../lib/types";
@@ -91,6 +92,8 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
   const [missingOpen, setMissingOpen] = useState(false);
   const dismissToast = useCallback(() => setToast(null), []);
   const busy = relocating || exporting || importing;
+  // 匯出中 shows only once the export runs past BUSY_CARD_DELAY_MS (user 2026-10-02).
+  const showExporting = useBusyReveal(exporting);
 
   // 驗證收藏庫 (T20): re-run whenever the library or its contents change (move, import).
   useEffect(() => {
@@ -259,7 +262,7 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
         />
       )}
 
-      {exporting && (
+      {showExporting && (
         <Modal title={t("settings.files.export")}>
           <ProgressBody
             icon="sync"
