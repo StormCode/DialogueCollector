@@ -13,6 +13,9 @@
 //!   text, any further lines the translation.
 //! - Bilingual ASS that puts each language in its own event (`Text - JP` and `Text - CN` with
 //!   the same timing) is paired into one cue (user 2026-09-29): see `pair_bilingual`.
+//! - ASS 主／副字幕 (user 2026-10-02): players can't tell them apart either, but the main one
+//!   is usually set larger. When a bilingual line's two parts are drawn at different sizes
+//!   (the style's Fontsize × ScaleY, or `\fs`/`\fscy` overrides), the larger is the 原文.
 //!
 //! Cues are returned in start-time order; `index` keeps each one's position in the file.
 
@@ -223,20 +226,72 @@ fn clean_srt_text(text: &str) -> String {
 
 // ---------------------------------------------------------------------------------------- ASS
 
+/// A style's font size and vertical scale (%), from `[V4+ Styles]`.
+#[derive(Debug, Clone, Copy, PartialEq)]
+struct Size {
+    font: f64,
+    scale_y: f64,
+}
+
+impl Size {
+    /// The height the text is drawn at.
+    fn height(self) -> f64 {
+        self.font * self.scale_y / 100.0
+    }
+}
+
+/// One event as `pair_bilingual` sees it: its style, its cue, and the height its 原文 is drawn
+/// at (`None` when the style isn't declared).
+struct Event {
+    style: String,
+    cue: Cue,
+    height: Option<f64>,
+}
+
+#[derive(PartialEq)]
+enum Section {
+    Styles,
+    Events,
+    Other,
+}
+
 pub fn parse_ass(text: &str) -> Result<Vec<Cue>, SubsError> {
-    let mut in_events = false;
+    let mut section = Section::Other;
     let mut format: Option<Vec<String>> = None;
-    let mut events: Vec<(String, Cue)> = Vec::new();
+    let mut style_format: Option<Vec<String>> = None;
+    let mut styles: std::collections::HashMap<String, Size> = std::collections::HashMap::new();
+    let mut events: Vec<Event> = Vec::new();
     let mut seen = std::collections::HashSet::new();
     let mut position = 0u32;
 
     for raw in text.lines() {
         let line = raw.trim_start_matches('\u{feff}').trim();
         if line.starts_with('[') {
-            in_events = line.eq_ignore_ascii_case("[events]");
+            section = if line.eq_ignore_ascii_case("[events]") {
+                Section::Events
+            } else if line.to_ascii_lowercase().ends_with("styles]") {
+                Section::Styles
+            } else {
+                Section::Other
+            };
             continue;
         }
-        if !in_events {
+        if section == Section::Styles {
+            if let Some(rest) = line.strip_prefix("Format:") {
+                style_format = Some(
+                    rest.split(',')
+                        .map(|f| f.trim().to_ascii_lowercase())
+                        .collect(),
+                );
+            } else if let (Some(rest), Some(fields)) = (line.strip_prefix("Style:"), &style_format)
+            {
+                if let Some((name, size)) = parse_style(fields, rest) {
+                    styles.insert(name, size);
+                }
+            }
+            continue;
+        }
+        if section != Section::Events {
             continue;
         }
         if let Some(rest) = line.strip_prefix("Format:") {
@@ -281,17 +336,88 @@ pub fn parse_ass(text: &str) -> Result<Vec<Cue>, SubsError> {
             parse_clock(start).ok_or_else(|| SubsError::Parse(format!("bad ASS time: {start}")))?;
         let end_ms =
             parse_clock(end).ok_or_else(|| SubsError::Parse(format!("bad ASS time: {end}")))?;
-        let text = clean_ass_text(values[raw_text]);
-        if text.is_empty() {
+        let style = field("style").unwrap_or("").to_owned();
+        let lines = ass_lines(values[raw_text], styles.get(&style).copied(), &styles);
+        if lines.is_empty() {
             continue;
         }
-        if !seen.insert((start_ms, end_ms, text.clone())) {
+        let joined = lines
+            .iter()
+            .map(|(l, _)| l.as_str())
+            .collect::<Vec<_>>()
+            .join("\n");
+        if !seen.insert((start_ms, end_ms, joined)) {
             continue; // the same line repeated on another layer
         }
-        let style = field("style").unwrap_or("").to_owned();
-        events.push((style, Cue::new(this_position, start_ms, end_ms, &text)));
+        let (cue, height) = cue_from_lines(this_position, start_ms, end_ms, &lines);
+        events.push(Event { style, cue, height });
     }
     Ok(sort(pair_bilingual(events)))
+}
+
+/// A `Style:` line's name and size; `None` if it lacks them.
+fn parse_style(fields: &[String], rest: &str) -> Option<(String, Size)> {
+    let values: Vec<&str> = rest.split(',').map(str::trim).collect();
+    let field = |name: &str| {
+        fields
+            .iter()
+            .position(|f| f == name)
+            .and_then(|i| values.get(i).copied())
+    };
+    let font = field("fontsize")?.parse().ok()?;
+    let scale_y = field("scaley")
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(100.0);
+    Some((field("name")?.to_owned(), Size { font, scale_y }))
+}
+
+/// A cue from an event's lines. Lines drawn at different heights put the tallest first as the
+/// 原文 (主字幕) and the rest, in order, as the 譯文; otherwise the first line is the 原文. Also
+/// returns the 原文's height.
+fn cue_from_lines(
+    index: u32,
+    start_ms: u64,
+    end_ms: u64,
+    lines: &[(String, Option<f64>)],
+) -> (Cue, Option<f64>) {
+    let heights: Option<Vec<f64>> = lines.iter().map(|(_, h)| *h).collect();
+    let tallest = heights
+        .as_ref()
+        .and_then(|hs| hs.iter().copied().reduce(f64::max))
+        .filter(|&max| {
+            heights
+                .as_ref()
+                .is_some_and(|hs| hs.iter().any(|&h| h < max))
+        });
+    let (main, rest): (Vec<_>, Vec<_>) = match tallest {
+        Some(max) => lines.iter().partition(|(_, h)| *h == Some(max)),
+        None => {
+            let (first, rest) = lines.split_first().expect("lines is not empty");
+            (vec![first], rest.iter().collect())
+        }
+    };
+    let text = main
+        .iter()
+        .map(|(l, _)| l.as_str())
+        .collect::<Vec<_>>()
+        .join(" ");
+    let translation = (!rest.is_empty()).then(|| {
+        rest.iter()
+            .map(|(l, _)| l.as_str())
+            .collect::<Vec<_>>()
+            .join("\n")
+    });
+    let height = main[0].1;
+    (
+        Cue {
+            index,
+            start_ms,
+            end_ms,
+            text,
+            translation,
+        },
+        height,
+    )
 }
 
 /// Which language a style name says its events are in, from tags like `JP` in `Text - JP`.
@@ -307,7 +433,7 @@ fn style_language(style: &str) -> StyleLanguage {
     for tag in style.split(|c: char| !c.is_ascii_alphanumeric()) {
         match tag.to_ascii_uppercase().as_str() {
             "JP" | "JA" | "JPN" | "JAP" => return StyleLanguage::Japanese,
-            "CN" | "ZH" | "CHS" | "CHT" | "SC" | "TC" | "CHI" | "GB" | "BIG5" => {
+            "CN" | "CH" | "ZH" | "CHS" | "CHT" | "SC" | "TC" | "CHI" | "GB" | "BIG5" => {
                 found = StyleLanguage::Chinese
             }
             _ => {}
@@ -328,11 +454,14 @@ fn has_kana(text: &str) -> bool {
 /// languages are there: the Japanese, joined in file order, is the 原文 and the Chinese the
 /// 譯文. Two one-line events in different, untagged styles pair too when exactly one has kana:
 /// that one is the 原文. Anything else sharing a timing (two lines in one style, a title card's
-/// two lines, an event of neither language among them) is left as it is.
-fn pair_bilingual(events: Vec<(String, Cue)>) -> Vec<Cue> {
+/// two lines, an event of neither language among them) is left as it is. Whichever side is
+/// drawn larger is the 原文 (主字幕), overriding the language when every size is known
+/// (user 2026-10-02): sizes alone don't decide *whether* to pair, as two speakers at once often
+/// differ in size too.
+fn pair_bilingual(events: Vec<Event>) -> Vec<Cue> {
     use std::collections::{HashMap, HashSet};
     let mut by_time: HashMap<(u64, u64), Vec<usize>> = HashMap::new();
-    for (i, (_, cue)) in events.iter().enumerate() {
+    for (i, Event { cue, .. }) in events.iter().enumerate() {
         by_time
             .entry((cue.start_ms, cue.end_ms))
             .or_default()
@@ -341,12 +470,12 @@ fn pair_bilingual(events: Vec<(String, Cue)>) -> Vec<Cue> {
     let mut merged: HashMap<usize, Cue> = HashMap::new();
     let mut dropped = HashSet::new();
     for group in by_time.values_mut() {
-        if group.len() < 2 || group.iter().any(|&i| events[i].1.translation.is_some()) {
+        if group.len() < 2 || group.iter().any(|&i| events[i].cue.translation.is_some()) {
             continue;
         }
-        group.sort_by_key(|&i| events[i].1.index);
-        let language = |i: usize| match style_language(&events[i].0) {
-            StyleLanguage::Unknown if has_kana(&events[i].1.text) => StyleLanguage::Japanese,
+        group.sort_by_key(|&i| events[i].cue.index);
+        let language = |i: usize| match style_language(&events[i].style) {
+            StyleLanguage::Unknown if has_kana(&events[i].cue.text) => StyleLanguage::Japanese,
             other => other,
         };
         let japanese: Vec<usize> = group
@@ -368,8 +497,8 @@ fn pair_bilingual(events: Vec<(String, Cue)>) -> Vec<Cue> {
             // Two lines, neither style tagged: different styles and exactly one with kana, which
             // leads. Without kana nothing says which is the original (a title card's two lines,
             // two speakers), so they stay apart.
-            let (style_a, style_b) = (&events[a].0, &events[b].0);
-            let (ja, jb) = (has_kana(&events[a].1.text), has_kana(&events[b].1.text));
+            let (style_a, style_b) = (&events[a].style, &events[b].style);
+            let (ja, jb) = (has_kana(&events[a].cue.text), has_kana(&events[b].cue.text));
             let untagged = style_language(style_a) == StyleLanguage::Unknown
                 && style_language(style_b) == StyleLanguage::Unknown;
             if style_a == style_b || !untagged || ja == jb {
@@ -383,9 +512,14 @@ fn pair_bilingual(events: Vec<(String, Cue)>) -> Vec<Cue> {
         } else {
             continue;
         };
+        let (originals, translations) = if taller(&events, &translations, &originals) {
+            (translations, originals)
+        } else {
+            (originals, translations)
+        };
         let join = |ids: &[usize]| {
             ids.iter()
-                .map(|&i| events[i].1.text.as_str())
+                .map(|&i| events[i].cue.text.as_str())
                 .collect::<Vec<_>>()
                 .join(" ")
         };
@@ -395,7 +529,7 @@ fn pair_bilingual(events: Vec<(String, Cue)>) -> Vec<Cue> {
             Cue {
                 text: join(&originals),
                 translation: Some(join(&translations)),
-                ..events[keep].1.clone()
+                ..events[keep].cue.clone()
             },
         );
         dropped.extend(group.iter().copied().filter(|&i| i != keep));
@@ -404,17 +538,38 @@ fn pair_bilingual(events: Vec<(String, Cue)>) -> Vec<Cue> {
         .into_iter()
         .enumerate()
         .filter(|(i, _)| !dropped.contains(i))
-        .map(|(i, (_, cue))| merged.remove(&i).unwrap_or(cue))
+        .map(|(i, Event { cue, .. })| merged.remove(&i).unwrap_or(cue))
         .collect()
 }
 
-fn clean_ass_text(text: &str) -> String {
-    let mut out = String::with_capacity(text.len());
+/// Whether every event in `a` and `b` has a known size and `a`'s tallest is taller than `b`'s.
+fn taller(events: &[Event], a: &[usize], b: &[usize]) -> bool {
+    let tallest = |ids: &[usize]| -> Option<f64> {
+        ids.iter()
+            .map(|&i| events[i].height)
+            .collect::<Option<Vec<_>>>()?
+            .into_iter()
+            .reduce(f64::max)
+    };
+    matches!((tallest(a), tallest(b)), (Some(x), Some(y)) if x > y)
+}
+
+/// An event's text as its hard lines (`\N`), override tags stripped and drawings dropped, each
+/// with the height it starts at: `base` (its style's size), changed by `\fs`, `\fscy` and
+/// `\r` as they come. Heights are `None` when the style's size isn't known.
+fn ass_lines(
+    text: &str,
+    base: Option<Size>,
+    styles: &std::collections::HashMap<String, Size>,
+) -> Vec<(String, Option<f64>)> {
+    // The visible text, in chunks between override blocks, each with the size in effect.
+    let mut chunks: Vec<(&str, Option<Size>)> = Vec::new();
+    let mut size = base;
     let mut drawing = false;
     let mut rest = text;
     while let Some(open) = rest.find('{') {
         if !drawing {
-            out.push_str(&rest[..open]);
+            chunks.push((&rest[..open], size));
         }
         let Some(close) = rest[open..].find('}') else {
             rest = "";
@@ -424,16 +579,87 @@ fn clean_ass_text(text: &str) -> String {
         if let Some(level) = drawing_level(block) {
             drawing = level > 0;
         }
+        size = apply_size_tags(block, size, base, styles);
         rest = &rest[open + close + 1..];
     }
     if !drawing {
-        out.push_str(rest);
+        chunks.push((rest, size));
     }
-    let out = out
-        .replace("\\N", "\n")
-        .replace("\\n", " ")
-        .replace("\\h", " ");
-    normalize(&out)
+
+    // The soft break and the hard space are spaces; a line's height is where its text starts.
+    let visible = |s: &str| s.replace("\\n", " ").replace("\\h", " ");
+    let mut lines = Vec::new();
+    let mut line = String::new();
+    let mut height: Option<Option<f64>> = None;
+    for (chunk, size) in chunks {
+        for (i, piece) in chunk.split("\\N").enumerate() {
+            if i > 0 {
+                let done = visible(&std::mem::take(&mut line)).trim().to_owned();
+                if !done.is_empty() {
+                    lines.push((done, height.flatten()));
+                }
+                height = None;
+            }
+            if height.is_none() && !visible(piece).trim().is_empty() {
+                height = Some(size.map(Size::height));
+            }
+            line.push_str(piece);
+        }
+    }
+    let done = visible(&line).trim().to_owned();
+    if !done.is_empty() {
+        lines.push((done, height.flatten()));
+    }
+    lines
+}
+
+/// `\fs`, `\fscy` and `\r` in an override block, in order. Animated ones (`\t(...)`) are
+/// skipped: the line starts at its own size.
+fn apply_size_tags(
+    block: &str,
+    mut size: Option<Size>,
+    base: Option<Size>,
+    styles: &std::collections::HashMap<String, Size>,
+) -> Option<Size> {
+    let mut depth = 0u32;
+    let mut plain = String::with_capacity(block.len());
+    for ch in block.chars() {
+        match ch {
+            '(' => depth += 1,
+            ')' => depth = depth.saturating_sub(1),
+            _ if depth == 0 => plain.push(ch),
+            _ => {}
+        }
+    }
+    for tag in plain.split('\\').map(str::trim) {
+        let number = |prefix: &str| -> Option<f64> {
+            let v = tag.strip_prefix(prefix)?;
+            (!v.is_empty() && v.bytes().all(|b| b.is_ascii_digit() || b == b'.'))
+                .then(|| v.parse().ok())
+                .flatten()
+        };
+        if let Some(scale_y) = number("fscy") {
+            size = size.map(|s| Size { scale_y, ..s });
+        } else if let Some(font) = number("fs") {
+            size = size.map(|s| Size { font, ..s });
+        } else if let Some(name) = tag.strip_prefix('r') {
+            size = if name.is_empty() {
+                base
+            } else {
+                styles.get(name).copied()
+            };
+        }
+    }
+    size
+}
+
+#[cfg(test)]
+fn clean_ass_text(text: &str) -> String {
+    ass_lines(text, None, &Default::default())
+        .into_iter()
+        .map(|(l, _)| l)
+        .collect::<Vec<_>>()
+        .join("\n")
 }
 
 /// The last `\pN` in an override block, if any (`\pos` and `\pbo` are other tags).
