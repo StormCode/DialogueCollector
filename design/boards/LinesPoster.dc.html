@@ -31,8 +31,8 @@
     .ln-back:hover { color: var(--bento-dv-indigo-40); background: var(--bento-dv-indigo-5); }
 
     .ln-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 22px 0 18px; border: none; border-radius: var(--bento-radius-16); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer; white-space: nowrap; transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease; }
-    .ln-btn-primary { background: var(--bento-dv-indigo-40); color: var(--bento-white); }
-    .ln-btn-primary:hover { background: var(--bento-dv-indigo-60); }
+    .ln-btn-primary { background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); }
+    .ln-btn-primary:hover { background: var(--solid-bg-hover, var(--bento-dv-indigo-60)); }
     .ln-btn-primary.is-stop { background: var(--bento-negative-40, #e42131); }
     .ln-btn-primary.is-stop:hover { background: var(--bento-negative-50, #b81a27); }
     .ln-btn-outline { background: var(--bento-bg-primary); color: var(--bento-dv-indigo-40); box-shadow: inset 0 0 0 var(--bento-border-width-strong, 2px) var(--bento-dv-indigo-40); }
@@ -74,10 +74,10 @@
     @media (prefers-reduced-motion: reduce) { .pg-anim-title { animation: none; } }
     .ln-card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
     .ln-card.is-active { border-color: var(--bento-dv-indigo-40); background: var(--bento-dv-indigo-5); }
-    .ln-check { display: inline-flex; flex-shrink: 0; opacity: 0; transition: opacity 120ms ease; --bento-bg-interactive: var(--bento-dv-indigo-40); --bento-border-input-enabled: var(--bento-dv-indigo-20); --bento-border-input-hover: var(--bento-dv-indigo-40); }
+    .ln-check { display: inline-flex; flex-shrink: 0; opacity: 0; transition: opacity 120ms ease; --bento-bg-interactive: var(--solid-bg, var(--bento-dv-indigo-40)); --bento-border-input-enabled: var(--bento-dv-indigo-20); --bento-border-input-hover: var(--bento-dv-indigo-40); }
     .ln-card:hover .ln-check, .ln-check:focus-within, .ln-list.has-checked .ln-check { opacity: 1; }
-    .ln-play {appearance: none; -webkit-appearance: none; flex-shrink: 0; margin-right: 12px; width: 48px; height: 48px; border-radius: 50%; border: none; display: inline-flex; align-items: center; justify-content: center; background: var(--bento-dv-indigo-40); color: var(--bento-white); cursor: pointer; transition: background-color 120ms ease; }
-    .ln-play:hover { background: var(--bento-dv-indigo-60); }
+    .ln-play {appearance: none; -webkit-appearance: none; flex-shrink: 0; margin-right: 12px; width: 48px; height: 48px; border-radius: 50%; border: none; display: inline-flex; align-items: center; justify-content: center; background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); cursor: pointer; transition: background-color 120ms ease; }
+    .ln-play:hover { background: var(--solid-bg-hover, var(--bento-dv-indigo-60)); }
     .ln-actions { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; margin-right: 12px; }
     .ln-act { appearance: none; -webkit-appearance: none; box-sizing: border-box; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 12px; background: transparent; cursor: pointer; text-decoration: none; transition: background-color 120ms ease; }
     .ln-act .material-symbol { font-size: 24px; font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
@@ -88,7 +88,7 @@
     .ln-act-edit:hover { background: var(--bento-informative-5); }
     .ln-act-del { color: var(--bento-negative-40); }
     .ln-act-del:hover { background: var(--bento-negative-1); }
-    .ln-edit-toggle { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; height: 48px; padding: 0 16px; box-sizing: border-box; border-radius: var(--bento-radius-16); background: var(--bento-bg-primary); box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-dv-indigo-20); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); color: var(--bento-neutral-60); --bento-bg-interactive: var(--bento-dv-indigo-40); --bento-border-input-enabled: var(--bento-neutral-60); --bento-border-input-hover: var(--bento-neutral-80); --bento-neutral-70: var(--bento-neutral-60); --bento-content-primary: var(--bento-neutral-60); }
+    .ln-edit-toggle { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; height: 48px; padding: 0 16px; box-sizing: border-box; border-radius: var(--bento-radius-16); background: var(--bento-bg-primary); box-shadow: inset 0 0 0 var(--bento-border-width) var(--bento-dv-indigo-20); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); color: var(--bento-neutral-60); --bento-bg-interactive: var(--solid-bg, var(--bento-dv-indigo-40)); --bento-border-input-enabled: var(--bento-neutral-60); --bento-border-input-hover: var(--bento-neutral-80); --bento-neutral-70: var(--bento-neutral-60); --bento-content-primary: var(--bento-neutral-60); }
     .ln-pin-block { display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; }
     .ln-pin-head { appearance: none; -webkit-appearance: none; align-self: flex-start; border: none; background: transparent; padding: 4px 8px 4px 4px; margin-left: -4px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; font: var(--bento-weight-semibold) 14px/20px var(--bento-font-ui); color: var(--bento-dv-orange-60); }
     .ln-pin-head .material-symbol { font-size: 20px; font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24; color: var(--bento-dv-orange-40); }
@@ -116,14 +116,16 @@
     .ln-page-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 6px; border-radius: var(--bento-radius-8); border: 1px solid var(--bento-neutral-10); background: var(--bento-bg-primary); color: var(--bento-content-secondary); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer; }
     .ln-page-btn:hover:not(:disabled) { background: var(--bento-bg-secondary); }
     .ln-page-btn:disabled { color: var(--bento-action-disabled-fg); cursor: not-allowed; opacity: 0.5; }
-    .ln-page-btn.is-current { background: var(--bento-dv-indigo-40); border-color: var(--bento-dv-indigo-40); color: var(--bento-white); }
+    .ln-page-btn.is-current { background: var(--solid-bg, var(--bento-dv-indigo-40)); border-color: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); }
     .ln-page-ellipsis { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; color: var(--bento-neutral-40); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); }
+    [data-theme="midnight"] img[src*="a41f06bab49514a736e15468dc1a8344"], [data-theme="midnight"] img[src*="3743135e47e2a77f4bf75b0b0b47f5eb"] { mix-blend-mode: normal !important; }
+    [data-theme="midnight"] .ln-card:not(.is-active):hover { background: color-mix(in srgb, var(--bento-bg-primary) 95%, #ffffff); box-shadow: none; }
   </style>
 </helmet>
-<div style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; font-family: var(--font-bento-font-ui); position: relative; z-index: 0;">
+<div data-theme="{{theme}}" style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; font-family: var(--font-bento-font-ui); position: relative; z-index: 0; {{themeStyle}}">
 
   <svg viewBox="0 0 1280 800" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
-    <path d="M 1020,0 C 1070,56 1100,175 1100,250 C 1100,415 1010,635 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--bento-dv-indigo-5);"></path>
+    <path d="M 1020,0 C 870,220 1140,480 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--bento-dv-indigo-5);"></path>
   </svg>
 
   <div style="position: absolute; top: 50%; right: 0; transform: translateY(-50%); z-index: 50; display: flex; flex-direction: column; align-items: stretch; gap: 4px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-5); border-right: none; border-top-left-radius: 16px; border-bottom-left-radius: 16px; box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.16); padding: 8px;">
@@ -338,7 +340,7 @@
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"showPosterPreview":{"editor":"boolean","default":false,"tsType":"boolean"},"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","midnight"],"default":"light"},"showPosterPreview":{"editor":"boolean","default":false,"tsType":"boolean"},"$preview":{"width":1280,"height":800}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
@@ -574,7 +576,7 @@ class Component extends DCLogic {
     return d.getFullYear() + '/' + p(d.getMonth() + 1) + '/' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
   };
 
-  renderVals() {
+  _baseRenderVals() {
     const expanded = this.state.expanded ?? true;
     const visible = this.getVisible();
     const total = this.totalPages();
@@ -713,6 +715,14 @@ class Component extends DCLogic {
       goNext: this.goNext,
       goLast: this.goLast,
     };
+  }
+
+  renderVals() {
+    const v = this._baseRenderVals() || {};
+    const dark = (this.props.theme ?? 'light') === 'midnight';
+    v.theme = dark ? 'midnight' : 'light';
+    v.themeStyle = dark ? "color-scheme: dark; --bento-neutral-1: #1b222c; --bento-neutral-5: #242c37; --bento-neutral-10: #2e3743; --bento-neutral-20: #3d4756; --bento-neutral-30: #566273; --bento-neutral-40: #76849a; --bento-neutral-50: #9aa8bc; --bento-neutral-60: #b6c2d3; --bento-neutral-70: #cbd4e1; --bento-neutral-80: #dee4ed; --bento-neutral-90: #eef1f6; --bento-bg-primary: #1f2630; --bento-bg-secondary: #141a22; --bento-bg-overlay: rgba(255,255,255,0.06); --bento-bg-interactive-overlay: rgba(255,255,255,0.08); --bento-content-primary: #eef1f6; --bento-content-secondary: #9aa8bc; --bento-content-disabled: rgba(255,255,255,0.3); --bento-icon-primary: #eef1f6; --bento-icon-secondary: #9aa8bc; --bento-border-decorative: #3d4756; --bento-border-container: rgba(255,255,255,0.08); --bento-border-input-enabled: #566273; --bento-border-input-hover: #76849a; --bento-border-input-focus: #cbd4e1; --bento-border-input-disabled: rgba(255,255,255,0.12); --bento-action-disabled-bg: rgba(255,255,255,0.1); --bento-action-disabled-fg: #76849a; --bento-bg-negative: rgba(241,74,88,0.16); --bento-negative-1: rgba(241,74,88,0.12); --bento-negative-5: rgba(241,74,88,0.2); --bento-negative-10: rgba(241,74,88,0.32); --bento-content-negative: #fa7d87; --bento-negative-50: #fa7d87; --bento-icon-negative: #fa7d87; --bento-negative-60: #ffb6bc; --bento-bg-positive: rgba(66,215,91,0.16); --bento-content-positive: #7eeb83; --bento-icon-positive: #7eeb83; --bento-positive-60: #7eeb83; --bento-bg-warning: rgba(252,179,59,0.16); --bento-warning-70: #ffcf73; --bento-elevation-sm: 0 4px 8px rgba(0,0,0,0.4); --bento-elevation-md: 0 8px 16px rgba(0,0,0,0.45); --bento-elevation-lg: 0 16px 32px rgba(0,0,0,0.5); --bento-dv-indigo-1: #242c37; --bento-dv-indigo-5: #2a3340; --bento-dv-indigo-10: #2e3743; --bento-dv-indigo-20: #566273; --bento-dv-indigo-30: #9aa8bc; --bento-dv-indigo-40: #cbd4e1; --bento-dv-indigo-50: #dee4ed; --bento-dv-indigo-60: #eef1f6; --bento-dv-indigo-70: #eef1f6; --bento-dv-indigo-80: #eef1f6; --bento-dv-indigo-90: #eef1f6; --solid-bg: #4a5568; --solid-bg-hover: #566273; --bento-bg-interactive: #4a5568; --bento-action-solid-primary-bg: #4a5568; --bento-action-solid-primary-bg-hover: #566273; --bento-action-solid-primary-fg: #ffffff; --bento-action-solid-primary-fg-hover: #ffffff; --bento-action-outline-primary-outline: #cbd4e1; --bento-action-outline-primary-outline-hover: #eef1f6; --bento-action-transparent-primary-fg: #dee4ed; --bento-action-transparent-primary-fg-hover: #ffffff; --bento-action-transparent-primary-bg-hover: rgba(255,255,255,0.08);" : '';
+    return v;
   }
 }
 </script>

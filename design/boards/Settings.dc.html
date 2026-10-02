@@ -91,7 +91,7 @@
 <div style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 56px 104px; gap: 28px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0; {{themeVars}}">
 
   <svg viewBox="0 0 1280 800" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
-    <path d="M 1020,0 C 1070,56 1100,175 1100,250 C 1100,415 1010,635 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--accent-5);"></path>
+    <path d="M 1020,0 C 870,220 1140,480 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--accent-5);"></path>
   </svg>
 
   <div style="position: absolute; top: 50%; right: 0; transform: translateY(-50%); z-index: 5; display: flex; flex-direction: column; align-items: stretch; gap: 4px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-5); border-right: none; border-top-left-radius: 16px; border-bottom-left-radius: 16px; box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.16); padding: 8px;">
@@ -410,7 +410,7 @@ class Component extends DCLogic {
       { id: 'red', name: '寶石紅', ramp: 'dv-red' },
       { id: 'jade', name: '翠綠', ramp: 'dv-jade' },
       { id: 'orange', name: '夕陽橘', ramp: 'dv-orange' },
-      { id: 'pink', name: '口紅粉', ramp: 'dv-pink' },
+      { id: 'pink', name: '蜜桃粉', ramp: 'dv-pink' },
       { id: 'neutral', name: '夜光黑', ramp: 'neutral' },
     ];
     this.FONTS = {
@@ -561,7 +561,7 @@ class Component extends DCLogic {
       '--bento-bg-interactive': '#76849a', '--bento-border-input-focus': '#cbd4e1',
       '--bento-action-outline-primary-outline': '#cbd4e1', '--bento-action-outline-primary-outline-hover': '#eef1f6',
       '--bento-action-transparent-primary-fg': '#dee4ed', '--bento-action-transparent-primary-fg-hover': '#ffffff', '--bento-action-transparent-primary-bg-hover': 'rgba(255, 255, 255, 0.08)',
-      '--bento-action-solid-primary-bg': '#dee4ed', '--bento-action-solid-primary-bg-hover': '#ffffff', '--bento-action-solid-primary-fg': '#141a22', '--bento-action-solid-primary-fg-hover': '#141a22',
+      '--bento-action-solid-primary-bg': '#4a5568', '--bento-action-solid-primary-bg-hover': '#566273', '--bento-action-solid-primary-fg': '#ffffff', '--bento-action-solid-primary-fg-hover': '#ffffff',
     };
     const isDark = r === 'neutral';
     const darkVars = isDark ? ' ' + Object.keys(DARK).map((k) => k + ': ' + DARK[k]).join('; ') + ';' : '';

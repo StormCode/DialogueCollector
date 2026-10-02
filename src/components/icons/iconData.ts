@@ -149,6 +149,6 @@ export const BOARD_ART = {
   },
   "backdrop": {
     "viewBox": "0 0 1280 800",
-    "body": "<path d=\"M 1020,0 C 1070,56 1100,175 1100,250 C 1100,415 1010,635 1000,800 L 1284,804 L 1284,-4 Z\" style=\"fill: var(--dc-accent-5);\"></path>"
+    "body": "<path d=\"M 1020,0 C 870,220 1140,480 1000,800 L 1284,804 L 1284,-4 Z\" style=\"fill: var(--dc-accent-5);\"></path>"
   }
 } as const;
