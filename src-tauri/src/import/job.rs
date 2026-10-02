@@ -1,10 +1,10 @@
-//! Starting a subtitle import and retrying one (T7, ENG4).
+//! Starting a subtitle import and retrying one (T7, ENG4 as revised 2026-10-02).
 //!
-//! Retry re-reads BOTH sources — the subtitle file is re-parsed and the video re-probed; nothing
-//! from the first pass is reused (D11). Each failed cue is found again by its text, ties broken
-//! by the start time nearest the recorded one, so inserting a line at the top of the file does
-//! not shift anything; a cue whose text is gone is marked lost and kept on record. A changed
-//! source only warns (ENG4); a missing one is `SourceMissing`.
+//! Retry rebuilds each failed line from what `import_failures` kept — its text, translation,
+//! time segments and character — because a line picked in 選擇台詞 may have been merged or
+//! swapped and no longer appears in the subtitle file. The video is probed again (nothing of
+//! the first pass is reused); a changed video only warns (ENG4), a missing one is
+//! `SourceMissing`.
 
 use std::path::{Path, PathBuf};
 use std::sync::atomic::AtomicBool;
@@ -14,7 +14,7 @@ use serde::Serialize;
 use crate::media::ffmpeg::Probe;
 use crate::media::MediaError;
 use crate::store::writer::Writer;
-use crate::subs::{self, Cue};
+use crate::subs::Cue;
 
 use super::run::{run_pass, Encoder, Event, Pass, PassSummary, PlannedCue};
 use super::runs::{self, SourceStamp, StoredFailure};
@@ -85,46 +85,51 @@ pub fn import_subtitle(
     finish(engine, run_id, summary, Vec::new(), Vec::new())
 }
 
-/// 再試一次: re-runs the failed and cancelled cues of `run_id` from fresh reads of its sources.
+/// 再試一次: re-runs the failed and cancelled lines of `run_id` from their records.
 pub fn retry(engine: &Engine<'_>, run_id: i64) -> Result<JobOutcome, ImportError> {
-    let (subtitle, video, failures) =
+    let (_subtitle, video, failures) =
         runs::load_for_retry(engine.writer, run_id)?.ok_or(ImportError::RunNotFound(run_id))?;
-    for stamp in [&subtitle, &video] {
-        if !stamp.path.is_file() {
-            return Err(ImportError::SourceMissing(stamp.path.clone()));
-        }
+    if !video.path.is_file() {
+        return Err(ImportError::SourceMissing(video.path.clone()));
     }
-    let changed_sources: Vec<PathBuf> = [&subtitle, &video]
+    let changed_sources: Vec<PathBuf> = (SourceStamp::of(&video.path) != video)
+        .then(|| video.path.clone())
         .into_iter()
-        .filter(|s| SourceStamp::of(&s.path) != **s)
-        .map(|s| s.path.clone())
         .collect();
     if !changed_sources.is_empty() {
-        log::warn!("retrying run {run_id} from changed sources: {changed_sources:?}");
+        log::warn!("retrying run {run_id} from a changed video: {changed_sources:?}");
     }
 
-    // Both sources are opened again: nothing from the first pass is reused.
-    let parsed = subs::parse_file(&subtitle.path)?;
+    // The video is opened again: nothing from the first pass is reused.
     let probe = engine.prober.probe(&video.path, engine.cancel)?;
     if !probe.has_audio {
         return Err(ImportError::NoAudio(video.path.clone()));
     }
 
-    let (planned, retried, lost) = match_failures(&failures, &parsed);
+    let planned = failures.iter().map(rebuild).collect();
     runs::begin_retry(
         engine.writer,
         run_id,
-        retried,
-        lost.iter().map(|f| f.id).collect(),
+        failures.iter().map(|f| f.id).collect(),
+        Vec::new(),
     )?;
     let summary = run_pass(&pass(engine, &video.path, probe), planned);
-    finish(
-        engine,
-        run_id,
-        summary,
-        lost.iter().map(|f| f.cue_index).collect(),
-        changed_sources,
-    )
+    finish(engine, run_id, summary, Vec::new(), changed_sources)
+}
+
+/// A failed line as it was planned, from its record.
+fn rebuild(failure: &StoredFailure) -> PlannedCue {
+    PlannedCue {
+        cue: Cue {
+            index: failure.cue_index,
+            start_ms: failure.start_ms,
+            end_ms: failure.end_ms,
+            text: failure.cue_text.clone(),
+            translation: failure.translation.clone(),
+        },
+        character_id: failure.character_id,
+        segments: failure.segments.clone(),
+    }
 }
 
 fn pass<'a>(engine: &'a Engine<'a>, video: &'a Path, probe: Probe) -> Pass<'a> {
@@ -167,50 +172,4 @@ fn finish(
         lost,
         changed_sources,
     })
-}
-
-/// Finds each failure again in the re-parsed cues: same text, and among repeats the start time
-/// nearest the recorded one. Pairs are taken closest-first across all failures, so one failure
-/// cannot take the cue another failure sits right next to. Each parsed cue is used at most
-/// once. Returns the cues to retry (in failure order), the failure ids being retried, and the
-/// failures that are lost.
-pub(crate) fn match_failures(
-    failures: &[StoredFailure],
-    parsed: &[Cue],
-) -> (Vec<PlannedCue>, Vec<i64>, Vec<StoredFailure>) {
-    let mut pairs: Vec<(u64, usize, usize)> = Vec::new();
-    for (fi, failure) in failures.iter().enumerate() {
-        for (ci, cue) in parsed.iter().enumerate() {
-            if cue.text == failure.cue_text {
-                pairs.push((cue.start_ms.abs_diff(failure.start_ms), fi, ci));
-            }
-        }
-    }
-    pairs.sort_unstable();
-
-    let mut matched: Vec<Option<usize>> = vec![None; failures.len()];
-    let mut used = vec![false; parsed.len()];
-    for (_, fi, ci) in pairs {
-        if matched[fi].is_none() && !used[ci] {
-            matched[fi] = Some(ci);
-            used[ci] = true;
-        }
-    }
-
-    let mut planned = Vec::new();
-    let mut retried = Vec::new();
-    let mut lost = Vec::new();
-    for (failure, found) in failures.iter().zip(matched) {
-        match found {
-            Some(ci) => {
-                planned.push(PlannedCue {
-                    cue: parsed[ci].clone(),
-                    character_id: failure.character_id,
-                });
-                retried.push(failure.id);
-            }
-            None => lost.push(failure.clone()),
-        }
-    }
-    (planned, retried, lost)
 }
