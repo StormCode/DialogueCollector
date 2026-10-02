@@ -33,8 +33,16 @@ describe("選擇台詞 line edits", () => {
     expect(canSplit(merged, new Set([100]))).toBe(true);
     expect(canSplit(merged, new Set([1]))).toBe(false);
     const split = splitRows(merged, new Set([100]));
-    expect(split.map((r) => r.index)).toEqual([0, 2, 1]);
+    expect(split.map((r) => r.index), "each back at its own place, around the unchosen row").toEqual([0, 1, 2]);
     expect(split.find((r) => r.index === 2)?.text).toBe("行こう，今すぐ");
+  });
+
+  it("puts split rows back in place, even past another merged row", () => {
+    const six = rowsFrom([0, 1, 2, 3, 4, 5].map((i) => ({ index: i, startMs: i * 1000, endMs: i * 1000 + 500, text: `${i}`, translation: null })));
+    const first = mergeRows(six, new Set([0, 3]), 100);
+    const both = mergeRows(first, new Set([1, 4]), 101);
+    expect(both.map((r) => r.index)).toEqual([100, 101, 2, 5]);
+    expect(splitRows(both, new Set([100])).map((r) => r.index)).toEqual([0, 101, 2, 3, 5]);
   });
 
   it("a merge of merges splits one level at a time", () => {
