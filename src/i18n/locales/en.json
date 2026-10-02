@@ -411,7 +411,6 @@
     "addCharacter": "Add character",
     "cancel": "Cancel",
     "save": "Save",
-    "saved": "Changes saved",
     "errors": {
       "generic": "Couldn't save the change. Please try again later.",
       "Line": {
