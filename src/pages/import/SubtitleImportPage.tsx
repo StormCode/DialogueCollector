@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import { BentoIcon, MaterialIcon } from "../../components/icons/Icon";
-import { useSubtitleImportStore } from "../../stores/subtitleImportStore";
+import { useBusyReveal } from "../../hooks/useBusyReveal";
+import { useSubtitleImportStore, type Screen } from "../../stores/subtitleImportStore";
 import { DoneMedallion, EqualizerMedallion, ImportButton, Medallion, OopsMedallion, StatusCard } from "./ImportParts";
 import { PartialScreen } from "./PartialScreen";
 import { SelectScreen } from "./SelectScreen";
@@ -16,6 +17,9 @@ export interface SubtitleImportState {
   /** Absent when the video carries its subtitles (內嵌字幕). */
   subtitle?: string;
 }
+
+/** Screens that only show work in progress: held back for `BUSY_CARD_DELAY_MS`. */
+const BUSY_SCREENS = new Set<Screen>(["reading", "extracting", "cutting", "indexing"]);
 
 // The subtitle path (canvas page 3, 字幕匯入改版 2026-10-02). With a subtitle file:
 // SubtitleImporting → AudioExtracting → SubtitleSelect (Step 2). A video alone: AudioExtracting
@@ -30,6 +34,8 @@ export function SubtitleImportPage() {
   const requested = location.state as SubtitleImportState | null;
   /** The track card's place, for the select card to grow from; used once. */
   const [growFrom, setGrowFrom] = useState<CardRect | null>(null);
+  const busy = !!s.videoPath && BUSY_SCREENS.has(s.screen);
+  const showBusy = useBusyReveal(busy);
 
   useEffect(() => {
     if (requested?.video && requested.video !== useSubtitleImportStore.getState().videoPath) {
@@ -48,6 +54,8 @@ export function SubtitleImportPage() {
     s.reset();
     navigate("/");
   };
+
+  if (busy && !showBusy) return <div className="imp-page" />;
 
   if (!s.videoPath) {
     // Opened without a file (e.g. from history): the main page is where one is chosen.

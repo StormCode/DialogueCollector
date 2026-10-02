@@ -7,6 +7,7 @@ import { BentoIcon, MaterialIcon } from "../../components/icons/Icon";
 import { AudioPreview, CharacterPicker, UNASSIGNED, type Owner } from "../../components/lines/LineFormParts";
 import { Field } from "../../components/ui/Field";
 import { useRevealScrollbar } from "../../components/ui/useRevealScrollbar";
+import { useBusyReveal } from "../../hooks/useBusyReveal";
 import { ipc } from "../../lib/ipc";
 import type { Character, ManualOutcome, MediaInfo } from "../../lib/types";
 import { useUiStore } from "../../stores/uiStore";
@@ -43,6 +44,7 @@ export function ManualImportPage() {
   const files = (location.state as ManualImportState | null)?.files;
 
   const [screen, setScreen] = useState<Screen>("loading");
+  const showImporting = useBusyReveal(screen === "importing");
   const [cards, setCards] = useState<Card[]>([]);
   const [index, setIndex] = useState(0);
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -130,6 +132,8 @@ export function ManualImportPage() {
   };
 
   const home = () => navigate("/");
+
+  if (screen === "importing" && !showImporting) return <div className="imp-page" />;
 
   switch (screen) {
     case "loading":
