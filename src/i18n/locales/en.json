@@ -13,13 +13,18 @@
     "fromSubtitle": "Cut a video into clips along its subtitles",
     "manual": "Import existing video or audio as is",
     "title": "Choose how to bring in lines",
-    "subtitleFormats": "ASS and SRT",
+    "subtitleFormats": "MKV, MP4, WEBM, ASS, SRT",
     "mediaFormats": "MKV, MP4, WEBM, WAV, M4A, MP3",
-    "subtitleFilter": "Subtitles",
+    "subtitleFilter": "Subtitles and video",
     "mediaFilter": "Video and audio",
     "unsupported": "This file type isn’t supported yet",
     "unsupportedSkipped": "This file type isn’t supported yet; skipped {{count}} files",
-    "unsupportedSkipped_one": "This file type isn’t supported yet; skipped 1 file"
+    "unsupportedSkipped_one": "This file type isn’t supported yet; skipped 1 file",
+    "subtitleDrop": "Drop the subtitle and the video here together",
+    "subtitleDropHint": "* For embedded subtitles, the video alone is enough",
+    "videoFilter": "Video",
+    "tooMany": "Import one subtitle file and one video at a time",
+    "pickVideo": "Choose the video for this subtitle"
   },
   "scriptBook": {
     "title": "Script book",
@@ -102,19 +107,19 @@
     "oops": "Oops... Something went wrong",
     "steps": {
       "label": "Steps",
-      "subtitle": "Subtitles",
-      "select": "Choose lines",
-      "source": "Video"
+      "files": "Add files",
+      "tracks": "Choose a track",
+      "select": "Choose lines"
     },
     "reading": {
       "title": "Reading subtitles",
       "hint": "Reading the subtitle file"
     },
     "readFailed": {
-      "title": "Couldn’t read the file"
+      "title": "Couldn't read the subtitles"
     },
     "select": {
-      "title": "Step 2. Choose lines",
+      "title": "Step {{n}}. Choose lines",
       "selectAll": "Select all",
       "clearAll": "Select none",
       "assignTo": "Assign to...",
@@ -133,15 +138,17 @@
       "lines": "lines",
       "checked": "Checked",
       "assigned": "Assigned",
-      "importSource": "Import video",
       "pickCharacter": "Choose a character",
-      "noCues": "No lines could be read from the subtitle file"
-    },
-    "source": {
-      "title": "Step 3. Import video",
-      "filter": "Video and audio",
-      "formats": "MKV, MP4, WEBM, OGG, M4A, MP3",
-      "unsupported": "That file type isn’t supported"
+      "noCues": "No lines could be read from the subtitle file",
+      "split": "Split",
+      "merge": "Merge",
+      "swap": "Swap",
+      "splitTip": "Turn merged lines back into the lines they were",
+      "mergeTip": "Merge the checked lines into one",
+      "swapTip": "Swap the main and secondary subtitles of a bilingual file",
+      "play": "Play line {{n}}",
+      "pause": "Pause line {{n}}",
+      "start": "Start import"
     },
     "cutting": {
       "title": "Cutting the video",
@@ -177,6 +184,18 @@
       "killed": "The cut was interrupted",
       "other": "The cut failed",
       "cancelled": "Cancelled"
+    },
+    "extracting": {
+      "title": "Extracting audio",
+      "hint": "Extracting the audio"
+    },
+    "tracks": {
+      "title": "Step 2. Choose a subtitle track",
+      "number": "Track",
+      "language": "Language",
+      "next": "Next",
+      "unknown": "Language not given",
+      "label": "Subtitle track"
     }
   },
   "settings": {

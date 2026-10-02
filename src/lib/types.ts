@@ -188,6 +188,23 @@ export interface NewCharacter {
 export interface Assignment {
   cue: Cue;
   characterId: number;
+  /** A merged line's [startMs, endMs] pieces (合併); omitted for an ordinary cue. */
+  segments?: [number, number][];
+}
+
+/** A text subtitle stream inside a video (選擇字幕軌). */
+export interface SubtitleTrack {
+  /** The stream's index in the container. */
+  index: number;
+  codec: string;
+  /** ISO 639 code, e.g. "jpn", "chi". */
+  language: string | null;
+  title: string | null;
+}
+
+export interface ExtractedSubtitle {
+  path: string;
+  cues: Cue[];
 }
 
 export interface ImportProgress {
@@ -213,8 +230,11 @@ export type FailureReason =
 export interface ImportFailure {
   cueIndex: number;
   text: string;
+  translation?: string | null;
   startMs: number;
   endMs: number;
+  /** A merged line's pieces; empty for an ordinary cue. */
+  segments?: [number, number][];
   characterId: number;
   reason: FailureReason;
   detail: string | null;

@@ -72,6 +72,21 @@ export function Medallion({ icon, motion = "none" }: { icon: MaterialIconName; m
   );
 }
 
+/** AudioExtracting: five bars bouncing like a level meter. */
+export function EqualizerMedallion() {
+  return (
+    <div className="imp-medallion">
+      <span className="imp-eq" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+      </span>
+    </div>
+  );
+}
+
 /** VideoComplete's check: Bento CheckWeightBold 72. */
 export function DoneMedallion() {
   return (
@@ -114,10 +129,15 @@ export function ImportButton({
   );
 }
 
-/** The step header of SubtitleSelect and VideoSelect. */
-export function Stepper({ current }: { current: 1 | 2 | 3 }) {
+/**
+ * The step header of TrackSelect and SubtitleSelect: 匯入檔案 → 選擇台詞 for a subtitle file,
+ * 匯入檔案 → 選擇字幕軌 → 選擇台詞 for embedded subtitles.
+ */
+export function Stepper({ embedded, current }: { embedded: boolean; current: number }) {
   const { t } = useTranslation();
-  const steps = [t("import.steps.subtitle"), t("import.steps.select"), t("import.steps.source")];
+  const steps = embedded
+    ? [t("import.steps.files"), t("import.steps.tracks"), t("import.steps.select")]
+    : [t("import.steps.files"), t("import.steps.select")];
   return (
     <ol className="imp-steps" aria-label={t("import.steps.label")}>
       {steps.map((label, i) => {

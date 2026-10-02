@@ -137,3 +137,17 @@
   font: var(--bento-weight-medium) 14px/18px var(--dc-ui-font);
   cursor: pointer;
 }
+
+/* The subtitle zone's title and its note (Main board: a 16/22 line over a 12/16 one, 4 apart). */
+.main-zone__titles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.main-zone__hint {
+  font: var(--bento-weight-regular) 12px/16px var(--dc-ui-font);
+  color: var(--main-subtitle);
+}

@@ -13,12 +13,17 @@
     "fromSubtitle": "字幕のタイミングで動画を分割する",
     "manual": "手持ちの動画や音声をそのまま取り込む",
     "title": "セリフの取り込み方法を選んでください",
-    "subtitleFormats": "ASS、SRT に対応",
+    "subtitleFormats": "MKV、MP4、WEBM、ASS、SRT に対応",
     "mediaFormats": "MKV、MP4、WEBM、WAV、M4A、MP3 に対応",
-    "subtitleFilter": "字幕ファイル",
+    "subtitleFilter": "字幕と動画",
     "mediaFilter": "動画・音声ファイル",
     "unsupported": "この形式にはまだ対応していません",
-    "unsupportedSkipped": "この形式にはまだ対応していません。{{count}} 件のファイルをスキップしました"
+    "unsupportedSkipped": "この形式にはまだ対応していません。{{count}} 件のファイルをスキップしました",
+    "subtitleDrop": "字幕ファイルと動画をまとめてここにドロップ",
+    "subtitleDropHint": "* 字幕が埋め込まれた動画は動画だけで OK",
+    "videoFilter": "動画",
+    "tooMany": "一度に取り込めるのは字幕ファイル 1 つと動画 1 本です",
+    "pickVideo": "この字幕の動画を選んでください"
   },
   "scriptBook": {
     "title": "セリフ帳",
@@ -99,19 +104,19 @@
     "oops": "Oops... Something went wrong",
     "steps": {
       "label": "ステップ",
-      "subtitle": "字幕の取り込み",
-      "select": "セリフの選択",
-      "source": "動画の取り込み"
+      "files": "ファイルを取り込む",
+      "tracks": "字幕トラックを選ぶ",
+      "select": "セリフを選ぶ"
     },
     "reading": {
       "title": "字幕を読み込み中",
       "hint": "字幕ファイルを読み込んでいます"
     },
     "readFailed": {
-      "title": "読み込みに失敗しました"
+      "title": "字幕を読み込めませんでした"
     },
     "select": {
-      "title": "Step 2. セリフの選択",
+      "title": "Step {{n}}. セリフを選ぶ",
       "selectAll": "すべて選択",
       "clearAll": "選択を解除",
       "assignTo": "割り当て...",
@@ -130,15 +135,17 @@
       "lines": "件",
       "checked": "選択中",
       "assigned": "割り当て済み",
-      "importSource": "動画を取り込む",
       "pickCharacter": "キャラクターを選択",
-      "noCues": "字幕ファイルからセリフを取り出せませんでした"
-    },
-    "source": {
-      "title": "Step 3. 動画の取り込み",
-      "filter": "動画・音声ファイル",
-      "formats": "MKV、MP4、WEBM、OGG、M4A、MP3 に対応",
-      "unsupported": "このファイル形式には対応していません"
+      "noCues": "字幕ファイルからセリフを取り出せませんでした",
+      "split": "分割",
+      "merge": "結合",
+      "swap": "入れ替え",
+      "splitTip": "結合したセリフを元の各セリフに戻す",
+      "mergeTip": "チェックしたセリフを1つに結合する",
+      "swapTip": "二言語字幕の主字幕と副字幕を入れ替える",
+      "play": "{{n}} 番目を再生",
+      "pause": "{{n}} 番目を一時停止",
+      "start": "インポート開始"
     },
     "cutting": {
       "title": "動画を分割中",
@@ -173,6 +180,18 @@
       "killed": "分割処理が中断されました",
       "other": "分割に失敗しました",
       "cancelled": "キャンセルしました"
+    },
+    "extracting": {
+      "title": "音声を抽出",
+      "hint": "音声を抽出しています"
+    },
+    "tracks": {
+      "title": "Step 2. 字幕トラックを選ぶ",
+      "number": "トラック番号",
+      "language": "言語",
+      "next": "次へ",
+      "unknown": "言語の指定なし",
+      "label": "字幕トラック"
     }
   },
   "settings": {

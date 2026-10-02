@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>選擇字幕軌</title>
+  <script src="./support.js"></script>
+  <link rel="stylesheet" href="ds/bento/tokens.css">
+  <link rel="stylesheet" href="ds/bento/components/bundle.css">
+  <script src="ds/bento/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,0,0&amp;display=block" rel="stylesheet">
+  <style>
+    body { margin: 0; }
+    .nav-item { appearance: none; -webkit-appearance: none; border: none; background: transparent; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 64px; padding: 8px 4px; border-radius: 8px; cursor: pointer; font-family: var(--font-bento-font-ui); font-weight: 500; font-size: 12px; line-height: 16px; }
+    .material-symbol { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24; }
+
+    .sub-scroll { scrollbar-width: none; scrollbar-color: transparent transparent; }
+    .sub-scroll::-webkit-scrollbar { width: 8px; }
+    .sub-scroll::-webkit-scrollbar-track { background: transparent; }
+    .sub-scroll::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; }
+    .sub-scroll:hover { scrollbar-width: thin; scrollbar-color: var(--bento-neutral-20, rgba(0,0,0,0.25)) transparent; }
+    .sub-scroll:hover::-webkit-scrollbar-thumb { background: var(--bento-neutral-20, rgba(0,0,0,0.25)); }
+
+    .sub-row { display: grid; grid-template-columns: 56px 250px minmax(0, 1fr); align-items: start; box-sizing: border-box; position: relative; cursor: pointer; background: var(--bento-bg-primary); border-bottom: 1px solid var(--bento-neutral-5); transition: background-color 120ms ease; }
+    .sub-row:last-child { border-bottom: none; }
+    .sub-row:hover { background: var(--bento-bg-secondary); }
+    .sub-row.is-selected, .sub-row.is-selected:hover { background: var(--bento-dv-indigo-1); }
+
+    .sub-input { position: absolute; opacity: 0; width: 0; height: 0; margin: 0; }
+    .sub-box-wrap { display: inline-flex; opacity: 0; transition: opacity 120ms ease; }
+    .sub-row:hover .sub-box-wrap, .sub-list.has-selection .sub-box-wrap, .sub-input:focus-visible + .sub-box-wrap { opacity: 1; }
+    .sub-box { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: var(--bento-radius-8); background: var(--bento-bg-primary); box-shadow: inset 0 0 0 1px var(--bento-neutral-40); color: var(--bento-white); transition: background-color 120ms ease; }
+    .sub-box.is-checked { background: var(--solid-bg, var(--bento-dv-indigo-40)); box-shadow: none; }
+    .sub-input:focus-visible + .sub-box-wrap .sub-box { outline: 2px solid var(--bento-dv-indigo-40); outline-offset: 2px; }
+
+    .sub-head { grid-template-columns: 56px 250px minmax(0, 1fr); }
+    .sub-list .sub-row, .sub-head { grid-template-columns: 56px 56px 250px minmax(0, 1fr); }
+    .sub-avatar-cell { display: flex; align-items: flex-start; justify-content: flex-start; padding-top: 9px; }
+    .sub-avatar-empty { background: var(--bento-neutral-5); color: var(--bento-neutral-40); }
+    .sub-avatar { box-sizing: border-box; width: 32px; height: 32px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; font: var(--bento-weight-semibold) 14px/1 var(--bento-font-ui); box-shadow: 0 0 0 2px var(--bento-bg-primary); }
+    .sub-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .sub-avatar-btn { appearance: none; -webkit-appearance: none; border: none; background: transparent; padding: 0; margin: 0; border-radius: 50%; cursor: pointer; display: inline-flex; transition: transform 120ms ease, box-shadow 120ms ease; }
+    .sub-avatar-btn:hover { transform: scale(1.08); box-shadow: 0 0 0 2px var(--bento-dv-indigo-20); }
+    .sub-avatar-btn:focus-visible { outline: 2px solid var(--bento-dv-indigo-40); outline-offset: 2px; }
+    .sub-avatar-btn.is-open { box-shadow: 0 0 0 2px var(--bento-dv-indigo-40); }
+    .pick-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+    .pick-item { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 8px 10px; min-height: 44px; border: none; border-radius: var(--bento-radius-12); background: transparent; cursor: pointer; text-align: left; min-width: 0; }
+    .pick-item:hover { background: var(--bento-bg-interactive-overlay); }
+    .pick-item.is-current { background: var(--bento-dv-indigo-5); box-shadow: inset 0 0 0 1.5px var(--bento-dv-indigo-40); }
+    @keyframes pick-pop { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+    .pick-panel { animation: pick-pop 160ms ease-out both; }
+    @media (prefers-reduced-motion: reduce) { .pick-panel { animation: none; } }
+
+    .assign-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; padding: 12px 14px 12px 20px; border-radius: var(--bento-radius-16); border: none; background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer; }
+    .assign-btn:hover { background: var(--solid-bg-hover, var(--bento-dv-indigo-50)); }
+    .assign-btn:disabled { background: var(--bento-action-disabled-bg); color: var(--bento-action-disabled-fg); cursor: not-allowed; }
+    .assign-item { appearance: none; -webkit-appearance: none; display: flex; align-items: center; gap: 12px; padding: 8px 12px; border: none; border-radius: var(--bento-radius-16); background: transparent; cursor: pointer; text-align: left; }
+    .assign-item:hover { background: var(--bento-bg-interactive-overlay); }
+
+    .sub-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--bento-radius-16); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer; }
+    .sub-btn-outline { padding: 13px 20px; background: transparent; border: 1.5px solid var(--bento-dv-indigo-40); color: var(--bento-dv-indigo-40); }
+    .sub-btn-outline:hover { background: var(--bento-dv-indigo-1); }
+    .sub-btn-neutral { padding: 13px 20px; background: transparent; border: 1.5px solid var(--bento-neutral-70); color: var(--bento-neutral-70); }
+    .sub-btn-neutral:hover { background: var(--bento-bg-secondary); }
+    .sub-btn-back { gap: 8px; padding: 12.5px 24px 12.5px 16px; border-color: var(--bento-neutral-60); color: var(--bento-neutral-60); }
+    .sub-btn-primary { gap: 8px; padding: 14px 24px 14px 20px; border: none; background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); }
+    .sub-btn-primary:hover { background: var(--solid-bg-hover, var(--bento-dv-indigo-50)); }
+    .sub-btn-primary:disabled { background: var(--bento-action-disabled-bg); color: var(--bento-action-disabled-fg); cursor: not-allowed; }
+    @keyframes pg-title-fade { from { opacity: 0; } to { opacity: 1; } }
+    .pg-anim-title { animation: pg-title-fade 450ms ease-out backwards; }
+    @media (prefers-reduced-motion: reduce) { .pg-anim-title { animation: none; } }
+    [data-theme="midnight"] img[src*="a41f06bab49514a736e15468dc1a8344"], [data-theme="midnight"] img[src*="3743135e47e2a77f4bf75b0b0b47f5eb"] { mix-blend-mode: normal !important; }
+    .trk-card { box-sizing: border-box; width: 360px; max-height: 100%; display: flex; flex-direction: column; gap: 8px; padding: 16px; background: var(--bento-bg-primary); border-radius: 20px; box-shadow: var(--bento-elevation-md); }
+    .trk-head, .trk-row { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; column-gap: 16px; padding: 0 16px; box-sizing: border-box; }
+    .trk-head { height: 32px; font: var(--bento-weight-medium) 13px/18px var(--bento-font-ui); color: var(--bento-neutral-60); }
+    .trk-list { display: flex; flex-direction: column; gap: 8px; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+    .trk-row { appearance: none; -webkit-appearance: none; width: 100%; min-height: 48px; border: none; border-radius: 12px; background: var(--bento-bg-secondary); text-align: left; cursor: pointer; font: var(--bento-weight-regular) 14px/20px var(--bento-font-ui); color: var(--bento-content-primary); transition: background-color 120ms ease, color 120ms ease; }
+    .trk-row:hover { background: var(--bento-dv-indigo-5); }
+    .trk-row.is-selected, .trk-row.is-selected:hover { background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); }
+    .trk-row:focus-visible { outline: 2px solid var(--bento-dv-indigo-40); outline-offset: 2px; }
+  </style>
+</helmet>
+<div data-theme="{{theme}}" style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 56px 104px; gap: 24px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0; {{themeStyle}}">
+
+  <svg viewBox="0 0 1280 800" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
+    <path d="M 1020,0 C 1070,56 1100,175 1100,250 C 1100,415 1010,635 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--bento-dv-indigo-5);"></path>
+  </svg>
+
+  <div style="position: absolute; top: 50%; right: 0; transform: translateY(-50%); display: flex; flex-direction: column; align-items: stretch; gap: 4px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-5); border-right: none; border-top-left-radius: 16px; border-bottom-left-radius: 16px; box-shadow: -4px 0px 8px rgba(0, 0, 0, 0.16); padding: 8px;">
+    <button type="button" aria-label="{{toggleLabel}}" onClick="{{toggleExpand}}" style="appearance: none; -webkit-appearance: none; position: absolute; top: 50%; left: -20px; transform: translateY(-50%); width: 20px; height: 56px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-5); border-right: none; border-radius: 999px 0 0 999px; box-shadow: -2px 0px 4px rgba(0, 0, 0, 0.12); color: var(--bento-icon-secondary); cursor: pointer;">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="{{chevronName}}" size="16"></x-import>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-informative-30); background-color: var(--bento-dv-indigo-5)">
+      <span style="display: inline-flex; color: var(--bento-dv-indigo-30);">
+        <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Home" size="24"></x-import>
+      </span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span style="color: var(--bento-dv-indigo-30)">主頁</span></sc-if>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-content-secondary);">
+      <span class="material-symbol" aria-hidden="true">book_2</span>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>台詞本</span></sc-if>
+    </button>
+    <button type="button" class="nav-item" style="color: var(--bento-content-secondary);">
+      <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="GearWeightRegular" size="24"></x-import>
+      <sc-if value="{{expanded}}" hint-placeholder-val="{{true}}"><span>設定</span></sc-if>
+    </button>
+  </div>
+
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; flex-shrink: 0;">
+    <h1 class="pg-anim-title" style="margin: 0; text-align: center; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">Step 2. 選擇字幕軌</h1>
+
+    <ol aria-label="步驟" style="list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 16px;">
+      <li style="display: flex; align-items: center; gap: 10px;">
+        <span style="box-sizing: border-box; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--solid-bg, var(--bento-dv-indigo-40)); background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); display: flex; align-items: center; justify-content: center;">
+          <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="CheckWeightBold" size="16"></x-import>
+        </span>
+        <span style="font: var(--bento-weight-medium) 14px/20px var(--bento-font-ui); color: var(--bento-neutral-60);">匯入檔案</span>
+      </li>
+      <li role="presentation" style="width: 96px; height: 1.5px; background: var(--bento-dv-indigo-40);"></li>
+      <li aria-current="step" style="display: flex; align-items: center; gap: 10px;">
+        <span style="box-sizing: border-box; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--bento-dv-indigo-40); color: var(--bento-dv-indigo-40); display: flex; align-items: center; justify-content: center; font: var(--bento-weight-semibold) 13px/16px var(--bento-font-ui);">2</span>
+        <span style="font: var(--bento-weight-semibold) 14px/20px var(--bento-font-ui); color: var(--bento-dv-indigo-40);">選擇字幕軌</span>
+      </li>
+      <li role="presentation" style="width: 96px; height: 1.5px; background: var(--bento-neutral-20);"></li>
+      <li style="display: flex; align-items: center; gap: 10px;">
+        <span style="box-sizing: border-box; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--bento-neutral-30); color: var(--bento-neutral-60); display: flex; align-items: center; justify-content: center; font: var(--bento-weight-medium) 13px/16px var(--bento-font-ui);">3</span>
+        <span style="font: var(--bento-weight-medium) 14px/20px var(--bento-font-ui); color: var(--bento-neutral-60);">選擇台詞</span>
+      </li>
+    </ol>
+  </div>
+
+  <div style="flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; align-items: center;">
+    <div aria-hidden="true" style="flex: 3 1 0;"></div>
+    
+    <div class="trk-card">
+      <div class="trk-head" aria-hidden="true"><span>字幕軌號</span><span>語言</span></div>
+      <div class="trk-list sub-scroll" role="radiogroup" aria-label="字幕軌">
+        <sc-for list="{{tracks}}" as="t" hint-placeholder-count="4">
+          <button type="button" role="radio" aria-checked="{{t.selected}}" class="trk-row {{t.rowClass}}" onClick="{{t.pick}}">
+            <span style="font-variant-numeric: tabular-nums;">#{{t.no}}</span>
+            <span style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{t.lang}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+    <div aria-hidden="true" style="flex: 5 1 0;"></div>
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-shrink: 0;">
+    <button type="button" class="sub-btn sub-btn-neutral sub-btn-back" onClick="{{handleBack}}"><span class="material-symbol" aria-hidden="true">arrow_back</span>回上一步</button>
+    <button type="button" class="sub-btn sub-btn-primary" disabled="{{nextDisabled}}" onClick="{{handleNext}}">下一步<span class="material-symbol" aria-hidden="true">arrow_forward</span></button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","midnight"],"default":"light"},"selectedTrack":{"editor":"number","default":0},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { expanded: true, selected: null };
+    this.TRACKS = [
+      { no: 1, lang: 'Chinese (Traditional)' },
+      { no: 2, lang: 'Japanese' },
+      { no: 3, lang: 'English' },
+      { no: 4, lang: 'Chinese (Simplified)' },
+    ];
+  }
+
+  toggleExpand = () => this.setState({ expanded: !this.state.expanded });
+
+  handleBack = () => {
+    // TODO: 回到起始畫面
+  };
+
+  handleNext = () => {
+    // TODO: 以選取的字幕軌進入 Step 3. 選擇台詞（SubtitleSelect flow="embedded"）
+  };
+
+  _baseRenderVals() {
+    const expanded = this.state.expanded ?? true;
+    const sel = this.state.selected ?? (Number(this.props.selectedTrack ?? 0) || null);
+    return {
+      expanded,
+      toggleExpand: this.toggleExpand,
+      chevronName: expanded ? 'ChevronRight' : 'ChevronLeft',
+      toggleLabel: expanded ? '收合選單' : '展開選單',
+      videoName: '葬送的芙莉蓮 第01話.mkv',
+      trackCount: this.TRACKS.length,
+      tracks: this.TRACKS.map((t) => ({
+        no: t.no,
+        lang: t.lang,
+        selected: sel === t.no ? 'true' : 'false',
+        rowClass: sel === t.no ? 'is-selected' : '',
+        pick: () => this.setState({ selected: t.no }),
+      })),
+      nextDisabled: !sel,
+      handleBack: this.handleBack,
+      handleNext: this.handleNext,
+    };
+  }
+
+  renderVals() {
+    const v = this._baseRenderVals() || {};
+    const dark = (this.props.theme ?? 'light') === 'midnight';
+    v.theme = dark ? 'midnight' : 'light';
+    v.themeStyle = dark ? "color-scheme: dark; --bento-neutral-1: #1b222c; --bento-neutral-5: #242c37; --bento-neutral-10: #2e3743; --bento-neutral-20: #3d4756; --bento-neutral-30: #566273; --bento-neutral-40: #76849a; --bento-neutral-50: #9aa8bc; --bento-neutral-60: #b6c2d3; --bento-neutral-70: #cbd4e1; --bento-neutral-80: #dee4ed; --bento-neutral-90: #eef1f6; --bento-bg-primary: #1f2630; --bento-bg-secondary: #141a22; --bento-bg-overlay: rgba(255,255,255,0.06); --bento-bg-interactive-overlay: rgba(255,255,255,0.08); --bento-content-primary: #eef1f6; --bento-content-secondary: #9aa8bc; --bento-content-disabled: rgba(255,255,255,0.3); --bento-icon-primary: #eef1f6; --bento-icon-secondary: #9aa8bc; --bento-border-decorative: #3d4756; --bento-border-container: rgba(255,255,255,0.08); --bento-border-input-enabled: #566273; --bento-border-input-hover: #76849a; --bento-border-input-focus: #cbd4e1; --bento-border-input-disabled: rgba(255,255,255,0.12); --bento-action-disabled-bg: rgba(255,255,255,0.1); --bento-action-disabled-fg: #76849a; --bento-bg-negative: rgba(241,74,88,0.16); --bento-negative-1: rgba(241,74,88,0.12); --bento-negative-5: rgba(241,74,88,0.2); --bento-negative-10: rgba(241,74,88,0.32); --bento-content-negative: #fa7d87; --bento-negative-50: #fa7d87; --bento-icon-negative: #fa7d87; --bento-negative-60: #ffb6bc; --bento-bg-positive: rgba(66,215,91,0.16); --bento-content-positive: #7eeb83; --bento-icon-positive: #7eeb83; --bento-positive-60: #7eeb83; --bento-bg-warning: rgba(252,179,59,0.16); --bento-warning-70: #ffcf73; --bento-elevation-sm: 0 4px 8px rgba(0,0,0,0.4); --bento-elevation-md: 0 8px 16px rgba(0,0,0,0.45); --bento-elevation-lg: 0 16px 32px rgba(0,0,0,0.5); --bento-dv-indigo-1: #242c37; --bento-dv-indigo-5: #2a3340; --bento-dv-indigo-10: #2e3743; --bento-dv-indigo-20: #566273; --bento-dv-indigo-30: #9aa8bc; --bento-dv-indigo-40: #cbd4e1; --bento-dv-indigo-50: #dee4ed; --bento-dv-indigo-60: #eef1f6; --bento-dv-indigo-70: #eef1f6; --bento-dv-indigo-80: #eef1f6; --bento-dv-indigo-90: #eef1f6; --solid-bg: #4a5568; --solid-bg-hover: #566273; --bento-bg-interactive: #4a5568; --bento-action-solid-primary-bg: #4a5568; --bento-action-solid-primary-bg-hover: #566273; --bento-action-solid-primary-fg: #ffffff; --bento-action-solid-primary-fg-hover: #ffffff; --bento-action-outline-primary-outline: #cbd4e1; --bento-action-outline-primary-outline-hover: #eef1f6; --bento-action-transparent-primary-fg: #dee4ed; --bento-action-transparent-primary-fg-hover: #ffffff; --bento-action-transparent-primary-bg-hover: rgba(255,255,255,0.08);" : '';
+    return v;
+  }
+}
+</script>
+</body>
+</html>

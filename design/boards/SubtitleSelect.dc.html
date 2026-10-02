@@ -12,7 +12,7 @@
 <x-dc>
 <helmet>
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&amp;display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200,0,0&amp;display=block" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,200..400,0..1,0&amp;display=block" rel="stylesheet">
   <style>
     body { margin: 0; }
     .nav-item { appearance: none; -webkit-appearance: none; border: none; background: transparent; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 64px; padding: 8px 4px; border-radius: 8px; cursor: pointer; font-family: var(--font-bento-font-ui); font-weight: 500; font-size: 12px; line-height: 16px; }
@@ -34,7 +34,7 @@
     .sub-box-wrap { display: inline-flex; opacity: 0; transition: opacity 120ms ease; }
     .sub-row:hover .sub-box-wrap, .sub-list.has-selection .sub-box-wrap, .sub-input:focus-visible + .sub-box-wrap { opacity: 1; }
     .sub-box { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: var(--bento-radius-8); background: var(--bento-bg-primary); box-shadow: inset 0 0 0 1px var(--bento-neutral-40); color: var(--bento-white); transition: background-color 120ms ease; }
-    .sub-box.is-checked { background: var(--bento-dv-indigo-40); box-shadow: none; }
+    .sub-box.is-checked { background: var(--solid-bg, var(--bento-dv-indigo-40)); box-shadow: none; }
     .sub-input:focus-visible + .sub-box-wrap .sub-box { outline: 2px solid var(--bento-dv-indigo-40); outline-offset: 2px; }
 
     .sub-head { grid-template-columns: 56px 250px minmax(0, 1fr); }
@@ -56,8 +56,8 @@
     .pick-panel { animation: pick-pop 160ms ease-out both; }
     @media (prefers-reduced-motion: reduce) { .pick-panel { animation: none; } }
 
-    .assign-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; padding: 12px 14px 12px 20px; border-radius: var(--bento-radius-16); border: none; background: var(--bento-dv-indigo-40); color: var(--bento-white); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer; }
-    .assign-btn:hover { background: var(--bento-dv-indigo-50); }
+    .assign-btn { appearance: none; -webkit-appearance: none; box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; padding: 12px 14px 12px 20px; border-radius: var(--bento-radius-16); border: none; background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); cursor: pointer; }
+    .assign-btn:hover { background: var(--solid-bg-hover, var(--bento-dv-indigo-50)); }
     .assign-btn:disabled { background: var(--bento-action-disabled-bg); color: var(--bento-action-disabled-fg); cursor: not-allowed; }
     .assign-item { appearance: none; -webkit-appearance: none; display: flex; align-items: center; gap: 12px; padding: 8px 12px; border: none; border-radius: var(--bento-radius-16); background: transparent; cursor: pointer; text-align: left; }
     .assign-item:hover { background: var(--bento-bg-interactive-overlay); }
@@ -68,12 +68,30 @@
     .sub-btn-neutral { padding: 13px 20px; background: transparent; border: 1.5px solid var(--bento-neutral-70); color: var(--bento-neutral-70); }
     .sub-btn-neutral:hover { background: var(--bento-bg-secondary); }
     .sub-btn-back { gap: 8px; padding: 12.5px 24px 12.5px 16px; border-color: var(--bento-neutral-60); color: var(--bento-neutral-60); }
-    .sub-btn-primary { gap: 8px; padding: 14px 24px 14px 20px; border: none; background: var(--bento-dv-indigo-40); color: var(--bento-white); }
-    .sub-btn-primary:hover { background: var(--bento-dv-indigo-50); }
+    .sub-btn-primary { gap: 8px; padding: 14px 24px 14px 20px; border: none; background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); }
+    .sub-btn-primary:hover { background: var(--solid-bg-hover, var(--bento-dv-indigo-50)); }
     .sub-btn-primary:disabled { background: var(--bento-action-disabled-bg); color: var(--bento-action-disabled-fg); cursor: not-allowed; }
+    @keyframes pg-title-fade { from { opacity: 0; } to { opacity: 1; } }
+    .pg-anim-title { animation: pg-title-fade 450ms ease-out backwards; }
+    @media (prefers-reduced-motion: reduce) { .pg-anim-title { animation: none; } }
+    .ms-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .sub-btn-outline:disabled, .sub-btn-outline:disabled:hover { background: transparent; border-color: var(--bento-neutral-20); color: var(--bento-content-disabled); cursor: not-allowed; }
+    .sub-btn-neutral:disabled, .sub-btn-neutral:disabled:hover { background: transparent; border-color: var(--bento-neutral-20); color: var(--bento-content-disabled); cursor: not-allowed; }
+    .sub-tool { gap: 6px; padding: 12.5px 18px 12.5px 14px; }
+    .sub-tool .material-symbol { font-size: 20px; }
+    .sub-text-cell { position: relative; align-self: stretch; }
+    .sub-play { appearance: none; -webkit-appearance: none; position: absolute; top: 50%; left: -42px; transform: translateY(-50%); width: 28px; height: 28px; padding: 0; border: none; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 120ms ease, background-color 120ms ease; }
+    .sub-play::before { content: ''; position: absolute; top: -11px; bottom: -11px; left: -6px; right: -14px; }
+    .sub-text-cell:hover .sub-play, .sub-play:focus-visible, .sub-row.is-playing .sub-play { opacity: 1; pointer-events: auto; }
+    .sub-play:hover { background: var(--solid-bg-hover, var(--bento-dv-indigo-60)); }
+    .sub-play:focus-visible { outline: 2px solid var(--bento-dv-indigo-40); outline-offset: 2px; }
+    .sub-play .material-symbol { font-size: 20px; }
+    .sub-line-text { transition: color 120ms ease; }
+    .sub-row.is-playing .sub-line-text { color: var(--bento-dv-indigo-40) !important; }
+    [data-theme="midnight"] img[src*="a41f06bab49514a736e15468dc1a8344"], [data-theme="midnight"] img[src*="3743135e47e2a77f4bf75b0b0b47f5eb"] { mix-blend-mode: normal !important; }
   </style>
 </helmet>
-<div style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 56px 104px; gap: 24px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0;">
+<div data-theme="{{theme}}" style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 56px 104px; gap: 24px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0; {{themeStyle}}">
 
   <svg viewBox="0 0 1280 800" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
     <path d="M 1020,0 C 1070,56 1100,175 1100,250 C 1100,415 1010,635 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--bento-dv-indigo-5);"></path>
@@ -100,33 +118,56 @@
   </div>
 
   <div style="display: flex; flex-direction: column; align-items: center; gap: 20px; flex-shrink: 0;">
-    <h1 style="margin: 0; text-align: center; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">Step 2. 選擇台詞</h1>
+    <h1 class="pg-anim-title" style="margin: 0; text-align: center; font-family: var(--font-bento-font-heading); font-weight: 600; font-size: 32px; line-height: 32px; color: var(--bento-content-primary);">Step {{stepNo}}. 選擇台詞</h1>
 
+    <sc-if value="{{isFlowSubtitle}}" hint-placeholder-val="{{true}}">
     <ol aria-label="步驟" style="list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 16px;">
       <li style="display: flex; align-items: center; gap: 10px;">
-        <span style="box-sizing: border-box; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--bento-dv-indigo-40); background: var(--bento-dv-indigo-40); color: var(--bento-white); display: flex; align-items: center; justify-content: center;">
+        <span style="box-sizing: border-box; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--solid-bg, var(--bento-dv-indigo-40)); background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); display: flex; align-items: center; justify-content: center;">
           <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="CheckWeightBold" size="16"></x-import>
         </span>
-        <span style="font: var(--bento-weight-medium) 14px/20px var(--bento-font-ui); color: var(--bento-neutral-60);">匯入字幕</span>
+        <span style="font: var(--bento-weight-medium) 14px/20px var(--bento-font-ui); color: var(--bento-neutral-60);">匯入檔案</span>
       </li>
       <li role="presentation" style="width: 96px; height: 1.5px; background: var(--bento-dv-indigo-40);"></li>
       <li aria-current="step" style="display: flex; align-items: center; gap: 10px;">
         <span style="box-sizing: border-box; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--bento-dv-indigo-40); color: var(--bento-dv-indigo-40); display: flex; align-items: center; justify-content: center; font: var(--bento-weight-semibold) 13px/16px var(--bento-font-ui);">2</span>
         <span style="font: var(--bento-weight-semibold) 14px/20px var(--bento-font-ui); color: var(--bento-dv-indigo-40);">選擇台詞</span>
       </li>
-      <li role="presentation" style="width: 96px; height: 1.5px; background: var(--bento-neutral-20);"></li>
+    </ol>
+    </sc-if>
+    <sc-if value="{{isFlowEmbedded}}" hint-placeholder-val="{{false}}">
+    <ol aria-label="步驟" style="list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 16px;">
       <li style="display: flex; align-items: center; gap: 10px;">
-        <span style="box-sizing: border-box; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--bento-neutral-30); color: var(--bento-neutral-60); display: flex; align-items: center; justify-content: center; font: var(--bento-weight-medium) 13px/16px var(--bento-font-ui);">3</span>
-        <span style="font: var(--bento-weight-medium) 14px/20px var(--bento-font-ui); color: var(--bento-neutral-60);">匯入影片</span>
+        <span style="box-sizing: border-box; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--solid-bg, var(--bento-dv-indigo-40)); background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); display: flex; align-items: center; justify-content: center;">
+          <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="CheckWeightBold" size="16"></x-import>
+        </span>
+        <span style="font: var(--bento-weight-medium) 14px/20px var(--bento-font-ui); color: var(--bento-neutral-60);">匯入檔案</span>
+      </li>
+      <li role="presentation" style="width: 96px; height: 1.5px; background: var(--bento-dv-indigo-40);"></li>
+      <li style="display: flex; align-items: center; gap: 10px;">
+        <span style="box-sizing: border-box; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--solid-bg, var(--bento-dv-indigo-40)); background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); display: flex; align-items: center; justify-content: center;">
+          <x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="CheckWeightBold" size="16"></x-import>
+        </span>
+        <span style="font: var(--bento-weight-medium) 14px/20px var(--bento-font-ui); color: var(--bento-neutral-60);">選擇字幕軌</span>
+      </li>
+      <li role="presentation" style="width: 96px; height: 1.5px; background: var(--bento-dv-indigo-40);"></li>
+      <li aria-current="step" style="display: flex; align-items: center; gap: 10px;">
+        <span style="box-sizing: border-box; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--bento-dv-indigo-40); color: var(--bento-dv-indigo-40); display: flex; align-items: center; justify-content: center; font: var(--bento-weight-semibold) 13px/16px var(--bento-font-ui);">3</span>
+        <span style="font: var(--bento-weight-semibold) 14px/20px var(--bento-font-ui); color: var(--bento-dv-indigo-40);">選擇台詞</span>
       </li>
     </ol>
+    </sc-if>
   </div>
 
   <div ref="{{setCardRef}}" style="flex: 1 1 0; min-height: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; background: var(--bento-bg-primary); border-radius: 24px; padding: 24px 32px; box-shadow: var(--bento-elevation-md); position: relative;">
 
     <div style="display: flex; align-items: center; justify-content: flex-start; gap: 12px; flex-shrink: 0; position: relative; z-index: 20;">
-      <button type="button" class="sub-btn sub-btn-outline" onClick="{{handleSelectAll}}">全部選取</button>
-      <button type="button" class="sub-btn sub-btn-neutral" onClick="{{handleClearAll}}">全部不選</button>
+      <button type="button" class="sub-btn sub-btn-outline" disabled="{{noSubtitles}}" onClick="{{handleSelectAll}}">全部選取</button>
+      <button type="button" class="sub-btn sub-btn-neutral" disabled="{{noSubtitles}}" onClick="{{handleClearAll}}">全部不選</button>
+      <span role="separator" aria-orientation="vertical" style="width: 1px; height: 28px; flex-shrink: 0; background: var(--bento-neutral-20);"></span>
+      <button type="button" class="sub-btn sub-btn-neutral sub-tool" disabled="{{splitDisabled}}" onClick="{{handleSplit}}" title="將勾選的 1 句台詞拆成 2 句"><span class="material-symbol" aria-hidden="true">call_split</span>拆分</button>
+      <button type="button" class="sub-btn sub-btn-neutral sub-tool" disabled="{{mergeDisabled}}" onClick="{{handleMerge}}" title="將勾選的相鄰台詞合併成 1 句"><span class="material-symbol" aria-hidden="true">call_merge</span>合併</button>
+      <button type="button" class="sub-btn sub-btn-neutral sub-tool" disabled="{{swapDisabled}}" onClick="{{handleSwap}}" title="調換勾選台詞的原文與譯文"><span class="material-symbol" aria-hidden="true">swap_vert</span>調換</button>
       <div style="flex: 1 1 auto;" aria-hidden="true"></div>
       <div style="position: relative;">
         <button type="button" class="assign-btn" aria-haspopup="menu" aria-expanded="{{menuOpen}}" disabled="{{assignDisabled}}" onClick="{{toggleMenu}}">
@@ -199,8 +240,9 @@
               </button>
             </span>
             <span style="padding: 14px 16px 14px 0; font: var(--bento-weight-regular) 13px/22px var(--bento-font-ui); color: var(--bento-content-primary); font-variant-numeric: tabular-nums; white-space: nowrap;">{{item.time}}</span>
-            <span style="display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 14px 24px 14px 0;">
-              <span style="font: var(--bento-weight-regular) 15px/22px var(--bento-font-ui); color: var(--bento-content-primary);">{{item.text}}</span>
+            <span class="sub-text-cell" style="display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 14px 24px 14px 0;">
+              <button type="button" class="sub-play" aria-label="{{item.playLabel}}" onClick="{{item.togglePlay}}"><span class="material-symbol ms-fill" aria-hidden="true">{{item.playIcon}}</span></button>
+              <span class="sub-line-text" style="font: var(--bento-weight-regular) 15px/22px var(--bento-font-ui); color: var(--bento-content-primary);">{{item.text}}</span>
               <sc-if value="{{item.hasTranslation}}" hint-placeholder-val="{{true}}">
                 <span style="font: var(--bento-weight-regular) 13px/20px var(--bento-font-ui); color: var(--bento-neutral-60);">{{item.translation}}</span>
               </sc-if>
@@ -220,7 +262,7 @@
       <span style="text-align: left; font: var(--bento-weight-regular) 14px/20px var(--bento-font-ui); color: var(--bento-content-primary);">全部 <span style="font-weight: 600;">{{totalCount}}</span> 個台詞<span style="color: var(--bento-neutral-30); margin: 0 10px;" aria-hidden="true">|</span>已勾選 <span style="font-weight: 600; color: var(--bento-dv-indigo-40)">{{selectedCount}}</span> 個台詞<span style="color: var(--bento-neutral-30); margin: 0 10px;" aria-hidden="true">|</span>已指派角色 <span style="font-weight: 600; color: var(--bento-dv-indigo-40)">{{assignedCount}}</span> 個台詞</span>
       <div style="display: flex; align-items: center; gap: 12px;">
         <button type="button" class="sub-btn sub-btn-neutral sub-btn-back" onClick="{{handleBack}}"><span class="material-symbol" aria-hidden="true">arrow_back</span>回上一步</button>
-        <button type="button" class="sub-btn sub-btn-primary" disabled="{{importDisabled}}" onClick="{{handleImport}}"><span class="material-symbol" aria-hidden="true">movie</span>匯入影片</button>
+        <button type="button" class="sub-btn sub-btn-primary" disabled="{{importDisabled}}" onClick="{{handleImport}}"><span class="material-symbol" aria-hidden="true">download</span>開始匯入</button>
       </div>
     </div>
 
@@ -259,12 +301,12 @@
   </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"noSubtitles":{"editor":"boolean","default":false},"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","midnight"],"default":"light"},"noSubtitles":{"editor":"boolean","default":false},"flow":{"editor":"enum","options":["subtitle","embedded"],"default":"subtitle"},"$preview":{"width":1280,"height":800}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
     // 示意資料：前 4 句已指派角色，第 5、6 句為勾選中
-    this.state = { expanded: true, selected: { 5: true, 6: true }, assigned: { 1: 'yuki', 2: 'frieren', 3: 'yuki', 4: 'frieren' }, menuOpen: false };
+    this.state = { expanded: true, selected: { 5: true, 6: true }, assigned: { 1: 'yuki', 2: 'frieren', 3: 'yuki', 4: 'frieren' }, menuOpen: false, subs: null, playId: null, playPaused: false, playProgress: 0 };
     this.CHARACTERS = [
       { id: 'yuki', name: '優希', show: '他是傳奇', ramp: 'indigo', img: '/_blob/8e7c48a81577b215f6492ed5ac49e399', imgPos: '50% 45%' },
       { id: 'frieren', name: '芙莉蓮', show: '葬送的芙莉蓮', ramp: 'jade', img: '/_blob/d21b13f3cadc7105e91cae2176052ebd', imgPos: '47% 45%' },
@@ -293,6 +335,95 @@ class Component extends DCLogic {
     ];
   }
 
+  subs = () => this.state.subs || this.SUBTITLES;
+
+  // ---------- 播放（模擬，邏輯同台詞頁：點同一句＝暫停/繼續，點別句＝改播該句） ----------
+  stopTimer = () => { if (this.timer) { clearInterval(this.timer); this.timer = null; } };
+  startTimer = () => { this.stopTimer(); this.timer = setInterval(this.tick, 100); };
+  tick = () => {
+    const { playId, playPaused, playProgress } = this.state;
+    if (playPaused || playId == null) return;
+    const line = this.subs().find((l) => l.id === playId);
+    if (!line) { this.stopPlay(); return; }
+    const next = (playProgress || 0) + 100 / Math.max(300, line.end - line.start);
+    if (next < 1) this.setState({ playProgress: next }); else this.stopPlay();
+  };
+  stopPlay = () => { this.stopTimer(); this.setState({ playId: null, playPaused: false, playProgress: 0 }); };
+  togglePlay = (id, e) => {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    if (this.state.playId === id) {
+      const playPaused = !this.state.playPaused;
+      this.setState({ playPaused });
+      if (!playPaused) this.startTimer();
+      return;
+    }
+    this.setState({ playId: id, playPaused: false, playProgress: 0 });
+    this.startTimer();
+  };
+
+  // ---------- 拆分 / 合併 / 調換 ----------
+  selectedIds = () => {
+    const sel = this.state.selected || {};
+    return this.subs().filter((r) => sel[r.id]).map((r) => r.id);
+  };
+  cutAt = (str) => {
+    if (!str) return ['', ''];
+    const chars = Array.from(str);
+    const mid = chars.length / 2;
+    let best = -1;
+    chars.forEach((ch, i) => {
+      if (i < chars.length - 1 && '、，。？！,.?! '.includes(ch) && (best < 0 || Math.abs(i + 1 - mid) < Math.abs(best - mid))) best = i + 1;
+    });
+    if (best < 0) best = Math.max(1, Math.round(mid));
+    return [chars.slice(0, best).join('').trim(), chars.slice(best).join('').trim()];
+  };
+  canMerge = (ids) => {
+    if (ids.length < 2) return false;
+    const list = this.subs();
+    const idx = ids.map((id) => list.findIndex((r) => r.id === id));
+    return idx.every((v, i) => i === 0 || v === idx[i - 1] + 1);
+  };
+  handleSplit = () => {
+    const ids = this.selectedIds();
+    if (ids.length !== 1) return;
+    this.stopPlay();
+    const list = this.subs().slice();
+    const i = list.findIndex((r) => r.id === ids[0]);
+    const r = list[i];
+    const [t1, t2] = this.cutAt(r.text);
+    const [tr1, tr2] = this.cutAt(r.translation);
+    const ratio = Array.from(t1).length / Math.max(1, Array.from(r.text).length);
+    const cut = Math.round(r.start + (r.end - r.start) * ratio);
+    const newId = Math.max(...list.map((x) => x.id)) + 1;
+    list.splice(i, 1, { ...r, end: cut, text: t1, translation: tr1 }, { id: newId, start: cut, end: r.end, text: t2, translation: tr2 });
+    const assigned = { ...(this.state.assigned || {}) };
+    if (assigned[r.id]) assigned[newId] = assigned[r.id];
+    this.setState({ subs: list, assigned, selected: { [r.id]: true, [newId]: true } });
+  };
+  handleMerge = () => {
+    const ids = this.selectedIds();
+    if (!this.canMerge(ids)) return;
+    this.stopPlay();
+    const list = this.subs();
+    const parts = list.filter((r) => ids.includes(r.id));
+    const first = parts[0];
+    const merged = {
+      ...first,
+      end: parts[parts.length - 1].end,
+      text: parts.map((p) => p.text).join(''),
+      translation: parts.map((p) => p.translation).filter(Boolean).join(''),
+    };
+    const assigned = { ...(this.state.assigned || {}) };
+    if (!assigned[first.id]) { const a = parts.find((p) => assigned[p.id]); if (a) assigned[first.id] = assigned[a.id]; }
+    parts.slice(1).forEach((p) => { delete assigned[p.id]; });
+    this.setState({ subs: list.filter((r) => !ids.includes(r.id) || r.id === first.id).map((r) => (r.id === first.id ? merged : r)), assigned, selected: { [first.id]: true } });
+  };
+  handleSwap = () => {
+    const ids = this.selectedIds();
+    if (!ids.length) return;
+    this.setState({ subs: this.subs().map((r) => (ids.includes(r.id) && r.translation ? { ...r, text: r.translation, translation: r.text } : r)) });
+  };
+
   toggleExpand = () => {
     this.setState({ expanded: !this.state.expanded });
   };
@@ -308,7 +439,7 @@ class Component extends DCLogic {
 
   handleSelectAll = () => {
     const all = {};
-    this.SUBTITLES.forEach((r) => { all[r.id] = true; });
+    this.subs().forEach((r) => { all[r.id] = true; });
     this.setState({ selected: all });
   };
 
@@ -380,20 +511,23 @@ class Component extends DCLogic {
   });
 
   handleBack = () => {
-    // TODO: 回到 Step 1. 匯入字幕
+    // TODO: 字幕＋影片流程回到起始畫面；內嵌字幕流程回到 Step 2. 選擇字幕軌
   };
 
   handleImport = () => {
-    // TODO: 進入 Step 3. 匯入影片
+    // TODO: 開始依字幕時間軸切割影片（VideoCutting）
   };
 
-  renderVals() {
+  _baseRenderVals() {
     const expanded = this.state.expanded ?? true;
     const selected = this.state.selected || {};
     const assigned = this.state.assigned || {};
     const noSubtitles = !!(this.props.noSubtitles ?? false);
-    const rows = (noSubtitles ? [] : this.SUBTITLES).map((r) => {
+    const playId = this.state.playId ?? null;
+    const playPaused = !!this.state.playPaused;
+    const rows = (noSubtitles ? [] : this.subs()).map((r) => {
       const isSelected = !!selected[r.id];
+      const isPlaying = playId === r.id;
       return {
         id: r.id,
         time: this.formatTime(r.start) + ' ~ ' + this.formatTime(r.end),
@@ -401,7 +535,10 @@ class Component extends DCLogic {
         translation: r.translation,
         hasTranslation: !!r.translation,
         selected: isSelected,
-        rowClass: isSelected ? 'is-selected' : '',
+        rowClass: (isSelected ? 'is-selected' : '') + (isPlaying ? ' is-playing' : ''),
+        playIcon: isPlaying && !playPaused ? 'pause' : 'play_arrow',
+        playLabel: (isPlaying && !playPaused ? '暫停' : '播放') + '第 ' + r.id + ' 句',
+        togglePlay: (e) => this.togglePlay(r.id, e),
         boxClass: isSelected ? 'is-checked' : '',
         ariaLabel: '選取字幕 ' + r.id,
         noChar: !assigned[r.id],
@@ -471,10 +608,28 @@ class Component extends DCLogic {
         return { name: c.name, show: c.show, bg: st.bg, fg: st.fg, initial: st.initial, img: st.img, imgPos: st.imgPos, hasImg: st.hasImg, noImg: st.noImg, pick: () => this.assignTo(c.id) };
       }),
       handleSelectAll: this.handleSelectAll,
+      splitDisabled: count !== 1,
+      mergeDisabled: noSubtitles || !this.canMerge(this.selectedIds()),
+      swapDisabled: count === 0,
+      handleSplit: this.handleSplit,
+      handleMerge: this.handleMerge,
+      handleSwap: this.handleSwap,
       handleClearAll: this.handleClearAll,
       handleBack: this.handleBack,
       handleImport: this.handleImport,
     };
+  }
+
+  renderVals() {
+    const v = this._baseRenderVals() || {};
+    const embedded = (this.props.flow ?? 'subtitle') === 'embedded';
+    v.isFlowSubtitle = !embedded;
+    v.isFlowEmbedded = embedded;
+    v.stepNo = embedded ? 3 : 2;
+    const dark = (this.props.theme ?? 'light') === 'midnight';
+    v.theme = dark ? 'midnight' : 'light';
+    v.themeStyle = dark ? "color-scheme: dark; --bento-neutral-1: #1b222c; --bento-neutral-5: #242c37; --bento-neutral-10: #2e3743; --bento-neutral-20: #3d4756; --bento-neutral-30: #566273; --bento-neutral-40: #76849a; --bento-neutral-50: #9aa8bc; --bento-neutral-60: #b6c2d3; --bento-neutral-70: #cbd4e1; --bento-neutral-80: #dee4ed; --bento-neutral-90: #eef1f6; --bento-bg-primary: #1f2630; --bento-bg-secondary: #141a22; --bento-bg-overlay: rgba(255,255,255,0.06); --bento-bg-interactive-overlay: rgba(255,255,255,0.08); --bento-content-primary: #eef1f6; --bento-content-secondary: #9aa8bc; --bento-content-disabled: rgba(255,255,255,0.3); --bento-icon-primary: #eef1f6; --bento-icon-secondary: #9aa8bc; --bento-border-decorative: #3d4756; --bento-border-container: rgba(255,255,255,0.08); --bento-border-input-enabled: #566273; --bento-border-input-hover: #76849a; --bento-border-input-focus: #cbd4e1; --bento-border-input-disabled: rgba(255,255,255,0.12); --bento-action-disabled-bg: rgba(255,255,255,0.1); --bento-action-disabled-fg: #76849a; --bento-bg-negative: rgba(241,74,88,0.16); --bento-negative-1: rgba(241,74,88,0.12); --bento-negative-5: rgba(241,74,88,0.2); --bento-negative-10: rgba(241,74,88,0.32); --bento-content-negative: #fa7d87; --bento-negative-50: #fa7d87; --bento-icon-negative: #fa7d87; --bento-negative-60: #ffb6bc; --bento-bg-positive: rgba(66,215,91,0.16); --bento-content-positive: #7eeb83; --bento-icon-positive: #7eeb83; --bento-positive-60: #7eeb83; --bento-bg-warning: rgba(252,179,59,0.16); --bento-warning-70: #ffcf73; --bento-elevation-sm: 0 4px 8px rgba(0,0,0,0.4); --bento-elevation-md: 0 8px 16px rgba(0,0,0,0.45); --bento-elevation-lg: 0 16px 32px rgba(0,0,0,0.5); --bento-dv-indigo-1: #242c37; --bento-dv-indigo-5: #2a3340; --bento-dv-indigo-10: #2e3743; --bento-dv-indigo-20: #566273; --bento-dv-indigo-30: #9aa8bc; --bento-dv-indigo-40: #cbd4e1; --bento-dv-indigo-50: #dee4ed; --bento-dv-indigo-60: #eef1f6; --bento-dv-indigo-70: #eef1f6; --bento-dv-indigo-80: #eef1f6; --bento-dv-indigo-90: #eef1f6; --solid-bg: #4a5568; --solid-bg-hover: #566273; --bento-bg-interactive: #4a5568; --bento-action-solid-primary-bg: #4a5568; --bento-action-solid-primary-bg-hover: #566273; --bento-action-solid-primary-fg: #ffffff; --bento-action-solid-primary-fg-hover: #ffffff; --bento-action-outline-primary-outline: #cbd4e1; --bento-action-outline-primary-outline-hover: #eef1f6; --bento-action-transparent-primary-fg: #dee4ed; --bento-action-transparent-primary-fg-hover: #ffffff; --bento-action-transparent-primary-bg-hover: rgba(255,255,255,0.08);" : '';
+    return v;
   }
 }
 </script>

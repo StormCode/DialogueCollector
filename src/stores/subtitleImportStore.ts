@@ -2,47 +2,70 @@ import { listen } from "@tauri-apps/api/event";
 import { create } from "zustand";
 
 import { errorKind, ipc } from "../lib/ipc";
-import type { Character, Cue, ImportProgress, JobOutcome, NewCharacter } from "../lib/types";
+import { canSplit, isBilingual, mergeRows, rowsFrom, spans, splitRows, swapRows, type Row } from "../lib/lineEdits";
+import type { Character, Cue, ImportProgress, JobOutcome, NewCharacter, SubtitleTrack } from "../lib/types";
 
 /** Must match `IMPORT_PROGRESS_EVENT` in src-tauri/src/import_cmd.rs. */
 const IMPORT_PROGRESS_EVENT = "import-progress";
 
+/** Merged rows get indexes from here on, clear of any cue's own. */
+const MERGED_INDEX_BASE = 1_000_000;
+
 /**
- * Screens of the subtitle path, one per board:
- * reading SubtitleImporting · readFailed SubtitleFailed · select SubtitleSelect (+ empty toast)
- * · source VideoSelect · cutting VideoCutting · indexing VideoImportingIndex
- * · complete VideoComplete · partial VideoPartial · failed VideoFailed.
+ * Screens of the subtitle path (字幕匯入改版 2026-10-02), one per board:
+ * reading SubtitleImporting · readFailed SubtitleFailed (字幕讀取失敗) · extracting
+ * AudioExtracting · tracks TrackSelect · select SubtitleSelect (+ empty toast, embedded variant)
+ * · cutting VideoCutting · indexing VideoImportingIndex · complete VideoComplete · partial
+ * VideoPartial · failed VideoFailed · aborted: 取消 on reading or extracting, back to the main page.
  */
 export type Screen =
   | "reading"
   | "readFailed"
+  | "extracting"
+  | "tracks"
   | "select"
-  | "source"
   | "cutting"
   | "indexing"
   | "complete"
   | "partial"
-  | "failed";
+  | "failed"
+  | "aborted";
+
+/** Where the subtitle comes from: a dropped file, or a track inside the video. */
+export type Flow = "file" | "embedded";
 
 interface SubtitleImportState {
   screen: Screen;
+  flow: Flow;
+  videoPath: string | null;
+  /** The subtitle file: the dropped one, or the extracted track's. */
   subtitlePath: string | null;
-  sourcePath: string | null;
-  cues: Cue[];
+  /** 抽取音訊's result: what the rows play from. */
+  audioPath: string | null;
+  tracks: SubtitleTrack[];
+  rows: Row[];
   /** 無法提取台詞: the file parsed but holds no dialogue. */
   noCues: boolean;
+  /** Whether the subtitle came in bilingual: 調換 is offered only then. */
+  bilingual: boolean;
   characters: Character[];
-  /** cue index → character id (Step 2). */
+  /** row index → character id. */
   assigned: Record<number, number>;
-  /** Checked rows, by cue index; only used to assign in bulk. */
+  /** Checked rows, by row index. */
   selected: Set<number>;
+  nextIndex: number;
   progress: ImportProgress | null;
   outcome: JobOutcome | null;
   /** Error kind of the last failed step, for logs and tests. */
   error: string | null;
 
-  openSubtitle: (path: string) => Promise<void>;
+  /** Starts the path: a subtitle file with its video, or a video alone (embedded subtitles). */
+  open: (video: string, subtitle: string | null) => Promise<void>;
+  /** 再試一次 on 字幕讀取失敗: repeats the step that failed. */
   retryRead: () => Promise<void>;
+  /** 取消 on 讀取字幕 or 抽取音訊. */
+  abort: () => Promise<void>;
+  pickTrack: (track: SubtitleTrack) => Promise<void>;
   loadCharacters: () => Promise<void>;
   addCharacter: (form: NewCharacter) => Promise<Character>;
   toggle: (index: number) => void;
@@ -51,9 +74,14 @@ interface SubtitleImportState {
   /** Assigns the checked rows (then clears the checks), or one row. `null` unassigns. */
   assignSelected: (characterId: number | null) => void;
   assignOne: (index: number, characterId: number | null) => void;
-  toSource: () => void;
-  toSelect: () => void;
-  startImport: (source: string) => Promise<void>;
+  merge: () => void;
+  split: () => void;
+  swap: () => void;
+  canMerge: () => boolean;
+  canSplit: () => boolean;
+  /** 回上一步 from 選擇台詞: the track list (embedded), else nothing to go back to. */
+  backFromSelect: () => boolean;
+  startImport: () => Promise<void>;
   cancel: () => Promise<void>;
   retry: () => Promise<void>;
   reset: () => void;
@@ -61,12 +89,17 @@ interface SubtitleImportState {
 
 const initial = {
   screen: "reading" as Screen,
+  flow: "file" as Flow,
+  videoPath: null,
   subtitlePath: null,
-  sourcePath: null,
-  cues: [] as Cue[],
+  audioPath: null,
+  tracks: [] as SubtitleTrack[],
+  rows: [] as Row[],
   noCues: false,
+  bilingual: false,
   assigned: {} as Record<number, number>,
   selected: new Set<number>(),
+  nextIndex: MERGED_INDEX_BASE,
   progress: null,
   outcome: null,
   error: null,
@@ -95,26 +128,101 @@ export const useSubtitleImportStore = create<SubtitleImportState>((set, get) => 
     }
   }
 
+  /** True once 取消 was pressed: a step finishing afterwards must not move the screen on. */
+  const aborted = () => get().screen === "aborted";
+
+  /** Shows a parsed subtitle in 選擇台詞. */
+  function showCues(cues: Cue[], subtitlePath: string) {
+    const rows = rowsFrom(cues);
+    set({
+      rows,
+      subtitlePath,
+      bilingual: isBilingual(rows),
+      noCues: false,
+      assigned: {},
+      selected: new Set(),
+      nextIndex: MERGED_INDEX_BASE,
+      screen: "select",
+    });
+  }
+
+  function readFailed(e: unknown, subtitlePath: string | null) {
+    if (aborted()) return;
+    const kind = errorKind(e);
+    // A subtitle that parsed but has no dialogue opens 選擇台詞 empty, with its toast.
+    if (kind === "Subs.NoCues") {
+      set({ noCues: true, rows: [], subtitlePath, screen: "select", error: kind });
+    } else {
+      set({ error: kind, screen: "readFailed" });
+    }
+  }
+
+  /** 抽取音訊: the video's audio, for the rows to play. Returns false if it did not finish. */
+  async function extractAudio(video: string): Promise<boolean> {
+    set({ screen: "extracting" });
+    try {
+      const audioPath = await ipc.preparePreview(video);
+      if (aborted()) return false;
+      set({ audioPath });
+      return true;
+    } catch (e) {
+      if (!aborted()) set({ error: errorKind(e), screen: "failed" });
+      return false;
+    }
+  }
+
   return {
     ...initial,
     characters: [],
 
-    openSubtitle: async (path) => {
-      set({ ...initial, selected: new Set(), subtitlePath: path, screen: "reading" });
+    open: async (video, subtitle) => {
+      set({ ...initial, selected: new Set(), videoPath: video, flow: subtitle ? "file" : "embedded" });
+      if (subtitle) {
+        set({ screen: "reading", subtitlePath: subtitle });
+        let cues: Cue[];
+        try {
+          cues = await ipc.parseSubtitle(subtitle);
+        } catch (e) {
+          // 字幕讀取失敗, or 選擇台詞 empty with its toast: nothing to play, so no 抽取音訊.
+          readFailed(e, subtitle);
+          return;
+        }
+        if (aborted() || !(await extractAudio(video))) return;
+        showCues(cues, subtitle);
+        return;
+      }
+      if (!(await extractAudio(video))) return;
       try {
-        const cues = await ipc.parseSubtitle(path);
-        set({ cues, screen: "select" });
+        const tracks = await ipc.listSubtitleTracks(video);
+        if (aborted()) return;
+        if (tracks.length === 0) set({ error: "Subs.NoTracks", screen: "readFailed" });
+        else set({ tracks, screen: "tracks" });
       } catch (e) {
-        const kind = errorKind(e);
-        // A file that parsed but has no dialogue opens Step 2 empty, with its toast.
-        if (kind === "Subs.NoCues") set({ noCues: true, cues: [], screen: "select", error: kind });
-        else set({ error: kind, screen: "readFailed" });
+        readFailed(e, null);
       }
     },
 
     retryRead: async () => {
-      const path = get().subtitlePath;
-      if (path) await get().openSubtitle(path);
+      const { videoPath, flow, subtitlePath } = get();
+      if (videoPath) await get().open(videoPath, flow === "file" ? subtitlePath : null);
+    },
+
+    abort: async () => {
+      set({ screen: "aborted" });
+      await ipc.cancelPrepare().catch(() => {});
+    },
+
+    pickTrack: async (track) => {
+      const video = get().videoPath;
+      if (!video) return;
+      set({ screen: "reading" });
+      try {
+        const extracted = await ipc.extractSubtitleTrack(video, track.index, track.codec);
+        if (aborted()) return;
+        showCues(extracted.cues, extracted.path);
+      } catch (e) {
+        readFailed(e, null);
+      }
     },
 
     loadCharacters: async () => set({ characters: await ipc.listCharacters() }),
@@ -131,7 +239,7 @@ export const useSubtitleImportStore = create<SubtitleImportState>((set, get) => 
       else selected.add(index);
       set({ selected });
     },
-    selectAll: () => set({ selected: new Set(get().cues.map((c) => c.index)) }),
+    selectAll: () => set({ selected: new Set(get().rows.map((r) => r.index)) }),
     clearAll: () => set({ selected: new Set() }),
 
     assignSelected: (characterId) => {
@@ -149,26 +257,74 @@ export const useSubtitleImportStore = create<SubtitleImportState>((set, get) => 
       set({ assigned });
     },
 
-    toSource: () => set({ screen: "source" }),
-    toSelect: () => set({ screen: "select" }),
+    canMerge: () => get().selected.size >= 2,
+    canSplit: () => canSplit(get().rows, get().selected),
 
-    startImport: async (source) => {
-      const { subtitlePath, cues, assigned } = get();
-      if (!subtitlePath) return;
-      set({ sourcePath: source });
-      const assignments = cues
-        .filter((c) => assigned[c.index] !== undefined)
-        .map((cue) => ({ cue, characterId: assigned[cue.index] }));
-      await run(() => ipc.startSubtitleImport(subtitlePath, source, assignments));
+    // 合併: the merged row takes the character of the earliest chosen row that has one.
+    merge: () => {
+      const { rows, selected, assigned, nextIndex } = get();
+      if (selected.size < 2) return;
+      const chosen = rows.filter((r) => selected.has(r.index));
+      const owner = chosen.map((r) => assigned[r.index]).find((id) => id !== undefined);
+      const next = { ...assigned };
+      for (const r of chosen) delete next[r.index];
+      if (owner !== undefined) next[nextIndex] = owner;
+      set({
+        rows: mergeRows(rows, selected, nextIndex),
+        assigned: next,
+        selected: new Set([nextIndex]),
+        nextIndex: nextIndex + 1,
+      });
+    },
+
+    // 拆分: the parts come back; each takes the merged row's character if it has one.
+    split: () => {
+      const { rows, selected, assigned } = get();
+      const next = { ...assigned };
+      const restored = new Set<number>();
+      for (const r of rows) {
+        if (!selected.has(r.index) || !r.parts) continue;
+        const owner = next[r.index];
+        delete next[r.index];
+        for (const p of r.parts) {
+          if (owner !== undefined) next[p.index] = owner;
+          restored.add(p.index);
+        }
+      }
+      set({ rows: splitRows(rows, selected), assigned: next, selected: restored });
+    },
+
+    swap: () => {
+      if (!get().bilingual) return;
+      set({ rows: swapRows(get().rows) });
+    },
+
+    backFromSelect: () => {
+      if (get().flow !== "embedded" || get().tracks.length === 0) return false;
+      set({ screen: "tracks" });
+      return true;
+    },
+
+    startImport: async () => {
+      const { subtitlePath, videoPath, rows, assigned } = get();
+      if (!subtitlePath || !videoPath) return;
+      const assignments = rows
+        .filter((r) => assigned[r.index] !== undefined)
+        .map((r) => ({
+          cue: { index: r.index, startMs: r.startMs, endMs: r.endMs, text: r.text, translation: r.translation },
+          characterId: assigned[r.index],
+          ...(r.segments ? { segments: spans(r) } : {}),
+        }));
+      await run(() => ipc.startSubtitleImport(subtitlePath, videoPath, assignments));
     },
 
     cancel: () => ipc.cancelImport(),
 
-    /** 再試一次: re-runs the failed and cancelled cues, or the whole import if it never ran. */
+    /** 再試一次: re-runs the failed and cancelled lines, or the whole import if it never ran. */
     retry: async () => {
-      const { outcome, sourcePath } = get();
+      const { outcome } = get();
       if (outcome) await run(() => ipc.retryImport(outcome.runId));
-      else if (sourcePath) await get().startImport(sourcePath);
+      else await get().startImport();
     },
 
     reset: () => set({ ...initial, selected: new Set() }),

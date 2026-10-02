@@ -73,12 +73,15 @@
     <div class="pg-anim-up" style="flex: 1 1 0; max-width: 480px; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 40px; padding-top: 20px; animation-delay: 450ms;">
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;">
         <div style="font-family: var(--font-bento-font-ui); font-weight: 600; font-size: 20px; line-height: 26px; color: var(--bento-content-primary);">依字幕的時間軸切分影片為多個片段</div>
-        <div style="font-family: var(--font-bento-font-ui); font-weight: 400; font-size: 14px; line-height: 20px; color: var(--bento-content-secondary);">支援 ASS、SRT</div>
+        <div style="font-family: var(--font-bento-font-ui); font-weight: 400; font-size: 14px; line-height: 20px; color: var(--bento-content-secondary);">支援 MKV、MP4、WEBM、ASS、SRT</div>
       </div>
       <div style="flex: 1 1 auto; width: 100%; box-sizing: border-box; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--bento-bg-primary); border: 3px dashed var(--bento-interactive-40); border-radius: 24px; padding: 40px;">
         <span class="material-symbol" aria-hidden="true" style="position: absolute; top: 221px; right: 24px; font-size: 230px; color: var(--bento-interactive-40); opacity: 0.2; transform: rotate(15deg); pointer-events: none">subtitles</span>
         <div style="position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 16px;">
-          <div style="font-family: var(--font-bento-font-ui); font-weight: 500; font-size: 16px; line-height: 22px; color: var(--bento-interactive-40);">將檔案拖放到這裡</div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; color: var(--bento-informative-30)">
+            <div style="font-family: var(--font-bento-font-ui); font-weight: 500; font-size: 16px; line-height: 22px; color: var(--bento-interactive-40);">將字幕檔、影片檔一起拖放到這裡</div>
+            <div style="font-family: var(--font-bento-font-ui); font-weight: 400; font-size: 12px; line-height: 16px; color: var(--bento-interactive-40)">* 若影片為內嵌字幕僅需拖放影片檔</div>
+          </div>
           <div style="font-family: var(--font-bento-font-ui); font-weight: 400; font-size: 13px; line-height: 18px; color: var(--bento-content-secondary);">或</div>
           <button type="button" class="dz-browse" style="border: 2px solid var(--bento-interactive-40); color: var(--bento-interactive-40);">瀏覽檔案</button>
         </div>
