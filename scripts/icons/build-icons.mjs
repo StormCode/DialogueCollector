@@ -101,8 +101,8 @@ const BOARD_ART = [
   // EditLine's preview button: its own play triangle and pause bars.
   { name: "previewPlay", board: "EditLine.dc.html", svg: /<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5\.14[\s\S]*?<\/svg>/ },
   { name: "previewPause", board: "EditLine.dc.html", svg: /<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect[\s\S]*?<\/svg>/ },
-  // The curve behind every page (Settings draws it in the theme's accent).
-  { name: "backdrop", board: "Settings.dc.html", svg: /<svg viewBox="0 0 1280 800"[\s\S]*?<\/svg>/ },
+  // The curve behind every page: the moving wave's start (Main, redrawn 2026-10-02).
+  { name: "backdrop", board: "Main.dc.html", svg: /<svg viewBox="0 0 1280 800"[\s\S]*?<\/svg>/ },
 ];
 
 function boardArt({ name, board, svg }) {
@@ -114,8 +114,9 @@ function boardArt({ name, board, svg }) {
     .replace(/^<svg[^>]*>/, "")
     .replace(/<\/svg>$/, "")
     .trim()
-    // Board-local variable names → the app's.
-    .replaceAll("var(--accent-5)", "var(--dc-accent-5)");
+    // Board-local variable names → the app's; the boards' indigo is the default theme's accent.
+    .replaceAll("var(--accent-5)", "var(--dc-accent-5)")
+    .replaceAll("var(--bento-dv-indigo-5)", "var(--dc-accent-5)");
   return [name, { viewBox, body }];
 }
 const bundle = readFileSync(join(root, "design/bento/components/bundle.js"), "utf8");
