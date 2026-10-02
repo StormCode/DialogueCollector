@@ -129,6 +129,7 @@ fn rebuild(failure: &StoredFailure) -> PlannedCue {
         },
         character_id: failure.character_id,
         segments: failure.segments.clone(),
+        gap_ms: failure.gap_ms,
     }
 }
 

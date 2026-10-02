@@ -32,6 +32,7 @@ pub trait Encoder: Send + Sync {
         &self,
         source: &Path,
         segments: &[(u64, u64)],
+        gap_ms: u64,
         out: &Path,
         cancel: &AtomicBool,
     ) -> Result<(), MediaError>;
@@ -47,10 +48,11 @@ impl Encoder for FfmpegEncoder {
         &self,
         source: &Path,
         segments: &[(u64, u64)],
+        gap_ms: u64,
         out: &Path,
         cancel: &AtomicBool,
     ) -> Result<(), MediaError> {
-        crate::media::ffmpeg::encode_segments(&self.ffmpeg, source, segments, out, cancel)
+        crate::media::ffmpeg::encode_segments(&self.ffmpeg, source, segments, gap_ms, out, cancel)
             .map(|_| ())
     }
 }
@@ -63,6 +65,8 @@ pub struct PlannedCue {
     /// The `[start_ms, end_ms)` pieces of a line merged from several cues (合併), in order.
     /// Empty for an ordinary cue, which is its own start–end.
     pub segments: Vec<(u64, u64)>,
+    /// Silence between a merged line's segments (選擇台詞's 間隔秒數); 0 for an ordinary cue.
+    pub gap_ms: u64,
 }
 
 impl PlannedCue {
@@ -183,6 +187,7 @@ pub fn run_pass(pass: &Pass<'_>, cues: Vec<PlannedCue>) -> PassSummary {
             start_ms: job.cue.start_ms,
             end_ms: job.cue.end_ms,
             segments: job.segments.clone(),
+            gap_ms: job.gap_ms,
             character_id: job.character_id,
             reason,
             detail,
@@ -231,7 +236,9 @@ fn process(pass: &Pass<'_>, job: &PlannedCue, encoded: &dyn Fn()) -> Outcome {
         .library
         .join(TMP_DIR)
         .join(format!("{}.tmp", new_clip_filename()));
-    let result = pass.encoder.encode(pass.source, &spans, &tmp, pass.cancel);
+    let result = pass
+        .encoder
+        .encode(pass.source, &spans, job.gap_ms, &tmp, pass.cancel);
     encoded();
     if pass.cancel.load(Ordering::Acquire) {
         remove_quietly(&tmp);
@@ -247,7 +254,8 @@ fn process(pass: &Pass<'_>, job: &PlannedCue, encoded: &dyn Fn()) -> Outcome {
         character_id: job.character_id,
         text: cue.text.clone(),
         translation: cue.translation.clone(),
-        duration_ms: spans.iter().map(|(start, end)| end - start).sum::<u64>() as i64,
+        duration_ms: (spans.iter().map(|(start, end)| end - start).sum::<u64>()
+            + job.gap_ms * (spans.len() as u64 - 1)) as i64,
         extension: crate::media::CLIP_EXTENSION,
     };
     let committed = match commit_cue(pass.library, pass.writer, &tmp, line) {

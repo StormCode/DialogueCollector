@@ -11,10 +11,17 @@ export interface Row extends Cue {
   segments: [number, number][] | null;
   /** The rows merged into this one, in list order; null for an ordinary cue. */
   parts: Row[] | null;
+  /** A merged row's 間隔秒數 in ms: the silence put between its segments; null for an ordinary cue. */
+  gapMs: number | null;
 }
 
+/** A new merged row's 間隔秒數 (board SubtitleSelect: 0.5 s). */
+export const DEFAULT_GAP_MS = 500;
+/** The 間隔秒數 input's range, 0–10 s. */
+export const MAX_GAP_MS = 10_000;
+
 export function rowsFrom(cues: Cue[]): Row[] {
-  return cues.map((c) => ({ ...c, segments: null, parts: null }));
+  return cues.map((c) => ({ ...c, segments: null, parts: null, gapMs: null }));
 }
 
 /** A row's audio: its segments, or its own start–end. */
@@ -62,6 +69,8 @@ export function mergeRows(rows: Row[], chosen: Set<number>, newIndex: number): R
     translation: translation === "" ? null : translation,
     segments: parts.flatMap(spans).sort((a, b) => a[0] - b[0]),
     parts,
+    // Merging onto a merged row keeps the gap it was given.
+    gapMs: parts[0].gapMs ?? DEFAULT_GAP_MS,
   };
   const out: Row[] = [];
   for (const r of rows) {

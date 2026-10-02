@@ -164,6 +164,16 @@ describe("subtitle import flow", () => {
     expect(screen.getByText("おはよう。今日は早いんだね。，そう言えば、昨日の話なんだけど。")).toBeInTheDocument();
     expect(screen.getAllByRole("checkbox")).toHaveLength(2);
 
+    // Only the merged row has a 間隔秒數, 0.5 s to start with; its label doesn't check the row.
+    const gap = screen.getByLabelText("第 1 句合併片段之間的間隔秒數");
+    expect(screen.getAllByRole("spinbutton")).toHaveLength(1);
+    expect(gap).toHaveValue(0.5);
+    fireEvent.change(gap, { target: { value: "1.2" } });
+    expect(useSubtitleImportStore.getState().rows[0].gapMs).toBe(1200);
+    const checked = useSubtitleImportStore.getState().selected.size;
+    fireEvent.click(screen.getByText("間隔(秒)"));
+    expect(useSubtitleImportStore.getState().selected.size).toBe(checked);
+
     fireEvent.click(split);
     expect(screen.getAllByRole("checkbox")).toHaveLength(3);
 

@@ -62,6 +62,8 @@ pub struct Failure {
     pub end_ms: u64,
     /// A merged line's pieces (see `PlannedCue::segments`); empty for an ordinary cue.
     pub segments: Vec<(u64, u64)>,
+    /// A merged line's 間隔秒數 (see `PlannedCue::gap_ms`).
+    pub gap_ms: u64,
     pub character_id: i64,
     pub reason: Reason,
     /// Developer detail, e.g. the end of ffmpeg's stderr.
@@ -158,8 +160,8 @@ pub fn finish_run(
             tx.execute(
                 "INSERT INTO import_failures (run_id, cue_index, cue_text, start_ms, end_ms, character_id,
                                               status, reason_code, reason_detail, created_at,
-                                              translation, segments)
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
+                                              translation, segments, gap_ms)
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)",
                 params![
                     run_id,
                     f.cue_index,
@@ -174,6 +176,7 @@ pub fn finish_run(
                     f.translation,
                     (!f.segments.is_empty())
                         .then(|| serde_json::to_string(&f.segments).unwrap_or_default()),
+                    f.gap_ms as i64,
                 ],
             )?;
         }
@@ -197,6 +200,7 @@ pub struct StoredFailure {
     pub start_ms: u64,
     pub end_ms: u64,
     pub segments: Vec<(u64, u64)>,
+    pub gap_ms: u64,
     pub character_id: i64,
 }
 
@@ -231,7 +235,7 @@ pub fn load_for_retry(
             return Ok(None);
         };
         let mut stmt = conn.prepare(
-            "SELECT id, cue_index, cue_text, start_ms, end_ms, character_id, translation, segments
+            "SELECT id, cue_index, cue_text, start_ms, end_ms, character_id, translation, segments, gap_ms
              FROM import_failures
              WHERE run_id = ?1 AND status IN ('failed', 'cancelled') ORDER BY cue_index",
         )?;
@@ -248,6 +252,7 @@ pub fn load_for_retry(
                     segments: segments
                         .and_then(|j| serde_json::from_str(&j).ok())
                         .unwrap_or_default(),
+                    gap_ms: r.get::<_, i64>(8)? as u64,
                     character_id: r.get(5)?,
                 })
             })?

@@ -190,6 +190,8 @@ export interface Assignment {
   characterId: number;
   /** A merged line's [startMs, endMs] pieces (合併); omitted for an ordinary cue. */
   segments?: [number, number][];
+  /** A merged line's 間隔秒數 in ms, the silence between its segments. */
+  gapMs?: number;
 }
 
 /** A text subtitle stream inside a video (選擇字幕軌). */

@@ -65,8 +65,14 @@ pub(crate) fn cut_cue_args(source: &Path, start_ms: u64, end_ms: u64, out: &Path
 }
 
 /// A merged line (選擇台詞's 合併): each `[start_ms, end_ms)` read with its own input-side seek,
-/// the pieces joined with the concat filter and encoded as one m4a.
-pub(crate) fn cut_segments_args(source: &Path, segments: &[(u64, u64)], out: &Path) -> Vec<String> {
+/// every piece but the last followed by `gap_ms` of silence (its 間隔秒數), joined with the
+/// concat filter and encoded as one m4a.
+pub(crate) fn cut_segments_args(
+    source: &Path,
+    segments: &[(u64, u64)],
+    gap_ms: u64,
+    out: &Path,
+) -> Vec<String> {
     let secs = |ms: u64| format!("{}.{:03}", ms / 1000, ms % 1000);
     let mut args: Vec<String> = ["-hide_banner", "-nostdin", "-v", "error"]
         .into_iter()
@@ -82,10 +88,20 @@ pub(crate) fn cut_segments_args(source: &Path, segments: &[(u64, u64)], out: &Pa
             source.to_string_lossy().into_owned(),
         ]);
     }
-    let inputs: String = (0..segments.len()).map(|i| format!("[{i}:a:0]")).collect();
+    let last = segments.len().saturating_sub(1);
+    let mut graph = String::new();
+    let mut inputs = String::new();
+    for i in 0..segments.len() {
+        if i < last && gap_ms > 0 {
+            graph.push_str(&format!("[{i}:a:0]apad=pad_dur={}[p{i}];", secs(gap_ms)));
+            inputs.push_str(&format!("[p{i}]"));
+        } else {
+            inputs.push_str(&format!("[{i}:a:0]"));
+        }
+    }
     args.extend([
         "-filter_complex".into(),
-        format!("{inputs}concat=n={}:v=0:a=1[out]", segments.len()),
+        format!("{graph}{inputs}concat=n={}:v=0:a=1[out]", segments.len()),
         "-map".into(),
         "[out]".into(),
         // Without this the merged clip reports the episode's length and never ends in the player.
@@ -117,13 +133,14 @@ pub fn encode_segments(
     ffmpeg: &Path,
     source: &Path,
     segments: &[(u64, u64)],
+    gap_ms: u64,
     out: &Path,
     cancel: &AtomicBool,
 ) -> Result<Duration, MediaError> {
     if let [(start, end)] = segments {
         return encode_cue(ffmpeg, source, *start, *end, out, cancel);
     }
-    let args = cut_segments_args(source, segments, out);
+    let args = cut_segments_args(source, segments, gap_ms, out);
     Ok(process::run(process::command(ffmpeg, &args), cancel)?.elapsed)
 }
 
@@ -609,13 +626,39 @@ mod real_sidecars {
         assert!(ok);
         let out = dir.path().join("merged.tmp");
         let never = AtomicBool::new(false);
-        encode_segments(&ffmpeg, &video, &[(500, 1500), (3000, 4200)], &out, &never).unwrap();
+        encode_segments(
+            &ffmpeg,
+            &video,
+            &[(500, 1500), (3000, 4200)],
+            0,
+            &out,
+            &never,
+        )
+        .unwrap();
         let probed = probe(&ffprobe, &out, &never).unwrap();
         let ms = probed.duration_ms.unwrap();
         assert!(probed.has_audio);
         assert!(
             (2100..=2350).contains(&ms),
             "1.0 s + 1.2 s joined, got {ms} ms"
+        );
+        let gapped = dir.path().join("gapped.tmp");
+        encode_segments(
+            &ffmpeg,
+            &video,
+            &[(500, 1500), (3000, 4200)],
+            800,
+            &gapped,
+            &never,
+        )
+        .unwrap();
+        let ms = probe(&ffprobe, &gapped, &never)
+            .unwrap()
+            .duration_ms
+            .unwrap();
+        assert!(
+            (2900..=3150).contains(&ms),
+            "1.0 s + 0.8 s of silence + 1.2 s, got {ms} ms"
         );
         let streams = std::process::Command::new(&ffprobe)
             .args([

@@ -148,6 +148,8 @@
       "swapTip": "Swap the main and secondary subtitles of a bilingual file",
       "play": "Play line {{n}}",
       "pause": "Pause line {{n}}",
+      "gap": "Gap (s)",
+      "gapFor": "Gap in seconds between the merged parts of line {{n}}",
       "start": "Start import"
     },
     "cutting": {

@@ -45,10 +45,14 @@ pub const MIGRATIONS: &[Migration] = &[
         version: 4,
         sql: include_str!("migrations/0004_failure_segments.sql"),
     },
+    Migration {
+        version: 5,
+        sql: include_str!("migrations/0005_failure_gap.sql"),
+    },
 ];
 
 /// The schema version this build writes. Opening a newer library is refused by name.
-pub const SCHEMA_VERSION: u32 = 4;
+pub const SCHEMA_VERSION: u32 = 5;
 
 #[derive(Debug, thiserror::Error)]
 pub enum StoreError {
