@@ -25,13 +25,13 @@ use super::commit::{commit_cue, CommittedCue, NewLine};
 use super::runs::{Failure, Reason, RunStatus};
 use super::ImportError;
 
-/// Encodes one cue to `out`. Must return `MediaError::Killed` promptly once `cancel` is set.
+/// Encodes one line to `out` from its `[start_ms, end_ms)` segments (one, unless 選擇台詞
+/// merged several cues). Must return `MediaError::Killed` promptly once `cancel` is set.
 pub trait Encoder: Send + Sync {
     fn encode(
         &self,
         source: &Path,
-        start_ms: u64,
-        end_ms: u64,
+        segments: &[(u64, u64)],
         out: &Path,
         cancel: &AtomicBool,
     ) -> Result<(), MediaError>;
@@ -46,12 +46,11 @@ impl Encoder for FfmpegEncoder {
     fn encode(
         &self,
         source: &Path,
-        start_ms: u64,
-        end_ms: u64,
+        segments: &[(u64, u64)],
         out: &Path,
         cancel: &AtomicBool,
     ) -> Result<(), MediaError> {
-        crate::media::ffmpeg::encode_cue(&self.ffmpeg, source, start_ms, end_ms, out, cancel)
+        crate::media::ffmpeg::encode_segments(&self.ffmpeg, source, segments, out, cancel)
             .map(|_| ())
     }
 }
@@ -61,6 +60,19 @@ impl Encoder for FfmpegEncoder {
 pub struct PlannedCue {
     pub cue: Cue,
     pub character_id: i64,
+    /// The `[start_ms, end_ms)` pieces of a line merged from several cues (合併), in order.
+    /// Empty for an ordinary cue, which is its own start–end.
+    pub segments: Vec<(u64, u64)>,
+}
+
+impl PlannedCue {
+    pub fn spans(&self) -> Vec<(u64, u64)> {
+        if self.segments.is_empty() {
+            vec![(self.cue.start_ms, self.cue.end_ms)]
+        } else {
+            self.segments.clone()
+        }
+    }
 }
 
 /// Progress, emitted after every cue settles.
@@ -167,8 +179,10 @@ pub fn run_pass(pass: &Pass<'_>, cues: Vec<PlannedCue>) -> PassSummary {
         let failure = |reason, detail| Failure {
             cue_index: job.cue.index,
             text: job.cue.text.clone(),
+            translation: job.cue.translation.clone(),
             start_ms: job.cue.start_ms,
             end_ms: job.cue.end_ms,
+            segments: job.segments.clone(),
             character_id: job.character_id,
             reason,
             detail,
@@ -200,11 +214,15 @@ pub fn run_pass(pass: &Pass<'_>, cues: Vec<PlannedCue>) -> PassSummary {
 /// `encoded` is called exactly once, as soon as the cue no longer needs ffmpeg.
 fn process(pass: &Pass<'_>, job: &PlannedCue, encoded: &dyn Fn()) -> Outcome {
     let cue = &job.cue;
-    if cue.end_ms <= cue.start_ms {
+    let spans = job.spans();
+    if spans.iter().any(|(start, end)| end <= start) {
         encoded();
         return Outcome::Failed(Reason::ZeroLength, None);
     }
-    if pass.duration_ms.is_some_and(|d| cue.start_ms >= d) {
+    if spans
+        .iter()
+        .any(|(start, _)| pass.duration_ms.is_some_and(|d| *start >= d))
+    {
         encoded();
         return Outcome::Failed(Reason::OutOfRange, None);
     }
@@ -213,9 +231,7 @@ fn process(pass: &Pass<'_>, job: &PlannedCue, encoded: &dyn Fn()) -> Outcome {
         .library
         .join(TMP_DIR)
         .join(format!("{}.tmp", new_clip_filename()));
-    let result = pass
-        .encoder
-        .encode(pass.source, cue.start_ms, cue.end_ms, &tmp, pass.cancel);
+    let result = pass.encoder.encode(pass.source, &spans, &tmp, pass.cancel);
     encoded();
     if pass.cancel.load(Ordering::Acquire) {
         remove_quietly(&tmp);
@@ -231,7 +247,7 @@ fn process(pass: &Pass<'_>, job: &PlannedCue, encoded: &dyn Fn()) -> Outcome {
         character_id: job.character_id,
         text: cue.text.clone(),
         translation: cue.translation.clone(),
-        duration_ms: (cue.end_ms - cue.start_ms) as i64,
+        duration_ms: spans.iter().map(|(start, end)| end - start).sum::<u64>() as i64,
         extension: crate::media::CLIP_EXTENSION,
     };
     let committed = match commit_cue(pass.library, pass.writer, &tmp, line) {

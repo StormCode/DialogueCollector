@@ -57,8 +57,11 @@ impl Reason {
 pub struct Failure {
     pub cue_index: u32,
     pub text: String,
+    pub translation: Option<String>,
     pub start_ms: u64,
     pub end_ms: u64,
+    /// A merged line's pieces (see `PlannedCue::segments`); empty for an ordinary cue.
+    pub segments: Vec<(u64, u64)>,
     pub character_id: i64,
     pub reason: Reason,
     /// Developer detail, e.g. the end of ffmpeg's stderr.
@@ -154,8 +157,9 @@ pub fn finish_run(
             };
             tx.execute(
                 "INSERT INTO import_failures (run_id, cue_index, cue_text, start_ms, end_ms, character_id,
-                                              status, reason_code, reason_detail, created_at)
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
+                                              status, reason_code, reason_detail, created_at,
+                                              translation, segments)
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
                 params![
                     run_id,
                     f.cue_index,
@@ -166,7 +170,10 @@ pub fn finish_run(
                     status,
                     f.reason.code(),
                     f.detail.as_deref().map(|d| d.chars().take(2000).collect::<String>()),
-                    now
+                    now,
+                    f.translation,
+                    (!f.segments.is_empty())
+                        .then(|| serde_json::to_string(&f.segments).unwrap_or_default()),
                 ],
             )?;
         }
@@ -186,8 +193,10 @@ pub struct StoredFailure {
     pub id: i64,
     pub cue_index: u32,
     pub cue_text: String,
+    pub translation: Option<String>,
     pub start_ms: u64,
     pub end_ms: u64,
+    pub segments: Vec<(u64, u64)>,
     pub character_id: i64,
 }
 
@@ -222,17 +231,23 @@ pub fn load_for_retry(
             return Ok(None);
         };
         let mut stmt = conn.prepare(
-            "SELECT id, cue_index, cue_text, start_ms, end_ms, character_id FROM import_failures
+            "SELECT id, cue_index, cue_text, start_ms, end_ms, character_id, translation, segments
+             FROM import_failures
              WHERE run_id = ?1 AND status IN ('failed', 'cancelled') ORDER BY cue_index",
         )?;
         let failures = stmt
             .query_map([run_id], |r| {
+                let segments: Option<String> = r.get(7)?;
                 Ok(StoredFailure {
                     id: r.get(0)?,
                     cue_index: r.get(1)?,
                     cue_text: r.get(2)?,
+                    translation: r.get(6)?,
                     start_ms: r.get::<_, i64>(3)? as u64,
                     end_ms: r.get::<_, i64>(4)? as u64,
+                    segments: segments
+                        .and_then(|j| serde_json::from_str(&j).ok())
+                        .unwrap_or_default(),
                     character_id: r.get(5)?,
                 })
             })?

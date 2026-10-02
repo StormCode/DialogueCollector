@@ -109,6 +109,9 @@ pub fn allow_preview(app: AppHandle, path: PathBuf) -> CommandResult<()> {
 pub struct Assignment {
     pub cue: Cue,
     pub character_id: i64,
+    /// A merged line's `[start_ms, end_ms]` pieces (合併); absent for an ordinary cue.
+    #[serde(default)]
+    pub segments: Vec<(u64, u64)>,
 }
 
 /// Step 3: cut `source` along the assigned cues. Resolves when the run ends (完成, 部分完成,
@@ -126,6 +129,7 @@ pub async fn start_subtitle_import(
         .map(|a| PlannedCue {
             cue: a.cue,
             character_id: a.character_id,
+            segments: a.segments,
         })
         .collect();
     run_job(app, &state, move |engine| {

@@ -8,9 +8,9 @@ use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::Mutex;
 use std::time::Duration;
 
-use super::job::{import_subtitle, match_failures, retry, Engine, Prober};
+use super::job::{import_subtitle, retry, Engine, Prober};
 use super::run::{Encoder, Event, PlannedCue};
-use super::runs::{Reason, RunStatus, StoredFailure};
+use super::runs::{Reason, RunStatus};
 use super::ImportError;
 use crate::library::folder::Library;
 use crate::library::paths::{DB_FILE, TMP_DIR};
@@ -28,18 +28,21 @@ struct FakeEncoder {
     fast: Option<(u64, Duration)>,
     calls: AtomicUsize,
     killed: AtomicUsize,
+    /// Every line's segments, in the order encoded.
+    segments: Mutex<Vec<Vec<(u64, u64)>>>,
 }
 
 impl Encoder for FakeEncoder {
     fn encode(
         &self,
         _source: &Path,
-        start_ms: u64,
-        _end_ms: u64,
+        segments: &[(u64, u64)],
         out: &Path,
         cancel: &AtomicBool,
     ) -> Result<(), MediaError> {
+        let start_ms = segments[0].0;
         self.calls.fetch_add(1, Ordering::SeqCst);
+        self.segments.lock().unwrap().push(segments.to_vec());
         // Like ffmpeg: the output file exists from the start.
         fs::write(out, b"partial").unwrap();
         let delay = match self.fast {
@@ -152,6 +155,7 @@ fn plan(subtitle: &Path) -> Vec<PlannedCue> {
         .map(|(i, cue)| PlannedCue {
             cue,
             character_id: 1 + (i as i64 % 2),
+            segments: Vec::new(),
         })
         .collect()
 }
@@ -409,34 +413,47 @@ fn a_cue_cancelled_after_its_commit_is_removed_again() {
     assert!(assert_rows_equal_files(&f.root).is_empty());
 }
 
-/// ENG4/ET4: retry re-opens both sources, finds the failed cues by text even after a line was
-/// inserted at the top, keeps their characters, and marks a vanished text as lost.
+/// ENG4 as revised 2026-10-02: retry rebuilds the failed lines from their records — text,
+/// translation, segments, character — so it works even when the subtitle file has changed or is
+/// gone (an extracted track lives in a cache; a merged line was never in the file).
 #[test]
-fn retry_finds_failed_cues_by_text_in_a_changed_subtitle_file() {
+fn retry_rebuilds_failed_lines_from_their_records() {
     let f = fixture();
     let (encoder, prober) = (FakeEncoder::default(), prober());
     encoder.fail.lock().unwrap().extend([
-        (3000, "Invalid data found when processing input"), // 那就再去一次吧。 (character 2)
-        (5000, "Invalid data found when processing input"), // 這一切都是…      (character 1)
+        (3000, "Invalid data found when processing input"),
+        (5000, "Invalid data found when processing input"),
     ]);
     let cancel = AtomicBool::new(false);
+    let mut planned = plan(&f.subtitle);
+    // 選擇台詞 merged the first and third cues, and swapped a translation in.
+    let merged = PlannedCue {
+        cue: Cue {
+            index: 0,
+            start_ms: 5000,
+            end_ms: 8000,
+            text: "合併的原文，第二段".into(),
+            translation: Some("Merged".into()),
+        },
+        character_id: 2,
+        segments: vec![(5000, 6000), (7000, 8000)],
+    };
+    planned.retain(|p| p.cue.start_ms != 5000);
+    planned.push(merged);
     let first = import_subtitle(
         &engine(&f, &encoder, &prober, &cancel, &quiet),
         &f.subtitle,
         &f.video,
-        plan(&f.subtitle),
+        planned,
     )
     .unwrap();
     assert_eq!(first.status, RunStatus::Partial);
+    assert_eq!(first.failures.len(), 2);
 
-    // The user fixes the file: a new line at the top shifts everything by 30 s, and one of the
-    // failed lines is removed.
-    let edited = "0\n00:00:00,000 --> 00:00:00,500\n新加的第一行\n\n".to_owned()
-        + &shift_srt(SRT, 30).replace("這一切都是命運石之門的選擇。", "（刪掉了）");
-    std::thread::sleep(Duration::from_millis(20));
-    fs::write(&f.subtitle, edited).unwrap();
+    // The subtitle file is gone; retry does not need it.
+    fs::remove_file(&f.subtitle).unwrap();
     encoder.fail.lock().unwrap().clear();
-
+    encoder.segments.lock().unwrap().clear();
     let out = retry(
         &engine(&f, &encoder, &prober, &cancel, &quiet),
         first.run_id,
@@ -447,28 +464,31 @@ fn retry_finds_failed_cues_by_text_in_a_changed_subtitle_file() {
         2,
         "the video is probed again"
     );
-    assert_eq!(out.imported, 1);
-    assert_eq!(out.lost, [2], "cue #2 (0-based) lost its text");
+    assert_eq!(out.status, RunStatus::Complete);
+    assert_eq!(out.imported, 2);
+    assert!(out.lost.is_empty() && out.changed_sources.is_empty());
+    let mut encoded = encoder.segments.lock().unwrap().clone();
+    encoded.sort();
     assert_eq!(
-        out.changed_sources,
-        std::slice::from_ref(&f.subtitle),
-        "a changed source only warns"
+        encoded,
+        [vec![(3000, 4000)], vec![(5000, 6000), (7000, 8000)]]
     );
 
     let rows = assert_rows_equal_files(&f.root);
-    assert_eq!(rows.len(), 4);
+    assert_eq!(rows.len(), 5, "every planned line is in the library now");
+    assert!(failure_rows(&f.root).is_empty());
+    let conn = rusqlite::Connection::open(f.root.join(crate::library::paths::DB_FILE)).unwrap();
+    let (translation, duration): (Option<String>, i64) = conn
+        .query_row(
+            "SELECT translation, duration_ms FROM lines WHERE text = '合併的原文，第二段'",
+            [],
+            |r| Ok((r.get(0)?, r.get(1)?)),
+        )
+        .unwrap();
+    assert_eq!(translation.as_deref(), Some("Merged"));
     assert_eq!(
-        rows.last().unwrap().1,
-        2,
-        "the retried line keeps its saved character"
-    );
-    assert_eq!(
-        failure_rows(&f.root),
-        [(
-            "這一切都是命運石之門的選擇。".into(),
-            "lost".into(),
-            "lost".into()
-        )]
+        duration, 2000,
+        "a merged line lasts as long as its segments together"
     );
 }
 
@@ -496,39 +516,6 @@ fn retry_of_a_deleted_source_is_source_missing() {
     )
     .unwrap_err();
     assert!(matches!(err, ImportError::SourceMissing(p) if p == f.video));
-}
-
-#[test]
-fn a_repeated_text_is_matched_to_the_nearest_start_time() {
-    let cue = |index, start_ms, text: &str| Cue {
-        index,
-        start_ms,
-        end_ms: start_ms + 500,
-        text: text.into(),
-        translation: None,
-    };
-    let parsed = [
-        cue(0, 1_000, "はい"),
-        cue(1, 50_000, "はい"),
-        cue(2, 90_000, "はい"),
-    ];
-    let failure = |id, start_ms| StoredFailure {
-        id,
-        cue_index: 0,
-        cue_text: "はい".into(),
-        start_ms,
-        end_ms: start_ms + 500,
-        character_id: 1,
-    };
-    let (planned, retried, lost) =
-        match_failures(&[failure(7, 52_000), failure(8, 49_000)], &parsed);
-    assert_eq!(
-        planned.iter().map(|p| p.cue.start_ms).collect::<Vec<_>>(),
-        [90_000, 50_000],
-        "49 s sits next to 50 s, so 52 s takes the next nearest; each cue is used once"
-    );
-    assert_eq!(retried, [7, 8]);
-    assert!(lost.is_empty());
 }
 
 fn shift_srt(srt: &str, seconds: u64) -> String {

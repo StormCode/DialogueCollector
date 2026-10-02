@@ -61,6 +61,66 @@ pub(crate) fn cut_cue_args(source: &Path, start_ms: u64, end_ms: u64, out: &Path
     .collect()
 }
 
+/// A merged line (選擇台詞's 合併): each `[start_ms, end_ms)` read with its own input-side seek,
+/// the pieces joined with the concat filter and encoded as one m4a.
+pub(crate) fn cut_segments_args(source: &Path, segments: &[(u64, u64)], out: &Path) -> Vec<String> {
+    let secs = |ms: u64| format!("{}.{:03}", ms / 1000, ms % 1000);
+    let mut args: Vec<String> = ["-hide_banner", "-nostdin", "-v", "error"]
+        .into_iter()
+        .map(str::to_owned)
+        .collect();
+    for &(start, end) in segments {
+        args.extend([
+            "-ss".into(),
+            secs(start),
+            "-t".into(),
+            secs(end.saturating_sub(start)),
+            "-i".into(),
+            source.to_string_lossy().into_owned(),
+        ]);
+    }
+    let inputs: String = (0..segments.len()).map(|i| format!("[{i}:a:0]")).collect();
+    args.extend([
+        "-filter_complex".into(),
+        format!("{inputs}concat=n={}:v=0:a=1[out]", segments.len()),
+        "-map".into(),
+        "[out]".into(),
+    ]);
+    args.extend(
+        [
+            "-c:a",
+            "aac",
+            "-b:a",
+            "160k",
+            "-movflags",
+            "+faststart",
+            "-f",
+            "ipod",
+            "-y",
+        ]
+        .into_iter()
+        .map(str::to_owned),
+    );
+    args.push(out.to_string_lossy().into_owned());
+    args
+}
+
+/// Imports: encode a line made of several segments (see `cut_segments_args`); one segment is
+/// `encode_cue`.
+pub fn encode_segments(
+    ffmpeg: &Path,
+    source: &Path,
+    segments: &[(u64, u64)],
+    out: &Path,
+    cancel: &AtomicBool,
+) -> Result<Duration, MediaError> {
+    if let [(start, end)] = segments {
+        return encode_cue(ffmpeg, source, *start, *end, out, cancel);
+    }
+    let args = cut_segments_args(source, segments, out);
+    Ok(process::run(process::command(ffmpeg, &args), cancel)?.elapsed)
+}
+
 /// Imports: encode one cue with the sidecar at `ffmpeg`, killed at once if `cancel` is set.
 pub fn encode_cue(
     ffmpeg: &Path,
@@ -500,5 +560,53 @@ mod real_sidecars {
             assert_eq!(cues[0].text, expected);
             assert_eq!((cues[0].start_ms, cues[0].end_ms), (1000, 2500));
         }
+    }
+
+    #[test]
+    fn real_ffmpeg_joins_the_segments_of_a_merged_line() {
+        let triple = match (std::env::consts::ARCH, std::env::consts::OS) {
+            ("aarch64", "macos") => "aarch64-apple-darwin",
+            ("x86_64", "macos") => "x86_64-apple-darwin",
+            ("x86_64", "windows") => "x86_64-pc-windows-msvc",
+            _ => return,
+        };
+        let bin = |name: &str| {
+            Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("binaries")
+                .join(format!("{name}-{triple}{}", std::env::consts::EXE_SUFFIX))
+        };
+        let (ffmpeg, ffprobe) = (bin("ffmpeg"), bin("ffprobe"));
+        if !ffmpeg.is_file() || !ffprobe.is_file() {
+            return;
+        }
+        let dir = tempfile::tempdir().unwrap();
+        let video = dir.path().join("tone.mp4");
+        let ok = std::process::Command::new(&ffmpeg)
+            .args([
+                "-v",
+                "error",
+                "-f",
+                "lavfi",
+                "-i",
+                "sine=duration=6",
+                "-c:a",
+                "aac",
+                "-y",
+            ])
+            .arg(&video)
+            .status()
+            .unwrap()
+            .success();
+        assert!(ok);
+        let out = dir.path().join("merged.tmp");
+        let never = AtomicBool::new(false);
+        encode_segments(&ffmpeg, &video, &[(500, 1500), (3000, 4200)], &out, &never).unwrap();
+        let probed = probe(&ffprobe, &out, &never).unwrap();
+        let ms = probed.duration_ms.unwrap();
+        assert!(probed.has_audio);
+        assert!(
+            (2100..=2350).contains(&ms),
+            "1.0 s + 1.2 s joined, got {ms} ms"
+        );
     }
 }
