@@ -23,6 +23,41 @@ export function formatClock(ms: number): string {
   return `${pad(h, 2)}:${pad(m, 2)}:${pad(s, 2)}.${pad(ms % 1000, 3)}`;
 }
 
+/**
+ * A merged row's 間隔秒數 (board SubtitleSelect: under its time, 0–10 s in 0.1 steps). The text
+ * typed is kept until it leaves the field, so "0." or an empty field can be typed through.
+ * Clicks stay here: the row is a label, and would toggle its checkbox.
+ */
+function GapInput({ n, gapMs, onChange }: { n: number; gapMs: number; onChange: (ms: number) => void }) {
+  const { t } = useTranslation();
+  const [draft, setDraft] = useState<string | null>(null);
+  const keep = (e: MouseEvent) => {
+    if (!(e.target instanceof HTMLInputElement)) e.preventDefault();
+    e.stopPropagation();
+  };
+  return (
+    <span className="sel-gap" onClick={keep}>
+      <span aria-hidden="true">{t("import.select.gap")}</span>
+      <input
+        type="number"
+        className="sel-gap__input"
+        min={0}
+        max={10}
+        step={0.1}
+        inputMode="decimal"
+        aria-label={t("import.select.gapFor", { n })}
+        value={draft ?? String(gapMs / 1000)}
+        onChange={(e) => {
+          setDraft(e.target.value);
+          const seconds = parseFloat(e.target.value);
+          if (Number.isFinite(seconds)) onChange(seconds * 1000);
+        }}
+        onBlur={() => setDraft(null)}
+      />
+    </span>
+  );
+}
+
 function matches(c: Character, query: string) {
   const q = query.trim().toLowerCase();
   return !q || c.name.toLowerCase().includes(q) || c.source.toLowerCase().includes(q);
@@ -318,7 +353,12 @@ export function SelectScreen({
                     </button>
                   </span>
                   <span className="sel-time">
-                    {formatClock(cue.startMs)} ~ {formatClock(cue.endMs)}
+                    <span>
+                      {formatClock(cue.startMs)} ~ {formatClock(cue.endMs)}
+                    </span>
+                    {cue.segments && (
+                      <GapInput n={n} gapMs={cue.gapMs ?? 0} onChange={(ms) => s.setGap(cue.index, ms)} />
+                    )}
                   </span>
                   <span className="sel-text">
                     {s.audioPath && (
@@ -329,7 +369,7 @@ export function SelectScreen({
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          player.toggle(cue.index, spans(cue));
+                          player.toggle(cue.index, spans(cue), cue.gapMs ?? 0);
                         }}
                       >
                         <MaterialIcon name={isPlaying ? "pause:fill1" : "play_arrow:fill1"} size={20} />

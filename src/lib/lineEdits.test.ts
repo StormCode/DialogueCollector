@@ -39,8 +39,10 @@ describe("選擇台詞 line edits", () => {
 
   it("a merge of merges splits one level at a time", () => {
     const once = mergeRows(rows, new Set([0, 1]), 100);
-    const twice = mergeRows(once, new Set([100, 2]), 101);
+    expect(once[0].gapMs, "a new merge starts at 0.5 s").toBe(500);
+    const twice = mergeRows([{ ...once[0], gapMs: 1200 }, once[1]], new Set([100, 2]), 101);
     expect(twice).toHaveLength(1);
+    expect(twice[0].gapMs, "merging onto a merged row keeps its gap").toBe(1200);
     const back = splitRows(twice, new Set([101]));
     expect(back.map((r) => r.index)).toEqual([100, 2]);
     expect(back[0].segments).toEqual([

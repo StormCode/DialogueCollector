@@ -2,7 +2,17 @@ import { listen } from "@tauri-apps/api/event";
 import { create } from "zustand";
 
 import { errorKind, ipc } from "../lib/ipc";
-import { canSplit, isBilingual, mergeRows, rowsFrom, spans, splitRows, swapRows, type Row } from "../lib/lineEdits";
+import {
+  canSplit,
+  isBilingual,
+  MAX_GAP_MS,
+  mergeRows,
+  rowsFrom,
+  spans,
+  splitRows,
+  swapRows,
+  type Row,
+} from "../lib/lineEdits";
 import type { Character, Cue, ImportProgress, JobOutcome, NewCharacter, SubtitleTrack } from "../lib/types";
 
 /** Must match `IMPORT_PROGRESS_EVENT` in src-tauri/src/import_cmd.rs. */
@@ -77,6 +87,8 @@ interface SubtitleImportState {
   merge: () => void;
   split: () => void;
   swap: () => void;
+  /** A merged row's 間隔秒數, clamped to 0–10 s. */
+  setGap: (index: number, gapMs: number) => void;
   canMerge: () => boolean;
   canSplit: () => boolean;
   /** 回上一步 from 選擇台詞: the track list (embedded), else nothing to go back to. */
@@ -299,6 +311,11 @@ export const useSubtitleImportStore = create<SubtitleImportState>((set, get) => 
       set({ rows: swapRows(get().rows) });
     },
 
+    setGap: (index, gapMs) => {
+      const gap = Number.isFinite(gapMs) ? Math.round(Math.min(MAX_GAP_MS, Math.max(0, gapMs))) : 0;
+      set({ rows: get().rows.map((r) => (r.index === index && r.segments ? { ...r, gapMs: gap } : r)) });
+    },
+
     backFromSelect: () => {
       if (get().flow !== "embedded" || get().tracks.length === 0) return false;
       set({ screen: "tracks" });
@@ -313,7 +330,7 @@ export const useSubtitleImportStore = create<SubtitleImportState>((set, get) => 
         .map((r) => ({
           cue: { index: r.index, startMs: r.startMs, endMs: r.endMs, text: r.text, translation: r.translation },
           characterId: assigned[r.index],
-          ...(r.segments ? { segments: spans(r) } : {}),
+          ...(r.segments ? { segments: spans(r), gapMs: r.gapMs ?? 0 } : {}),
         }));
       await run(() => ipc.startSubtitleImport(subtitlePath, videoPath, assignments));
     },

@@ -112,6 +112,9 @@ pub struct Assignment {
     /// A merged line's `[start_ms, end_ms]` pieces (合併); absent for an ordinary cue.
     #[serde(default)]
     pub segments: Vec<(u64, u64)>,
+    /// Its 間隔秒數 in ms, clamped to 0–10 s; absent for an ordinary cue.
+    #[serde(default)]
+    pub gap_ms: u64,
 }
 
 /// Step 3: cut `source` along the assigned cues. Resolves when the run ends (完成, 部分完成,
@@ -130,6 +133,7 @@ pub async fn start_subtitle_import(
             cue: a.cue,
             character_id: a.character_id,
             segments: a.segments,
+            gap_ms: a.gap_ms.min(10_000),
         })
         .collect();
     run_job(app, &state, move |engine| {

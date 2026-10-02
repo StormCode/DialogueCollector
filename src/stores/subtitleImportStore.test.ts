@@ -81,8 +81,15 @@ describe("選擇台詞 (T8, T28)", () => {
           [0, 500],
           [2000, 2500],
         ],
+        gapMs: 500,
       },
     ]);
+
+    s().setGap(merged.index, 12_000);
+    expect(s().rows[0].gapMs, "clamped to 10 s").toBe(10_000);
+    s().setGap(merged.index, 1200);
+    s().setGap(1, 800);
+    expect(s().rows[1].gapMs, "an ordinary row has no gap").toBeNull();
 
     useSubtitleImportStore.setState({ screen: "select", selected: new Set([merged.index]) });
     s().split();

@@ -79,6 +79,10 @@
     .sub-btn-neutral:disabled, .sub-btn-neutral:disabled:hover { background: transparent; border-color: var(--bento-neutral-20); color: var(--bento-content-disabled); cursor: not-allowed; }
     .sub-tool { gap: 6px; padding: 12.5px 18px 12.5px 14px; }
     .sub-tool .material-symbol { font-size: 20px; }
+    .sub-gap { display: inline-flex; align-items: center; gap: 6px; font: var(--bento-weight-regular) 12px/16px var(--bento-font-ui); color: var(--bento-content-secondary); cursor: default; }
+    .sub-gap-input { box-sizing: border-box; width: 52px; height: 28px; padding: 0 4px 0 10px; border: none; border-radius: var(--bento-radius-8); background: var(--bento-bg-primary); box-shadow: inset 0 0 0 1px var(--bento-border-input-enabled); color: var(--bento-content-primary); font: var(--bento-weight-regular) 13px/18px var(--bento-font-ui); font-variant-numeric: tabular-nums; color-scheme: inherit; }
+    .sub-gap-input:hover { box-shadow: inset 0 0 0 1px var(--bento-border-input-hover); }
+    .sub-gap-input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--bento-dv-indigo-40); }
     .sub-text-cell { position: relative; align-self: stretch; }
     .sub-play { appearance: none; -webkit-appearance: none; position: absolute; top: 50%; left: -42px; transform: translateY(-50%); width: 28px; height: 28px; padding: 0; border: none; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 120ms ease, background-color 120ms ease; }
     .sub-play::before { content: ''; position: absolute; top: -11px; bottom: -11px; left: -6px; right: -14px; }
@@ -167,7 +171,7 @@
       <span role="separator" aria-orientation="vertical" style="width: 1px; height: 28px; flex-shrink: 0; background: var(--bento-neutral-20);"></span>
       <button type="button" class="sub-btn sub-btn-neutral sub-tool" disabled="{{splitDisabled}}" onClick="{{handleSplit}}" title="將勾選的 1 句台詞拆成 2 句"><span class="material-symbol" aria-hidden="true">call_split</span>拆分</button>
       <button type="button" class="sub-btn sub-btn-neutral sub-tool" disabled="{{mergeDisabled}}" onClick="{{handleMerge}}" title="將勾選的相鄰台詞合併成 1 句"><span class="material-symbol" aria-hidden="true">call_merge</span>合併</button>
-      <button type="button" class="sub-btn sub-btn-neutral sub-tool" disabled="{{swapDisabled}}" onClick="{{handleSwap}}" title="調換勾選台詞的原文與譯文"><span class="material-symbol" aria-hidden="true">swap_vert</span>調換</button>
+      <button type="button" class="sub-btn sub-btn-neutral sub-tool" disabled="{{swapDisabled}}" onClick="{{handleSwap}}" title="調換整份字幕的原文與譯文"><span class="material-symbol" aria-hidden="true">swap_vert</span>調換</button>
       <div style="flex: 1 1 auto;" aria-hidden="true"></div>
       <div style="position: relative;">
         <button type="button" class="assign-btn" aria-haspopup="menu" aria-expanded="{{menuOpen}}" disabled="{{assignDisabled}}" onClick="{{toggleMenu}}">
@@ -239,7 +243,17 @@
               </sc-if>
               </button>
             </span>
-            <span style="padding: 14px 16px 14px 0; font: var(--bento-weight-regular) 13px/22px var(--bento-font-ui); color: var(--bento-content-primary); font-variant-numeric: tabular-nums; white-space: nowrap;">{{item.time}}</span>
+            <span style="padding: 14px 16px 14px 0; display: flex; align-items: flex-start;">
+              <span style="display: inline-flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                <span style="font: var(--bento-weight-regular) 13px/22px var(--bento-font-ui); color: var(--bento-content-primary); font-variant-numeric: tabular-nums; white-space: nowrap;">{{item.time}}</span>
+                <sc-if value="{{item.isMerged}}" hint-placeholder-val="{{false}}">
+                  <span class="sub-gap" onClick="{{item.stopClick}}">
+                    <span>間隔(秒)</span>
+                    <input type="number" class="sub-gap-input" min="0" max="10" step="0.1" inputmode="decimal" aria-label="第 {{item.id}} 句合併片段之間的間隔秒數" value="{{item.gap}}" onChange="{{item.setGap}}" onClick="{{item.stopClick}}">
+                  </span>
+                </sc-if>
+              </span>
+            </span>
             <span class="sub-text-cell" style="display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: 14px 24px 14px 0;">
               <button type="button" class="sub-play" aria-label="{{item.playLabel}}" onClick="{{item.togglePlay}}"><span class="material-symbol ms-fill" aria-hidden="true">{{item.playIcon}}</span></button>
               <span class="sub-line-text" style="font: var(--bento-weight-regular) 15px/22px var(--bento-font-ui); color: var(--bento-content-primary);">{{item.text}}</span>
@@ -324,7 +338,7 @@ class Component extends DCLogic {
       { id: 6, start: 28500, end: 30120, text: 'いいね、行こう。', translation: '好啊，走吧。' },
       { id: 7, start: 31340, end: 33900, text: 'でも、雨が降りそうだよ。', translation: '不過，好像快下雨了喔。' },
       { id: 8, start: 34250, end: 36700, text: '傘なら持ってるから大丈夫。', translation: '' },
-      { id: 9, start: 37480, end: 41310, text: '本当に？ じゃあ、お言葉に甘えて一緒に入れてもらおうかな。', translation: '真的嗎？那我就不客氣，跟你共撐一把傘囉。' },
+      { id: 9, start: 37480, end: 41310, merged: true, gap: 0.5, text: '本当に？ じゃあ、お言葉に甘えて一緒に入れてもらおうかな。', translation: '真的嗎？那我就不客氣，跟你共撐一把傘囉。' },
       { id: 10, start: 42000, end: 43220, text: 'どうぞ。', translation: '請。' },
       { id: 11, start: 44650, end: 47400, text: 'あ、先生が来た。', translation: '' },
       { id: 12, start: 48110, end: 51960, text: 'みんな席についてください。出席を取ります。', translation: '大家請入座，我要點名了。' },
@@ -395,7 +409,7 @@ class Component extends DCLogic {
     const ratio = Array.from(t1).length / Math.max(1, Array.from(r.text).length);
     const cut = Math.round(r.start + (r.end - r.start) * ratio);
     const newId = Math.max(...list.map((x) => x.id)) + 1;
-    list.splice(i, 1, { ...r, end: cut, text: t1, translation: tr1 }, { id: newId, start: cut, end: r.end, text: t2, translation: tr2 });
+    list.splice(i, 1, { ...r, end: cut, text: t1, translation: tr1, merged: false }, { id: newId, start: cut, end: r.end, text: t2, translation: tr2 });
     const assigned = { ...(this.state.assigned || {}) };
     if (assigned[r.id]) assigned[newId] = assigned[r.id];
     this.setState({ subs: list, assigned, selected: { [r.id]: true, [newId]: true } });
@@ -412,16 +426,22 @@ class Component extends DCLogic {
       end: parts[parts.length - 1].end,
       text: parts.map((p) => p.text).join(''),
       translation: parts.map((p) => p.translation).filter(Boolean).join(''),
+      merged: true,
+      gap: first.merged ? first.gap : 0.5, // 合併片段之間的間隔秒數（預設 0.5 秒）
     };
     const assigned = { ...(this.state.assigned || {}) };
     if (!assigned[first.id]) { const a = parts.find((p) => assigned[p.id]); if (a) assigned[first.id] = assigned[a.id]; }
     parts.slice(1).forEach((p) => { delete assigned[p.id]; });
     this.setState({ subs: list.filter((r) => !ids.includes(r.id) || r.id === first.id).map((r) => (r.id === first.id ? merged : r)), assigned, selected: { [first.id]: true } });
   };
+  setGap = (id, e) => {
+    const n = parseFloat(e && e.target ? e.target.value : e);
+    const gap = Number.isFinite(n) ? Math.max(0, Math.min(10, n)) : 0;
+    this.setState({ subs: this.subs().map((r) => (r.id === id ? { ...r, gap } : r)) });
+  };
+  // 調換：整份字幕的原文與譯文全部對調（與勾選無關）
   handleSwap = () => {
-    const ids = this.selectedIds();
-    if (!ids.length) return;
-    this.setState({ subs: this.subs().map((r) => (ids.includes(r.id) && r.translation ? { ...r, text: r.translation, translation: r.text } : r)) });
+    this.setState({ subs: this.subs().map((r) => (r.translation ? { ...r, text: r.translation, translation: r.text } : r)) });
   };
 
   toggleExpand = () => {
@@ -539,6 +559,10 @@ class Component extends DCLogic {
         playIcon: isPlaying && !playPaused ? 'pause' : 'play_arrow',
         playLabel: (isPlaying && !playPaused ? '暫停' : '播放') + '第 ' + r.id + ' 句',
         togglePlay: (e) => this.togglePlay(r.id, e),
+        isMerged: !!r.merged,
+        gap: r.merged ? String(r.gap ?? 0.5) : '',
+        setGap: (e) => this.setGap(r.id, e),
+        stopClick: (e) => { if (e) { e.preventDefault && e.target && e.target.tagName !== 'INPUT' && e.preventDefault(); e.stopPropagation && e.stopPropagation(); } },
         boxClass: isSelected ? 'is-checked' : '',
         ariaLabel: '選取字幕 ' + r.id,
         noChar: !assigned[r.id],
@@ -610,7 +634,7 @@ class Component extends DCLogic {
       handleSelectAll: this.handleSelectAll,
       splitDisabled: count !== 1,
       mergeDisabled: noSubtitles || !this.canMerge(this.selectedIds()),
-      swapDisabled: count === 0,
+      swapDisabled: noSubtitles,
       handleSplit: this.handleSplit,
       handleMerge: this.handleMerge,
       handleSwap: this.handleSwap,

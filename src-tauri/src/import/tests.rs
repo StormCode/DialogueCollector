@@ -37,6 +37,7 @@ impl Encoder for FakeEncoder {
         &self,
         _source: &Path,
         segments: &[(u64, u64)],
+        _gap_ms: u64,
         out: &Path,
         cancel: &AtomicBool,
     ) -> Result<(), MediaError> {
@@ -156,6 +157,7 @@ fn plan(subtitle: &Path) -> Vec<PlannedCue> {
             cue,
             character_id: 1 + (i as i64 % 2),
             segments: Vec::new(),
+            gap_ms: 0,
         })
         .collect()
 }
@@ -437,6 +439,7 @@ fn retry_rebuilds_failed_lines_from_their_records() {
         },
         character_id: 2,
         segments: vec![(5000, 6000), (7000, 8000)],
+        gap_ms: 500,
     };
     planned.retain(|p| p.cue.start_ms != 5000);
     planned.push(merged);
@@ -487,8 +490,8 @@ fn retry_rebuilds_failed_lines_from_their_records() {
         .unwrap();
     assert_eq!(translation.as_deref(), Some("Merged"));
     assert_eq!(
-        duration, 2000,
-        "a merged line lasts as long as its segments together"
+        duration, 2500,
+        "a merged line lasts as long as its segments and the gap between them"
     );
 }
 
