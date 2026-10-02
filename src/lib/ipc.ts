@@ -10,7 +10,9 @@ import type {
   CharacterEdit,
   Cue,
   JobOutcome,
+  ExtractedSubtitle,
   ManualEntry,
+  SubtitleTrack,
   ManualOutcome,
   MediaInfo,
   Line,
@@ -53,6 +55,10 @@ export const ipc = {
   deleteLine: (id: number) => invoke<void>("delete_line", { id }),
   setPoster: (characterId: number, path: string | null) =>
     invoke<string | null>("set_poster", { characterId, path }),
+  cancelPrepare: () => invoke<void>("cancel_prepare"),
+  listSubtitleTracks: (video: string) => invoke<SubtitleTrack[]>("list_subtitle_tracks", { video }),
+  extractSubtitleTrack: (video: string, index: number, codec: string) =>
+    invoke<ExtractedSubtitle>("extract_subtitle_track", { video, index, codec }),
   probeMedia: (paths: string[]) => invoke<MediaInfo[]>("probe_media", { paths }),
   preparePreview: (path: string) => invoke<string>("prepare_preview", { path }),
   startManualImport: (entries: ManualEntry[]) => invoke<ManualOutcome>("start_manual_import", { entries }),

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { useTranslation } from "react-i18next";
 
 import { AddCharacterModal } from "../../components/characters/AddCharacterModal";
@@ -7,9 +7,12 @@ import { Toast } from "../../components/feedback/Toast";
 import { BentoIcon, BoardArt, MaterialIcon } from "../../components/icons/Icon";
 import { SearchBar } from "../../components/ui/SearchBar";
 import { useRevealScrollbar } from "../../components/ui/useRevealScrollbar";
+import { useRowPlayer } from "../../hooks/useRowPlayer";
+import { spans } from "../../lib/lineEdits";
 import type { Character } from "../../lib/types";
 import { useSubtitleImportStore } from "../../stores/subtitleImportStore";
 import { ImportButton, Stepper } from "./ImportParts";
+import type { CardRect } from "./TrackScreen";
 
 /** 00:01:02.345 */
 export function formatClock(ms: number): string {
@@ -25,14 +28,65 @@ function matches(c: Character, query: string) {
   return !q || c.name.toLowerCase().includes(q) || c.source.toLowerCase().includes(q);
 }
 
-// Board: SubtitleSelect.dc.html (Step 2) and SubtitleSelectEmpty.dc.html (its toast). The
-// checkboxes only serve bulk assignment (D13-REV); only assigned lines are imported.
-export function SelectScreen({ onBack }: { onBack: () => void }) {
+/**
+ * The select card grows out of the track card it follows (user 2026-10-02; not on the board):
+ * it starts at the small card's place and size and eases to its own, its content fading in
+ * once it has. Skipped with reduced motion.
+ */
+function useGrowFrom(card: React.RefObject<HTMLDivElement | null>, from: CardRect | null, done: () => void) {
+  useLayoutEffect(() => {
+    const el = card.current;
+    if (!el || !from) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      done();
+      return;
+    }
+    const to = el.getBoundingClientRect();
+    if (to.width === 0 || to.height === 0) {
+      done();
+      return;
+    }
+    el.classList.add("is-growing");
+    const anim = el.animate?.(
+      [
+        {
+          transformOrigin: "top left",
+          transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.width / to.width}, ${from.height / to.height})`,
+        },
+        { transformOrigin: "top left", transform: "none" },
+      ],
+      { duration: 520, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+    );
+    const finish = () => {
+      el.classList.remove("is-growing");
+      done();
+    };
+    if (anim) anim.onfinish = finish;
+    else finish();
+    return () => anim?.cancel();
+  }, [card, from, done]);
+}
+
+// Board: SubtitleSelect.dc.html (Step 2, or Step 3 after 選擇字幕軌 as SubtitleSelectEmbedded)
+// and SubtitleSelectEmpty.dc.html (its toast). Checked rows are assigned in bulk (D13-REV) and
+// are what 拆分／合併 act on; 調換 swaps the whole subtitle. Only assigned lines are imported.
+export function SelectScreen({
+  onBack,
+  growFrom = null,
+  onGrown = () => {},
+}: {
+  onBack: () => void;
+  growFrom?: CardRect | null;
+  onGrown?: () => void;
+}) {
   const { t } = useTranslation();
   const s = useSubtitleImportStore();
   const card = useRef<HTMLDivElement>(null);
   const list = useRef<HTMLDivElement>(null);
   useRevealScrollbar(list);
+  useGrowFrom(card, growFrom, onGrown);
+  const player = useRowPlayer(s.audioPath);
+  const embedded = s.flow === "embedded";
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuQuery, setMenuQuery] = useState("");
@@ -48,7 +102,7 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
 
   const byId = useMemo(() => new Map(s.characters.map((c) => [c.id, c])), [s.characters]);
   const selectedCount = s.selected.size;
-  const assignedCount = s.cues.filter((c) => s.assigned[c.index] !== undefined).length;
+  const assignedCount = s.rows.filter((r) => s.assigned[r.index] !== undefined).length;
   const menuChars = s.characters.filter((c) => matches(c, menuQuery));
   const pickChars = s.characters.filter((c) => matches(c, pickQuery));
   const showMenu = menuOpen && selectedCount > 0;
@@ -85,8 +139,8 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
   return (
     <div className="imp-page imp-page--list">
       <header className="imp-header">
-        <h1 className="imp-title pg-anim-title">{t("import.select.title")}</h1>
-        <Stepper current={2} />
+        <h1 className="imp-title pg-anim-title">{t("import.select.title", { n: embedded ? 3 : 2 })}</h1>
+        <Stepper embedded={embedded} current={embedded ? 3 : 2} />
       </header>
 
       <div className="sel-card" ref={card}>
@@ -96,6 +150,43 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
           </button>
           <button type="button" className="sel-btn sel-btn--neutral" onClick={s.clearAll}>
             {t("import.select.clearAll")}
+          </button>
+          <span className="sel-toolbar__sep" role="separator" aria-orientation="vertical" />
+          <button
+            type="button"
+            className="sel-btn sel-btn--neutral sel-tool"
+            disabled={!s.canSplit()}
+            title={t("import.select.splitTip")}
+            onClick={() => {
+              player.stop();
+              s.split();
+            }}
+          >
+            <MaterialIcon name="call_split" size={20} />
+            {t("import.select.split")}
+          </button>
+          <button
+            type="button"
+            className="sel-btn sel-btn--neutral sel-tool"
+            disabled={!s.canMerge()}
+            title={t("import.select.mergeTip")}
+            onClick={() => {
+              player.stop();
+              s.merge();
+            }}
+          >
+            <MaterialIcon name="call_merge" size={20} />
+            {t("import.select.merge")}
+          </button>
+          <button
+            type="button"
+            className="sel-btn sel-btn--neutral sel-tool"
+            disabled={!s.bilingual}
+            title={t("import.select.swapTip")}
+            onClick={s.swap}
+          >
+            <MaterialIcon name="swap_vert" size={20} />
+            {t("import.select.swap")}
           </button>
           <div className="sel-toolbar__gap" aria-hidden="true" />
           <div className="sel-assign">
@@ -179,16 +270,22 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
             ref={list}
             className={`sel-list st-scroll${selectedCount > 0 ? " has-selection" : ""}`}
           >
-            {s.cues.map((cue) => {
+            {s.rows.map((cue, position) => {
               const isSelected = s.selected.has(cue.index);
               const character = byId.get(s.assigned[cue.index]);
+              const n = position + 1;
+              const isCurrent = player.current?.index === cue.index;
+              const isPlaying = isCurrent && !player.current?.paused;
               return (
-                <label key={cue.index} className={`sel-row${isSelected ? " is-selected" : ""}`}>
+                <label
+                  key={cue.index}
+                  className={`sel-row${isSelected ? " is-selected" : ""}${isCurrent ? " is-playing" : ""}`}
+                >
                   <span className="sel-check">
                     <input
                       type="checkbox"
                       className="sel-input"
-                      aria-label={t("import.select.selectLine", { n: cue.index + 1 })}
+                      aria-label={t("import.select.selectLine", { n })}
                       checked={isSelected}
                       onChange={() => s.toggle(cue.index)}
                     />
@@ -202,7 +299,7 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
                     <button
                       type="button"
                       className={`sel-avatar-btn${picker?.index === cue.index ? " is-open" : ""}`}
-                      aria-label={t("import.select.pickFor", { n: cue.index + 1 })}
+                      aria-label={t("import.select.pickFor", { n })}
                       aria-haspopup="dialog"
                       onClick={(e) => openPicker(cue.index, e)}
                     >
@@ -224,13 +321,27 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
                     {formatClock(cue.startMs)} ~ {formatClock(cue.endMs)}
                   </span>
                   <span className="sel-text">
+                    {s.audioPath && (
+                      <button
+                        type="button"
+                        className="sel-play"
+                        aria-label={t(isPlaying ? "import.select.pause" : "import.select.play", { n })}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          player.toggle(cue.index, spans(cue));
+                        }}
+                      >
+                        <MaterialIcon name={isPlaying ? "pause:fill1" : "play_arrow:fill1"} size={20} />
+                      </button>
+                    )}
                     <span className="sel-text__line">{cue.text}</span>
                     {cue.translation && <span className="sel-text__translation">{cue.translation}</span>}
                   </span>
                 </label>
               );
             })}
-            {s.cues.length === 0 && (
+            {s.rows.length === 0 && (
               <div className="sel-empty">
                 <MaterialIcon name="subtitles_off" size={40} />
                 {t("import.select.empty")}
@@ -241,7 +352,7 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
 
         <div className="sel-footer">
           <span className="sel-counts">
-            {t("import.select.total")} <b>{s.cues.length}</b> {t("import.select.lines")}
+            {t("import.select.total")} <b>{s.rows.length}</b> {t("import.select.lines")}
             <span className="sel-sep" aria-hidden="true">
               |
             </span>
@@ -257,11 +368,14 @@ export function SelectScreen({ onBack }: { onBack: () => void }) {
             </ImportButton>
             <ImportButton
               kind="primary"
-              icon={<MaterialIcon name="movie" />}
+              icon={<MaterialIcon name="download" />}
               disabled={assignedCount === 0}
-              onClick={s.toSource}
+              onClick={() => {
+                player.stop();
+                void s.startImport();
+              }}
             >
-              {t("import.select.importSource")}
+              {t("import.select.start")}
             </ImportButton>
           </div>
         </div>

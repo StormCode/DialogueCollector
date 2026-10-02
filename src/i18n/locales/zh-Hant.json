@@ -13,12 +13,17 @@
     "fromSubtitle": "依字幕的時間軸切分影片為多個片段",
     "manual": "直接匯入現有的影片或音訊",
     "title": "請選擇其中一種匯入台詞的方式",
-    "subtitleFormats": "支援 ASS、SRT",
+    "subtitleFormats": "支援 MKV、MP4、WEBM、ASS、SRT",
     "mediaFormats": "支援 MKV、MP4、WEBM、WAV、M4A、MP3",
-    "subtitleFilter": "字幕檔",
+    "subtitleFilter": "字幕檔與影片",
     "mediaFilter": "影音檔",
     "unsupported": "尚未支援此格式",
-    "unsupportedSkipped": "尚未支援此格式，略過了 {{count}} 個檔案"
+    "unsupportedSkipped": "尚未支援此格式，略過了 {{count}} 個檔案",
+    "subtitleDrop": "將字幕檔、影片檔一起拖放到這裡",
+    "subtitleDropHint": "* 若影片為內嵌字幕僅需拖放影片檔",
+    "videoFilter": "影片",
+    "tooMany": "一次只能匯入一個字幕檔與一部影片",
+    "pickVideo": "請選擇這個字幕的影片"
   },
   "scriptBook": {
     "title": "台詞本",
@@ -99,19 +104,19 @@
     "oops": "Oops... Something went wrong",
     "steps": {
       "label": "步驟",
-      "subtitle": "匯入字幕",
-      "select": "選擇台詞",
-      "source": "匯入影片"
+      "files": "匯入檔案",
+      "tracks": "選擇字幕軌",
+      "select": "選擇台詞"
     },
     "reading": {
       "title": "讀取字幕",
       "hint": "正在讀取字幕文件"
     },
     "readFailed": {
-      "title": "讀取失敗"
+      "title": "字幕讀取失敗"
     },
     "select": {
-      "title": "Step 2. 選擇台詞",
+      "title": "Step {{n}}. 選擇台詞",
       "selectAll": "全部選取",
       "clearAll": "全部不選",
       "assignTo": "指派給...",
@@ -130,15 +135,17 @@
       "lines": "個台詞",
       "checked": "已勾選",
       "assigned": "已指派角色",
-      "importSource": "匯入影片",
       "pickCharacter": "選擇角色",
-      "noCues": "無法從字幕檔提取任何台詞"
-    },
-    "source": {
-      "title": "Step 3. 匯入影片",
-      "filter": "影音檔",
-      "formats": "支援 MKV、MP4、WEBM、OGG、M4A、MP3",
-      "unsupported": "不支援這個檔案格式"
+      "noCues": "無法從字幕檔提取任何台詞",
+      "split": "拆分",
+      "merge": "合併",
+      "swap": "調換",
+      "splitTip": "把合併過的台詞還原成原本的各句",
+      "mergeTip": "把勾選的台詞合併成一句",
+      "swapTip": "調換雙語字幕的主、次字幕",
+      "play": "播放第 {{n}} 句",
+      "pause": "暫停第 {{n}} 句",
+      "start": "開始匯入"
     },
     "cutting": {
       "title": "切割影片中",
@@ -173,6 +180,18 @@
       "killed": "切割程序被中斷",
       "other": "切割失敗",
       "cancelled": "已取消"
+    },
+    "extracting": {
+      "title": "抽取音訊",
+      "hint": "正在抽取音訊"
+    },
+    "tracks": {
+      "title": "Step 2. 選擇字幕軌",
+      "number": "字幕軌號",
+      "language": "語言",
+      "next": "下一步",
+      "unknown": "未標示語言",
+      "label": "字幕軌"
     }
   },
   "settings": {

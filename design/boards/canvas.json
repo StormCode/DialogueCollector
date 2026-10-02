@@ -20,6 +20,33 @@
       "x": 1360,
       "y": 5880
     },
+    "AudioExtracting.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "抽取音訊",
+      "w": 1280,
+      "x": 2720,
+      "y": 0
+    },
+    "AudioExtractingDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "抽取音訊（夜光黑）",
+      "w": 1280,
+      "x": 2720,
+      "y": 3420
+    },
+    "AudioExtractingVideoOnly.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "抽取音訊（僅影片）",
+      "w": 1280,
+      "x": 2720,
+      "y": 2140
+    },
     "Complete.dc.html": {
       "h": 800,
       "is_interactive": true,
@@ -146,6 +173,15 @@
       "x": 4080,
       "y": 1280
     },
+    "FailedPartial.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-2",
+      "title": "匯入失敗（部分失敗）",
+      "w": 1280,
+      "x": 5440,
+      "y": 0
+    },
     "ImportingIndex.dc.html": {
       "h": 800,
       "is_interactive": true,
@@ -181,6 +217,15 @@
       "w": 1280,
       "x": 0,
       "y": 1280
+    },
+    "InputLineNoAudio.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-2",
+      "title": "略過沒有音訊的檔案 Toast",
+      "w": 1280,
+      "x": 0,
+      "y": -1104
     },
     "Lines.dc.html": {
       "h": 800,
@@ -285,6 +330,30 @@
       "title": "找不到收藏庫 Toast",
       "w": 1280,
       "x": 1360,
+      "y": 0
+    },
+    "MainNoAudio.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "title": "全部沒有音訊（回主頁）Toast",
+      "w": 1280,
+      "x": 5440,
+      "y": 0
+    },
+    "MainUnsupportedFormat.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "title": "尚未支援此格式 Toast",
+      "w": 1280,
+      "x": 2720,
+      "y": 0
+    },
+    "MainUnsupportedMulti.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "title": "尚未支援此格式（多檔）Toast",
+      "w": 1280,
+      "x": 4080,
       "y": 0
     },
     "ScriptBook.dc.html": {
@@ -465,7 +534,7 @@
       "title": "讀取失敗（夜光黑）",
       "w": 1280,
       "x": 1360,
-      "y": 2200
+      "y": 3420
     },
     "SubtitleImporting.dc.html": {
       "h": 800,
@@ -483,7 +552,7 @@
       "title": "讀取字幕（夜光黑）",
       "w": 1280,
       "x": 0,
-      "y": 2200
+      "y": 3420
     },
     "SubtitleSelect.dc.html": {
       "h": 800,
@@ -491,7 +560,7 @@
       "page": "page-3",
       "title": "Step 2. 選擇台詞",
       "w": 1280,
-      "x": 2720,
+      "x": 4080,
       "y": 0
     },
     "SubtitleSelectDark.dc.html": {
@@ -500,8 +569,17 @@
       "page": "page-3",
       "title": "Step 2. 選擇台詞（夜光黑）",
       "w": 1280,
-      "x": 2720,
-      "y": 2200
+      "x": 4080,
+      "y": 3420
+    },
+    "SubtitleSelectEmbedded.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "Step 3. 選擇台詞（內嵌字幕）",
+      "w": 1280,
+      "x": 6800,
+      "y": 2140
     },
     "SubtitleSelectEmpty.dc.html": {
       "h": 800,
@@ -509,8 +587,35 @@
       "page": "page-3",
       "title": "無法提取台詞 Toast",
       "w": 1280,
-      "x": 2720,
+      "x": 4080,
       "y": 920
+    },
+    "TrackSelect.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "Step 2. 選擇字幕軌",
+      "w": 1280,
+      "x": 4080,
+      "y": 2140
+    },
+    "TrackSelectDark.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "Step 2. 選擇字幕軌（夜光黑）",
+      "w": 1280,
+      "x": 4080,
+      "y": 4340
+    },
+    "TrackSelectPicked.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "page": "page-3",
+      "title": "Step 2. 選擇字幕軌（已選取）",
+      "w": 1280,
+      "x": 5440,
+      "y": 2140
     },
     "VideoComplete.dc.html": {
       "h": 800,
@@ -528,7 +633,7 @@
       "title": "匯入完成（夜光黑）",
       "w": 1280,
       "x": 8160,
-      "y": 2200
+      "y": 3420
     },
     "VideoCutting.dc.html": {
       "h": 800,
@@ -546,7 +651,7 @@
       "title": "切割影片中（夜光黑）",
       "w": 1280,
       "x": 5440,
-      "y": 2200
+      "y": 3420
     },
     "VideoFailed.dc.html": {
       "h": 800,
@@ -564,7 +669,7 @@
       "title": "匯入失敗（夜光黑）",
       "w": 1280,
       "x": 10880,
-      "y": 2200
+      "y": 3420
     },
     "VideoImportingIndex.dc.html": {
       "h": 800,
@@ -582,7 +687,7 @@
       "title": "匯入中（夜光黑）",
       "w": 1280,
       "x": 6800,
-      "y": 2200
+      "y": 3420
     },
     "VideoPartial.dc.html": {
       "h": 800,
@@ -600,67 +705,7 @@
       "title": "部分完成（夜光黑）",
       "w": 1280,
       "x": 9520,
-      "y": 2200
-    },
-    "VideoSelect.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-3",
-      "title": "Step 3. 匯入影片",
-      "w": 1280,
-      "x": 4080,
-      "y": 0
-    },
-    "VideoSelectDark.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-3",
-      "title": "Step 3. 匯入影片（夜光黑）",
-      "w": 1280,
-      "x": 4080,
-      "y": 2200
-    },
-    "MainUnsupportedFormat.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "title": "尚未支援此格式 Toast",
-      "w": 1280,
-      "x": 2720,
-      "y": 0
-    },
-    "MainUnsupportedMulti.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "title": "尚未支援此格式（多檔）Toast",
-      "w": 1280,
-      "x": 4080,
-      "y": 0
-    },
-    "MainNoAudio.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "title": "全部沒有音訊（回主頁）Toast",
-      "w": 1280,
-      "x": 5440,
-      "y": 0
-    },
-    "InputLineNoAudio.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-2",
-      "title": "略過沒有音訊的檔案 Toast",
-      "w": 1280,
-      "x": 5440,
-      "y": 0
-    },
-    "FailedPartial.dc.html": {
-      "h": 800,
-      "is_interactive": true,
-      "page": "page-2",
-      "title": "匯入失敗（部分失敗）",
-      "w": 1280,
-      "x": 6800,
-      "y": 0
+      "y": 3420
     }
   },
   "createdOnFiles": {
@@ -680,6 +725,24 @@
     "view": "canvas"
   },
   "notes": {
+    "flow-1-page-3": {
+      "kind": "title1",
+      "maxW": 8000,
+      "page": "page-3",
+      "text": "流程一：字幕檔＋影片檔",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "flow-2-page-3": {
+      "kind": "title1",
+      "maxW": 5360,
+      "page": "page-3",
+      "text": "流程二：僅影片檔（內嵌字幕）",
+      "w": 240,
+      "x": 2720,
+      "y": 1840
+    },
     "midnight-page-1": {
       "kind": "title1",
       "maxW": 1280,
@@ -704,7 +767,7 @@
       "text": "夜光黑",
       "w": 240,
       "x": 0,
-      "y": 1900
+      "y": 3120
     },
     "midnight-page-4": {
       "kind": "title1",
@@ -723,25 +786,20 @@
     "MainUnsupportedFormat.dc.html",
     "MainUnsupportedMulti.dc.html",
     "MainNoAudio.dc.html",
-    "InputLine.dc.html",
-    "InputLineDark.dc.html",
-    "ImportingIndex.dc.html",
-    "ImportingIndexDark.dc.html",
-    "Complete.dc.html",
-    "CompleteDark.dc.html",
-    "Failed.dc.html",
-    "FailedDark.dc.html",
-    "InputLineNoAudio.dc.html",
-    "FailedPartial.dc.html",
     "SubtitleImporting.dc.html",
     "SubtitleImportingDark.dc.html",
     "SubtitleFailed.dc.html",
     "SubtitleFailedDark.dc.html",
+    "AudioExtracting.dc.html",
+    "AudioExtractingDark.dc.html",
+    "AudioExtractingVideoOnly.dc.html",
+    "TrackSelect.dc.html",
+    "TrackSelectPicked.dc.html",
+    "TrackSelectDark.dc.html",
     "SubtitleSelect.dc.html",
     "SubtitleSelectDark.dc.html",
     "SubtitleSelectEmpty.dc.html",
-    "VideoSelect.dc.html",
-    "VideoSelectDark.dc.html",
+    "SubtitleSelectEmbedded.dc.html",
     "VideoCutting.dc.html",
     "VideoCuttingDark.dc.html",
     "VideoImportingIndex.dc.html",
@@ -790,7 +848,17 @@
     "SettingsNetworkDrive.dc.html",
     "SettingsMissingFiles.dc.html",
     "SettingsMissingModal.dc.html",
-    "SettingsMissingDeleteAll.dc.html"
+    "SettingsMissingDeleteAll.dc.html",
+    "InputLine.dc.html",
+    "InputLineDark.dc.html",
+    "ImportingIndex.dc.html",
+    "ImportingIndexDark.dc.html",
+    "Complete.dc.html",
+    "CompleteDark.dc.html",
+    "Failed.dc.html",
+    "FailedDark.dc.html",
+    "InputLineNoAudio.dc.html",
+    "FailedPartial.dc.html"
   ],
   "pages": [
     {

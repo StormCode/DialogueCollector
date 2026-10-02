@@ -1,42 +1,55 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import { BentoIcon, MaterialIcon } from "../../components/icons/Icon";
 import { useSubtitleImportStore } from "../../stores/subtitleImportStore";
-import { DoneMedallion, ImportButton, Medallion, OopsMedallion, StatusCard } from "./ImportParts";
+import { DoneMedallion, EqualizerMedallion, ImportButton, Medallion, OopsMedallion, StatusCard } from "./ImportParts";
 import { PartialScreen } from "./PartialScreen";
 import { SelectScreen } from "./SelectScreen";
-import { SourceScreen } from "./SourceScreen";
+import { TrackScreen, type CardRect } from "./TrackScreen";
 import "./import.css";
 
 /** `navigate("/import/subtitle", { state })` from the main page's drop zone. */
 export interface SubtitleImportState {
-  subtitle: string;
+  video: string;
+  /** Absent when the video carries its subtitles (內嵌字幕). */
+  subtitle?: string;
 }
 
-// The subtitle path (canvas page 3): SubtitleImporting → SubtitleSelect → VideoSelect →
-// VideoCutting → VideoImportingIndex → VideoComplete | VideoPartial | VideoFailed, with
-// SubtitleFailed when the file cannot be read.
+// The subtitle path (canvas page 3, 字幕匯入改版 2026-10-02). With a subtitle file:
+// SubtitleImporting → AudioExtracting → SubtitleSelect (Step 2). A video alone: AudioExtracting
+// → TrackSelect (Step 2) → SubtitleImporting → SubtitleSelect (Step 3). Then VideoCutting →
+// VideoImportingIndex → VideoComplete | VideoPartial | VideoFailed; SubtitleFailed
+// (字幕讀取失敗) when no subtitle can be read.
 export function SubtitleImportPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const s = useSubtitleImportStore();
-  const requested = (location.state as SubtitleImportState | null)?.subtitle;
+  const requested = location.state as SubtitleImportState | null;
+  /** The track card's place, for the select card to grow from; used once. */
+  const [growFrom, setGrowFrom] = useState<CardRect | null>(null);
 
   useEffect(() => {
-    if (requested && requested !== useSubtitleImportStore.getState().subtitlePath) {
-      void useSubtitleImportStore.getState().openSubtitle(requested);
+    if (requested?.video && requested.video !== useSubtitleImportStore.getState().videoPath) {
+      void useSubtitleImportStore.getState().open(requested.video, requested.subtitle ?? null);
     }
   }, [requested]);
+
+  useEffect(() => {
+    if (s.screen === "aborted") {
+      s.reset();
+      navigate("/");
+    }
+  }, [s, navigate]);
 
   const home = () => {
     s.reset();
     navigate("/");
   };
 
-  if (!s.subtitlePath) {
+  if (!s.videoPath) {
     // Opened without a file (e.g. from history): the main page is where one is chosen.
     return (
       <div className="imp-page">
@@ -64,13 +77,41 @@ export function SubtitleImportPage() {
             title={t("import.reading.title")}
             hint={t("import.reading.hint")}
             actions={
-              <ImportButton kind="secondary" icon={<MaterialIcon name="close" />} onClick={home}>
+              <ImportButton kind="secondary" icon={<MaterialIcon name="close" />} onClick={() => void s.abort()}>
                 {t("import.cancel")}
               </ImportButton>
             }
           />
         </div>
       );
+    case "extracting":
+      return (
+        <div className="imp-page">
+          <StatusCard
+            medallion={<EqualizerMedallion />}
+            title={t("import.extracting.title")}
+            hint={t("import.extracting.hint")}
+            actions={
+              <ImportButton kind="secondary" icon={<MaterialIcon name="close" />} onClick={() => void s.abort()}>
+                {t("import.cancel")}
+              </ImportButton>
+            }
+          />
+        </div>
+      );
+    case "tracks":
+      return (
+        <TrackScreen
+          tracks={s.tracks}
+          onBack={home}
+          onNext={(track, from) => {
+            setGrowFrom(from);
+            void s.pickTrack(track);
+          }}
+        />
+      );
+    case "aborted":
+      return <div className="imp-page" />;
     case "readFailed":
       return (
         <div className="imp-page">
@@ -93,9 +134,15 @@ export function SubtitleImportPage() {
         </div>
       );
     case "select":
-      return <SelectScreen onBack={home} />;
-    case "source":
-      return <SourceScreen onBack={s.toSelect} onPick={(path) => void s.startImport(path)} />;
+      return (
+        <SelectScreen
+          onBack={() => {
+            if (!s.backFromSelect()) home();
+          }}
+          growFrom={growFrom}
+          onGrown={() => setGrowFrom(null)}
+        />
+      );
     case "cutting":
     case "indexing": {
       const cutting = s.screen === "cutting";

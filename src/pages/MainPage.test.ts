@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import i18n from "../i18n";
-import { MANUAL_EXTENSIONS, sortDropped } from "./MainPage";
+import { MANUAL_EXTENSIONS, sortDropped, sortSubtitleDrop } from "./MainPage";
 
 describe("dropping files on the main page", () => {
   it("keeps the supported files and counts the rest", () => {
@@ -23,5 +23,15 @@ describe("dropping files on the main page", () => {
     const t = i18n.getFixedT("zh-Hant");
     expect(t("main.unsupported")).toBe("尚未支援此格式");
     expect(t("main.unsupportedSkipped", { count: 3 })).toBe("尚未支援此格式，略過了 3 個檔案");
+  });
+
+  it("the subtitle zone takes a subtitle with its video, or a video alone", () => {
+    expect(sortSubtitleDrop(["/a/ep.ass", "/a/ep.MKV", "/a/notes.txt"])).toEqual({
+      subtitles: ["/a/ep.ass"],
+      videos: ["/a/ep.MKV"],
+      skipped: 1,
+    });
+    expect(sortSubtitleDrop(["/a/ep.mp4"])).toEqual({ subtitles: [], videos: ["/a/ep.mp4"], skipped: 0 });
+    expect(sortSubtitleDrop(["/a/ep.ogg"]).skipped, "the subtitle path no longer cuts from audio files").toBe(1);
   });
 });
