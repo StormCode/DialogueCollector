@@ -353,12 +353,14 @@ export function SelectScreen({
                     </button>
                   </span>
                   <span className="sel-time">
-                    <span>
-                      {formatClock(cue.startMs)} ~ {formatClock(cue.endMs)}
+                    <span className="sel-time__stack">
+                      <span>
+                        {formatClock(cue.startMs)} ~ {formatClock(cue.endMs)}
+                      </span>
+                      {cue.segments && (
+                        <GapInput n={n} gapMs={cue.gapMs ?? 0} onChange={(ms) => s.setGap(cue.index, ms)} />
+                      )}
                     </span>
-                    {cue.segments && (
-                      <GapInput n={n} gapMs={cue.gapMs ?? 0} onChange={(ms) => s.setGap(cue.index, ms)} />
-                    )}
                   </span>
                   <span className="sel-text">
                     {s.audioPath && (

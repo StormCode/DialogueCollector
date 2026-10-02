@@ -769,9 +769,7 @@
 
 .sel-time {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
+  align-items: flex-start;
   padding: 14px 16px 14px 0;
   white-space: nowrap;
   font: var(--bento-weight-regular) 13px/22px var(--dc-ui-font);
@@ -780,6 +778,13 @@
 }
 
 /* A merged row's 間隔秒數, under its time (board SubtitleSelect .sub-gap). */
+.sel-time__stack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
 .sel-gap {
   display: inline-flex;
   align-items: center;
