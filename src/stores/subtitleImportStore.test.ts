@@ -69,7 +69,10 @@ describe("選擇台詞 (T8, T28)", () => {
     const merged = s().rows[0];
     expect(s().rows.map((r) => r.index)).toEqual([merged.index, 1, 3]);
     expect(s().assigned).toEqual({ [merged.index]: 7 });
+    expect(s().selected.size, "the checks clear").toBe(0);
+    s().toggle(merged.index);
     expect(s().canSplit()).toBe(true);
+    s().toggle(merged.index);
 
     const start = vi.spyOn(ipc, "startSubtitleImport").mockResolvedValue(outcome);
     await s().startImport();
@@ -95,6 +98,18 @@ describe("選擇台詞 (T8, T28)", () => {
     s().split();
     expect(s().rows.map((r) => r.index)).toEqual([0, 2, 1, 3]);
     expect(s().assigned, "the parts take the merged row's character").toEqual({ 0: 7, 2: 7 });
+    expect(s().selected.size).toBe(0);
+  });
+
+  it("merges a second set of checked rows on its own, not into the first merge", () => {
+    useSubtitleImportStore.setState({ rows: rowsFrom([0, 1, 2, 3, 4, 5].map((i) => cue(i))) });
+    s().toggle(0);
+    s().toggle(1);
+    s().merge();
+    s().toggle(3);
+    s().toggle(5);
+    s().merge();
+    expect(s().rows.map((r) => r.text)).toEqual(["line 0, line 1", "line 2", "line 3, line 5", "line 4"]);
   });
 
   it("swaps the whole subtitle only when it is bilingual", () => {

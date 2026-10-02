@@ -174,6 +174,8 @@ describe("subtitle import flow", () => {
     fireEvent.click(screen.getByText("間隔(秒)"));
     expect(useSubtitleImportStore.getState().selected.size).toBe(checked);
 
+    expect(split, "nothing is checked after 合併").toBeDisabled();
+    fireEvent.click(screen.getByLabelText("選取字幕 1"));
     fireEvent.click(split);
     expect(screen.getAllByRole("checkbox")).toHaveLength(3);
 
