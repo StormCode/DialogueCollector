@@ -144,11 +144,7 @@ pub async fn extract_subtitle_track(
     codec: String,
 ) -> CommandResult<ExtractedSubtitle> {
     let ffmpeg = sidecar("ffmpeg").map_err(CommandError::from)?;
-    let dir = app
-        .path()
-        .app_cache_dir()
-        .map(|d| d.join("subtitles"))
-        .map_err(|e| CommandError::new("Internal.CacheDir", e))?;
+    let dir = cache_subdir(&app, SUBTITLES_DIR)?;
     let cancel = std::sync::Arc::clone(&state.prepare_cancel);
     cancel.store(false, Ordering::SeqCst);
     tauri::async_runtime::spawn_blocking(move || {
@@ -267,11 +263,21 @@ pub async fn start_manual_import(
     .map_err(|e| CommandError::new("Internal.Join", e))?
 }
 
-fn preview_dir(app: &AppHandle) -> CommandResult<PathBuf> {
+/// 抽取音訊's audio (InputLine's preview, 選擇台詞's per-row playback; a merged row plays
+/// its segments from it, so 合併 makes no audio of its own).
+const PREVIEW_DIR: &str = "preview";
+/// Subtitle tracks extracted from a video (選擇字幕軌).
+const SUBTITLES_DIR: &str = "subtitles";
+
+fn cache_subdir(app: &AppHandle, name: &str) -> CommandResult<PathBuf> {
     app.path()
         .app_cache_dir()
-        .map(|d| d.join("preview"))
+        .map(|d| d.join(name))
         .map_err(|e| CommandError::new("Internal.CacheDir", e))
+}
+
+fn preview_dir(app: &AppHandle) -> CommandResult<PathBuf> {
+    cache_subdir(app, PREVIEW_DIR)
 }
 
 /// The cached previews are only for the InputLine that made them.
@@ -294,9 +300,12 @@ fn fingerprint(path: &Path) -> u64 {
     h.finish()
 }
 
-/// Called at startup: previews left by a previous session are dropped.
-pub fn clear_previews_at_startup(app: &AppHandle) {
-    if let Ok(dir) = preview_dir(app) {
-        clear_previews(&dir);
+/// The extracted audio and subtitle tracks only serve the session that made them: dropped
+/// when the app exits (user 2026-10-02), and again at startup in case it didn't exit cleanly.
+pub fn clear_temp_files(app: &AppHandle) {
+    for name in [PREVIEW_DIR, SUBTITLES_DIR] {
+        if let Ok(dir) = cache_subdir(app, name) {
+            clear_previews(&dir);
+        }
     }
 }

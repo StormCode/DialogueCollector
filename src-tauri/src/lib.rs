@@ -69,7 +69,7 @@ pub fn run() {
         .setup(|app| {
             use tauri::Manager;
 
-            manual_cmd::clear_previews_at_startup(app.handle());
+            manual_cmd::clear_temp_files(app.handle());
 
             let smoke = smoke::SmokeMode::from_args();
             smoke.arm_watchdog();
@@ -155,7 +155,10 @@ pub fn run() {
                     api.prevent_exit();
                 }
             }
-            tauri::RunEvent::Exit => updater::install_staged_on_exit(app),
+            tauri::RunEvent::Exit => {
+                manual_cmd::clear_temp_files(app);
+                updater::install_staged_on_exit(app);
+            }
             _ => {}
         });
 }
