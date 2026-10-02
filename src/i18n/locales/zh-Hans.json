@@ -405,7 +405,6 @@
     "addCharacter": "新增角色",
     "cancel": "取消",
     "save": "保存",
-    "saved": "已保存更改",
     "errors": {
       "generic": "无法保存更改，请稍后再试",
       "Line": {

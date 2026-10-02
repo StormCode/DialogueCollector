@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { AddCharacterModal } from "../components/characters/AddCharacterModal";
-import { BentoIcon, MaterialIcon } from "../components/icons/Icon";
+import { MaterialIcon } from "../components/icons/Icon";
 import { AudioPreview, CharacterPicker } from "../components/lines/LineFormParts";
 import { Field } from "../components/ui/Field";
 import { Modal } from "../components/ui/Modal";
@@ -11,33 +11,25 @@ import { errorKind, ipc } from "../lib/ipc";
 import type { Character, Line } from "../lib/types";
 
 // Board: EditLine.dc.html, shown as a modal over the 台詞 page (user 2026-09-29: the board draws
-// it full-size, but it floats). 儲存 keeps it open and says 已儲存變更 until the next edit; closing
-// tells the page whether anything was saved. Moving a line to another character is a change of
+// it full-size, but it floats). 儲存 closes it (user 2026-10-02) and tells the page to reload.
+// Moving a line to another character is a change of
 // 角色 here.
 export function EditLineModal({ line: initial, onClose }: { line: Line; onClose: (saved: boolean) => void }) {
   const { t } = useTranslation();
-  const [line, setLine] = useState<Line>(initial);
   const [characters, setCharacters] = useState<Character[]>([]);
   const [text, setText] = useState(initial.text);
   const [translation, setTranslation] = useState(initial.translation ?? "");
   const [owner, setOwner] = useState<number | null>(initial.characterId);
   const [attempted, setAttempted] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
-  const everSaved = useRef(false);
   const body = useRef<HTMLDivElement>(null);
   useRevealScrollbar(body);
 
   useEffect(() => {
     ipc.listCharacters().then(setCharacters, () => setCharacters([]));
   }, []);
-  const close = () => onClose(everSaved.current);
-
-  const edited = (fn: () => void) => {
-    fn();
-    setSaved(false);
-  };
+  const close = () => onClose(false);
 
 
   // 原文 and 譯文 are each optional, but one of them must be filled in.
@@ -50,14 +42,12 @@ export function EditLineModal({ line: initial, onClose }: { line: Line; onClose:
     setSaveError(null);
     if (blank || owner === null) return;
     try {
-      const updated = await ipc.updateLine(line.id, {
+      await ipc.updateLine(initial.id, {
         text,
         translation: translation.trim() || null,
         characterId: owner,
       });
-      setLine(updated);
-      setSaved(true);
-      everSaved.current = true;
+      onClose(true);
     } catch (e) {
       setSaveError(
         t(`editLine.errors.${errorKind(e)}`, {
@@ -67,7 +57,7 @@ export function EditLineModal({ line: initial, onClose }: { line: Line; onClose:
     }
   };
 
-  const audioPath = line.audioPath;
+  const audioPath = initial.audioPath;
   const resolveAudio = useCallback(() => Promise.resolve(audioPath), [audioPath]);
 
   return (
@@ -76,14 +66,14 @@ export function EditLineModal({ line: initial, onClose }: { line: Line; onClose:
         <p className="el-subtitle">{t("editLine.subtitle")}</p>
         <div className="el-group">
           <span className="el-label">{t("editLine.preview")}</span>
-          <AudioPreview resolve={resolveAudio} durationMs={line.durationMs} />
+          <AudioPreview resolve={resolveAudio} durationMs={initial.durationMs} />
         </div>
         <Field
           label={t("editLine.text")}
           placeholder={t("editLine.textPlaceholder")}
           rows={7}
           value={text}
-          onChange={(v) => edited(() => setText(v))}
+          onChange={(v) => setText(v)}
           error={textError}
         />
         <Field
@@ -91,13 +81,13 @@ export function EditLineModal({ line: initial, onClose }: { line: Line; onClose:
           placeholder={t("editLine.translationPlaceholder")}
           rows={7}
           value={translation}
-          onChange={(v) => edited(() => setTranslation(v))}
+          onChange={(v) => setTranslation(v)}
           invalid={!!textError}
         />
         <CharacterPicker
           characters={characters}
           value={owner}
-          onChange={(o) => edited(() => setOwner(typeof o === "number" ? o : null))}
+          onChange={(o) => setOwner(typeof o === "number" ? o : null)}
           onAddCharacter={() => setAdding(true)}
           error={charError}
         />
@@ -107,12 +97,6 @@ export function EditLineModal({ line: initial, onClose }: { line: Line; onClose:
             {t("editLine.cancel")}
           </button>
           <div className="el-footer__end">
-            {saved && (
-              <span className="el-saved" role="status">
-                <BentoIcon name="PositiveCircle" size={18} />
-                {t("editLine.saved")}
-              </span>
-            )}
             {saveError && (
               <span className="el-error" role="alert">
                 {saveError}
@@ -132,7 +116,7 @@ export function EditLineModal({ line: initial, onClose }: { line: Line; onClose:
             const created = await ipc.createCharacter(form);
             setCharacters(await ipc.listCharacters());
             setAdding(false);
-            edited(() => setOwner(created.id));
+            setOwner(created.id);
           }}
         />
       )}

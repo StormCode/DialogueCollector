@@ -303,14 +303,6 @@
   background: var(--bento-bg-secondary);
 }
 
-.el-saved {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font: var(--bento-weight-medium) 14px/18px var(--dc-ui-font);
-  color: var(--bento-content-positive);
-}
-
 .el-save {
   appearance: none;
   display: inline-flex;

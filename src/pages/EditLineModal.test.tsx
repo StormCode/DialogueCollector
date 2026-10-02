@@ -35,7 +35,7 @@ describe("EditLineModal", () => {
     vi.spyOn(ipc, "listCharacters").mockResolvedValue([character(1, "優希", "他是傳奇"), character(2, "芙莉蓮", "葬送的芙莉蓮")]);
   });
 
-  it("requires the text or the translation, then saves them and a new character", async () => {
+  it("requires the text or the translation, then saves them and a new character and closes", async () => {
     const update = vi.spyOn(ipc, "updateLine").mockResolvedValue({ ...LINE, characterId: 2 });
     const onClose = vi.fn();
     render(<EditLineModal line={LINE} onClose={onClose} />);
@@ -59,10 +59,7 @@ describe("EditLineModal", () => {
     await waitFor(() =>
       expect(update).toHaveBeenCalledWith(7, { text: "今天的風真舒服。", translation: "Lovely breeze.", characterId: 2 }),
     );
-    expect(await screen.findByText("已儲存變更")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "取消" }));
-    expect(onClose).toHaveBeenCalledWith(true);
+    await waitFor(() => expect(onClose).toHaveBeenCalledWith(true));
   });
 
   it("saves a line that has only a 譯文", async () => {
