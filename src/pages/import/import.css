@@ -711,8 +711,10 @@
   transition: background-color 120ms ease;
 }
 
+/* Filled like 指派給... (the board's --solid-bg): 夜光黑's slate, not its light accent. */
 .sel-box.is-checked {
-  background: var(--dc-accent-40);
+  background: var(--dc-solid);
+  color: var(--dc-on-solid);
   box-shadow: none;
 }
 
