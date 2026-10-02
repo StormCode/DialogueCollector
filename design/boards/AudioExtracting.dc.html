@@ -62,15 +62,24 @@
     [data-theme="midnight"] img[src*="a41f06bab49514a736e15468dc1a8344"], [data-theme="midnight"] img[src*="3743135e47e2a77f4bf75b0b0b47f5eb"] { mix-blend-mode: normal !important; }
     .eq { position: relative; z-index: 1; display: flex; align-items: center; gap: 7px; height: 64px; }
     .eq-bar { width: 8px; height: 64px; border-radius: 999px; background: var(--bento-dv-indigo-40); transform-origin: center; transform: scaleY(0.3); animation: eq-bounce 1s ease-in-out infinite; }
-    .eq-bar:nth-child(1) { animation-duration: 0.9s; animation-delay: -0.2s; }
-    .eq-bar:nth-child(2) { animation-duration: 1.1s; animation-delay: -0.5s; }
-    .eq-bar:nth-child(3) { animation-duration: 0.8s; animation-delay: -0.1s; }
-    .eq-bar:nth-child(4) { animation-duration: 1.2s; animation-delay: -0.7s; }
-    .eq-bar:nth-child(5) { animation-duration: 0.95s; animation-delay: -0.35s; }
-    @keyframes eq-bounce { 0%, 100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
+    /* 每根線條各自的關鍵影格與最高高度都不同，避免同時拉到一樣長 */
+    .eq-bar:nth-child(1) { animation: eq-b1 1.05s ease-in-out infinite; animation-delay: -0.2s; }
+    .eq-bar:nth-child(2) { animation: eq-b2 0.85s ease-in-out infinite; animation-delay: -0.55s; }
+    .eq-bar:nth-child(3) { animation: eq-b3 1.2s ease-in-out infinite; animation-delay: -0.1s; }
+    .eq-bar:nth-child(4) { animation: eq-b4 0.95s ease-in-out infinite; animation-delay: -0.7s; }
+    .eq-bar:nth-child(5) { animation: eq-b5 1.15s ease-in-out infinite; animation-delay: -0.4s; }
+    @keyframes eq-b1 { 0%, 100% { transform: scaleY(0.22); } 30% { transform: scaleY(0.58); } 55% { transform: scaleY(0.34); } 80% { transform: scaleY(0.5); } }
+    @keyframes eq-b2 { 0%, 100% { transform: scaleY(0.3); } 25% { transform: scaleY(0.86); } 50% { transform: scaleY(0.46); } 75% { transform: scaleY(0.72); } }
+    @keyframes eq-b3 { 0%, 100% { transform: scaleY(0.4); } 35% { transform: scaleY(1); } 60% { transform: scaleY(0.55); } 85% { transform: scaleY(0.9); } }
+    @keyframes eq-b4 { 0%, 100% { transform: scaleY(0.26); } 20% { transform: scaleY(0.66); } 45% { transform: scaleY(0.38); } 70% { transform: scaleY(0.78); } }
+    @keyframes eq-b5 { 0%, 100% { transform: scaleY(0.18); } 40% { transform: scaleY(0.44); } 65% { transform: scaleY(0.28); } 85% { transform: scaleY(0.38); } }
     /* 編輯器在編輯模式下會凍結動畫；此規則以較高的選擇器權重讓頻譜持續跳動 */
-    body[data-dc-editor-on] .eq-bar.eq-bar.eq-bar.eq-bar.eq-bar.eq-bar:nth-child(n) { animation-name: eq-bounce !important; animation-iteration-count: infinite !important; animation-timing-function: ease-in-out !important; }
-    @media (prefers-reduced-motion: reduce) { .eq-bar { animation: none; } .eq-bar:nth-child(1) { transform: scaleY(0.45); } .eq-bar:nth-child(2) { transform: scaleY(0.8); } .eq-bar:nth-child(3) { transform: scaleY(1); } .eq-bar:nth-child(4) { transform: scaleY(0.6); } .eq-bar:nth-child(5) { transform: scaleY(0.35); } }
+    body[data-dc-editor-on] .eq.eq.eq.eq.eq .eq-bar:nth-child(1) { animation: eq-b1 1.05s ease-in-out -0.2s infinite !important; }
+    body[data-dc-editor-on] .eq.eq.eq.eq.eq .eq-bar:nth-child(2) { animation: eq-b2 0.85s ease-in-out -0.55s infinite !important; }
+    body[data-dc-editor-on] .eq.eq.eq.eq.eq .eq-bar:nth-child(3) { animation: eq-b3 1.2s ease-in-out -0.1s infinite !important; }
+    body[data-dc-editor-on] .eq.eq.eq.eq.eq .eq-bar:nth-child(4) { animation: eq-b4 0.95s ease-in-out -0.7s infinite !important; }
+    body[data-dc-editor-on] .eq.eq.eq.eq.eq .eq-bar:nth-child(5) { animation: eq-b5 1.15s ease-in-out -0.4s infinite !important; }
+    @media (prefers-reduced-motion: reduce) { .eq-bar, .eq-bar:nth-child(n) { animation: none !important; } .eq-bar:nth-child(1) { transform: scaleY(0.45); } .eq-bar:nth-child(2) { transform: scaleY(0.8); } .eq-bar:nth-child(3) { transform: scaleY(1); } .eq-bar:nth-child(4) { transform: scaleY(0.6); } .eq-bar:nth-child(5) { transform: scaleY(0.35); } }
   </style>
 </helmet>
 <div data-theme="{{theme}}" style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 80px; gap: 40px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0; {{themeStyle}}">
