@@ -66,22 +66,29 @@ function matches(c: Character, query: string) {
 /**
  * The select card grows out of the track card it follows (user 2026-10-02; not on the board):
  * it starts at the small card's place and size and eases to its own, its content fading in
- * once it has. Skipped with reduced motion.
+ * once it has. Skipped with reduced motion. Returns whether it is still growing: the content
+ * is hidden from the first render, since hiding it only after a render would fade the list
+ * out before fading it in.
  */
-function useGrowFrom(card: React.RefObject<HTMLDivElement | null>, from: CardRect | null, done: () => void) {
+function useGrowFrom(card: React.RefObject<HTMLDivElement | null>, from: CardRect | null, done: () => void): boolean {
+  const reduced = () => !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const [growing, setGrowing] = useState(() => from !== null && !reduced());
+  // The page passes a new callback on every render; only `from` restarts the animation.
+  const onDone = useRef(done);
+  onDone.current = done;
+
   useLayoutEffect(() => {
     const el = card.current;
     if (!el || !from) return;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
-      done();
-      return;
-    }
+    const finish = () => {
+      setGrowing(false);
+      onDone.current();
+    };
     const to = el.getBoundingClientRect();
-    if (to.width === 0 || to.height === 0) {
-      done();
+    if (reduced() || to.width === 0 || to.height === 0) {
+      finish();
       return;
     }
-    el.classList.add("is-growing");
     const anim = el.animate?.(
       [
         {
@@ -92,14 +99,18 @@ function useGrowFrom(card: React.RefObject<HTMLDivElement | null>, from: CardRec
       ],
       { duration: 520, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
     );
-    const finish = () => {
-      el.classList.remove("is-growing");
-      done();
+    if (!anim) {
+      finish();
+      return;
+    }
+    anim.onfinish = finish;
+    return () => {
+      anim.onfinish = null;
+      anim.cancel();
     };
-    if (anim) anim.onfinish = finish;
-    else finish();
-    return () => anim?.cancel();
-  }, [card, from, done]);
+  }, [card, from]);
+
+  return growing;
 }
 
 // Board: SubtitleSelect.dc.html (Step 2, or Step 3 after 選擇字幕軌 as SubtitleSelectEmbedded)
@@ -119,7 +130,7 @@ export function SelectScreen({
   const card = useRef<HTMLDivElement>(null);
   const list = useRef<HTMLDivElement>(null);
   useRevealScrollbar(list);
-  useGrowFrom(card, growFrom, onGrown);
+  const growing = useGrowFrom(card, growFrom, onGrown);
   const player = useRowPlayer(s.audioPath);
   const embedded = s.flow === "embedded";
 
@@ -178,7 +189,7 @@ export function SelectScreen({
         <Stepper embedded={embedded} current={embedded ? 3 : 2} />
       </header>
 
-      <div className="sel-card" ref={card}>
+      <div className={`sel-card${growing ? " is-growing" : ""}`} ref={card}>
         <div className="sel-toolbar">
           <button type="button" className="sel-btn sel-btn--outline" onClick={s.selectAll}>
             {t("import.select.selectAll")}
