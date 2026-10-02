@@ -48,6 +48,8 @@ pub struct AppState {
     pub export_cancel: std::sync::Arc<AtomicBool>,
     /// Set by `cancel_import` (and on quit); kills the running import's encodes (ENG6).
     pub import_cancel: std::sync::Arc<AtomicBool>,
+    /// Set by `cancel_prepare`: stops 抽取音訊 or the extraction of a subtitle track.
+    pub prepare_cancel: std::sync::Arc<AtomicBool>,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -97,6 +99,7 @@ pub fn run() {
                 library_busy: AtomicBool::new(false),
                 export_cancel: std::sync::Arc::new(AtomicBool::new(false)),
                 import_cancel: std::sync::Arc::new(AtomicBool::new(false)),
+                prepare_cancel: std::sync::Arc::new(AtomicBool::new(false)),
             });
             if auto_update && !app.state::<smoke::SmokeMode>().enabled {
                 tauri::async_runtime::spawn(updater::stage_in_background(app.handle().clone()));
@@ -133,6 +136,9 @@ pub fn run() {
             import_cmd::cancel_import,
             manual_cmd::probe_media,
             manual_cmd::prepare_preview,
+            manual_cmd::cancel_prepare,
+            manual_cmd::list_subtitle_tracks,
+            manual_cmd::extract_subtitle_track,
             manual_cmd::start_manual_import,
             smoke::smoke_mode,
             smoke::run_smoke,

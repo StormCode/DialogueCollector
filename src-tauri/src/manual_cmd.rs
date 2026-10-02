@@ -66,7 +66,11 @@ const PLAYABLE: &[&str] = &["m4a", "mp3", "mp4", "wav"];
 /// 播放預覽: a path the webview can play for `path`, added to the asset scope. MKV and WebM (which
 /// not every macOS webview decodes) get their audio encoded to a cached m4a first.
 #[tauri::command]
-pub async fn prepare_preview(app: AppHandle, path: PathBuf) -> CommandResult<PathBuf> {
+pub async fn prepare_preview(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    path: PathBuf,
+) -> CommandResult<PathBuf> {
     let ext = path
         .extension()
         .and_then(|e| e.to_str())
@@ -81,12 +85,16 @@ pub async fn prepare_preview(app: AppHandle, path: PathBuf) -> CommandResult<Pat
             let ffmpeg = sidecar("ffmpeg").map_err(CommandError::from)?;
             let source = path.clone();
             let target = out.clone();
+            let cancel = std::sync::Arc::clone(&state.prepare_cancel);
+            cancel.store(false, Ordering::SeqCst);
             tauri::async_runtime::spawn_blocking(move || {
                 std::fs::create_dir_all(&dir).map_err(|e| CommandError::new("Import.Io", e))?;
                 let staged = target.with_extension("m4a.part");
-                let never = AtomicBool::new(false);
-                ffmpeg::extract_audio(&ffmpeg, &source, &staged, &never)
-                    .map_err(CommandError::from)?;
+                let done = ffmpeg::extract_audio(&ffmpeg, &source, &staged, &cancel);
+                if let Err(e) = done {
+                    let _ = std::fs::remove_file(&staged);
+                    return Err(CommandError::from(e));
+                }
                 std::fs::rename(&staged, &target).map_err(|e| CommandError::new("Import.Io", e))
             })
             .await
@@ -98,6 +106,74 @@ pub async fn prepare_preview(app: AppHandle, path: PathBuf) -> CommandResult<Pat
         .allow_file(&playable)
         .map_err(|e| CommandError::new("Internal.AssetScope", e))?;
     Ok(playable)
+}
+
+/// 取消 on 抽取音訊 or while a subtitle track is read: kills that ffmpeg at once.
+#[tauri::command]
+pub fn cancel_prepare(state: State<'_, AppState>) {
+    state.prepare_cancel.store(true, Ordering::SeqCst);
+}
+
+/// 選擇字幕軌: the video's text subtitle streams.
+#[tauri::command]
+pub async fn list_subtitle_tracks(video: PathBuf) -> CommandResult<Vec<ffmpeg::SubtitleTrack>> {
+    let ffprobe = sidecar("ffprobe").map_err(CommandError::from)?;
+    tauri::async_runtime::spawn_blocking(move || {
+        let never = AtomicBool::new(false);
+        ffmpeg::probe_subtitle_tracks(&ffprobe, &video, &never).map_err(CommandError::from)
+    })
+    .await
+    .map_err(|e| CommandError::new("Internal.Join", e))?
+}
+
+/// The chosen track, written out as ASS or SRT and parsed like a dropped subtitle file.
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtractedSubtitle {
+    /// Where it was written, kept with the import run.
+    pub path: PathBuf,
+    pub cues: Vec<crate::subs::Cue>,
+}
+
+#[tauri::command]
+pub async fn extract_subtitle_track(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    video: PathBuf,
+    index: u32,
+    codec: String,
+) -> CommandResult<ExtractedSubtitle> {
+    let ffmpeg = sidecar("ffmpeg").map_err(CommandError::from)?;
+    let dir = app
+        .path()
+        .app_cache_dir()
+        .map(|d| d.join("subtitles"))
+        .map_err(|e| CommandError::new("Internal.CacheDir", e))?;
+    let cancel = std::sync::Arc::clone(&state.prepare_cancel);
+    cancel.store(false, Ordering::SeqCst);
+    tauri::async_runtime::spawn_blocking(move || {
+        std::fs::create_dir_all(&dir).map_err(|e| CommandError::new("Import.Io", e))?;
+        let out = dir.join(format!(
+            "{:016x}-{index}.{}",
+            fingerprint(&video),
+            ffmpeg::subtitle_extension(&codec)
+        ));
+        if let Err(e) = ffmpeg::extract_subtitle(&ffmpeg, &video, index, &codec, &out, &cancel) {
+            let _ = std::fs::remove_file(&out);
+            return Err(CommandError::from(e));
+        }
+        let cues = crate::subs::parse_file(&out);
+        match &cues {
+            Ok(c) => log::info!("track {index} of {}: {} cues", video.display(), c.len()),
+            Err(e) => log::warn!("track {index} of {}: {e}", video.display()),
+        }
+        Ok(ExtractedSubtitle {
+            path: out,
+            cues: cues?,
+        })
+    })
+    .await
+    .map_err(|e| CommandError::new("Internal.Join", e))?
 }
 
 /// One InputLine card.
