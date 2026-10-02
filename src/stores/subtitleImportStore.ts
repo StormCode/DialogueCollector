@@ -272,7 +272,9 @@ export const useSubtitleImportStore = create<SubtitleImportState>((set, get) => 
     canMerge: () => get().selected.size >= 2,
     canSplit: () => canSplit(get().rows, get().selected),
 
-    // 合併: the merged row takes the character of the earliest chosen row that has one.
+    // 合併: the merged row takes the character of the earliest chosen row that has one. The checks
+    // clear afterwards (unlike the board), so the next rows checked merge on their own instead of
+    // joining the row just made (user 2026-10-02).
     merge: () => {
       const { rows, selected, assigned, nextIndex } = get();
       if (selected.size < 2) return;
@@ -284,26 +286,23 @@ export const useSubtitleImportStore = create<SubtitleImportState>((set, get) => 
       set({
         rows: mergeRows(rows, selected, nextIndex),
         assigned: next,
-        selected: new Set([nextIndex]),
+        selected: new Set(),
         nextIndex: nextIndex + 1,
       });
     },
 
-    // 拆分: the parts come back; each takes the merged row's character if it has one.
+    // 拆分: the parts come back; each takes the merged row's character if it has one. The checks
+    // clear, as after 合併.
     split: () => {
       const { rows, selected, assigned } = get();
       const next = { ...assigned };
-      const restored = new Set<number>();
       for (const r of rows) {
         if (!selected.has(r.index) || !r.parts) continue;
         const owner = next[r.index];
         delete next[r.index];
-        for (const p of r.parts) {
-          if (owner !== undefined) next[p.index] = owner;
-          restored.add(p.index);
-        }
+        for (const p of r.parts) if (owner !== undefined) next[p.index] = owner;
       }
-      set({ rows: splitRows(rows, selected), assigned: next, selected: restored });
+      set({ rows: splitRows(rows, selected), assigned: next, selected: new Set() });
     },
 
     swap: () => {
