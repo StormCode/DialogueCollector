@@ -75,10 +75,11 @@
     .pg-anim-title { animation: pg-title-fade 450ms ease-out backwards; }
     @media (prefers-reduced-motion: reduce) { .pg-anim-title { animation: none; } }
     [data-theme="midnight"] img[src*="a41f06bab49514a736e15468dc1a8344"], [data-theme="midnight"] img[src*="3743135e47e2a77f4bf75b0b0b47f5eb"] { mix-blend-mode: normal !important; }
-    .trk-card { box-sizing: border-box; width: 360px; max-height: 100%; display: flex; flex-direction: column; gap: 8px; padding: 16px; background: var(--bento-bg-primary); border-radius: 20px; box-shadow: var(--bento-elevation-md); }
+    .trk-card { box-sizing: border-box; width: 360px; max-height: min(50vh, 100%); display: flex; flex-direction: column; gap: 8px; padding: 16px; background: var(--bento-bg-primary); border-radius: 20px; box-shadow: var(--bento-elevation-md); }
     .trk-head, .trk-row { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; column-gap: 16px; padding: 0 16px; box-sizing: border-box; }
     .trk-head { height: 32px; font: var(--bento-weight-medium) 13px/18px var(--bento-font-ui); color: var(--bento-neutral-60); }
-    .trk-list { display: flex; flex-direction: column; gap: 8px; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+    .trk-list { flex: 1 1 auto; display: flex; flex-direction: column; gap: 8px; min-height: 0; max-height: 100%; overflow-y: auto; overflow-x: hidden; }
+    .trk-list > .trk-row, .trk-head { flex-shrink: 0; }
     .trk-row { appearance: none; -webkit-appearance: none; width: 100%; min-height: 48px; border: none; border-radius: 12px; background: var(--bento-bg-secondary); text-align: left; cursor: pointer; font: var(--bento-weight-regular) 14px/20px var(--bento-font-ui); color: var(--bento-content-primary); transition: background-color 120ms ease, color 120ms ease; }
     .trk-row:hover { background: var(--bento-dv-indigo-5); }
     .trk-row.is-selected, .trk-row.is-selected:hover { background: var(--solid-bg, var(--bento-dv-indigo-40)); color: var(--bento-white); }
@@ -167,6 +168,10 @@ class Component extends DCLogic {
       { no: 2, lang: 'Japanese' },
       { no: 3, lang: 'English' },
       { no: 4, lang: 'Chinese (Simplified)' },
+      { no: 5, lang: 'Korean' },
+      { no: 6, lang: 'French' },
+      { no: 7, lang: 'Spanish' },
+      { no: 8, lang: 'German' },
     ];
   }
 
