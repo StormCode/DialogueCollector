@@ -1,96 +1,97 @@
-## Dialogue Collector · 台詞收藏家
+## 台詞收藏家 · Dialogue Collector
 
-<p align="center"><img src="src-tauri/icons/128x128@2x.png" width="160" alt="Dialogue Collector logo"></p>
+<p align="center"><img src="src-tauri/icons/128x128@2x.png" width="160" alt="台詞收藏家 logo"></p>
 
-**Cut your favourite lines out of your own videos and keep them, by character, in a library you own.**
+**從你自己的影片剪下喜歡的台詞，依角色收進只屬於你的收藏庫。**
 
-**Fully offline · macOS (Apple Silicon / Intel) · Windows x64**
+**完全離線 · macOS（Apple 晶片／Intel）· Windows x64**
 
-Latest stable release: **v0.1.5** · Supports: **macOS 11+**, **Windows 10/11 x64**
+最新穩定版：**v0.1.5** · 支援：**macOS 11 以上**、**Windows 10/11 x64**
 
-### [Download the latest stable build](https://github.com/StormCode/DialogueCollector/releases/latest)
+### [下載最新穩定版](https://github.com/StormCode/DialogueCollector/releases/latest)
 
-| Platform | File |
+| 平台 | 檔案 |
 | --- | --- |
-| macOS, Apple Silicon | [DialogueCollector_0.1.5_aarch64.dmg](https://github.com/StormCode/DialogueCollector/releases/latest) |
-| macOS, Intel | [DialogueCollector_0.1.5_x64.dmg](https://github.com/StormCode/DialogueCollector/releases/latest) |
+| macOS（Apple 晶片） | [DialogueCollector_0.1.5_aarch64.dmg](https://github.com/StormCode/DialogueCollector/releases/latest) |
+| macOS（Intel） | [DialogueCollector_0.1.5_x64.dmg](https://github.com/StormCode/DialogueCollector/releases/latest) |
 | Windows x64 | [DialogueCollector_0.1.5_x64-setup.exe](https://github.com/StormCode/DialogueCollector/releases/latest) |
 
-All releases: https://github.com/StormCode/DialogueCollector/releases
+所有版本：https://github.com/StormCode/DialogueCollector/releases
 
-The app is not code-signed: macOS and Windows warn on first launch, and you open it anyway once (macOS: right-click → Open; Windows: More info → Run anyway).
+本程式沒有程式碼簽章：macOS 與 Windows 第一次開啟時會跳出警告，略過一次即可（macOS：按右鍵 → 打開；Windows：其他資訊 → 仍要執行）。
 
-## What is Dialogue Collector
+## 什麼是台詞收藏家
 
-Dialogue Collector is a desktop app that turns the videos you already own into a personal library of voice clips, one line at a time, filed under the character who said it. Nothing leaves your computer.
+台詞收藏家是一套桌面應用程式，把你手邊的影片變成個人的語音收藏庫：一句一句剪下台詞，依說話的角色分類。所有資料都留在你的電腦裡。
 
-- **A script book of characters.** Each character gets a portrait, voice actor and series; their page plays lines one by one or in sequence, pins favourites, searches and filters, and carries a banner poster.
-- **Cut clips from subtitles.** Drop a video with its ASS or SRT file; every line you pick becomes its own audio clip, cut at the subtitle's timing.
-- **Embedded subtitles too.** Drop an MKV or MP4 alone and pick one of its text subtitle tracks; the app extracts it for you.
-- **Bilingual subtitles, sorted out.** Lines split across two languages are paired back into one, the larger-drawn subtitle as the original and the other as the translation; one click swaps them for the whole file.
-- **Shape lines before you import.** Play any line from the video's audio, merge several (with a gap of your choosing between them), split them back, and assign characters to many lines at once.
-- **Import what you already have.** Bring in existing audio (m4a, mp3, wav) or video as is, several files at a time, and type the line yourself.
-- **A library you own.** Clips are plain files in a folder you choose and can move; back everything up to one zip and restore it on another machine.
-- **Made to feel at home.** Multiple languages supported, including Traditional and Simplified Chinese, Japanese and English; seven custom themes (including a dark theme) and optional automatic updates.
+- **角色的台詞本。** 每個角色有自己的頭像、聲優與作品；角色頁可以逐句或依序播放台詞、釘選喜歡的句子、搜尋與篩選，還能放一張橫幅海報。
+- **依字幕剪下台詞。** 把影片和它的 ASS 或 SRT 字幕檔一起拖進來，選中的每一句都會依字幕時間剪成一段音檔。
+- **也支援內嵌字幕。** 只拖入 MKV 或 MP4，從影片內的文字字幕軌選一軌，程式會幫你抽出來。
+- **雙語字幕自動整理。** 分成兩種語言的同一句會配對回一句，字級較大的當原文、另一個當譯文；按一下就能整份對調。
+- **匯入前先整理台詞。** 每一句都能直接播放影片的聲音，可以合併多句（句與句之間的間隔秒數自訂）、拆分回原狀，也能一次把多句指派給角色。
+- **匯入現有的檔案。** 現有的音訊（m4a、mp3、wav）或影片可以直接匯入，一次可以多個檔案，台詞自己輸入。
+- **收藏庫屬於你。** 音檔就是你指定資料夾裡的一般檔案，資料夾可以搬移；全部資料能備份成一個 zip，在另一台電腦還原。
+- **用起來順手。** 支援繁體中文、簡體中文、日文與英文；七種主題配色（含深色主題），以及可選擇開啟的自動更新。
 
-## Stack
+## 技術架構
 
-| Layer | Choice |
+| 層級 | 選用 |
 | --- | --- |
-| Shell | Tauri 2 (Rust) |
-| Renderer | Vite + React 19 + TypeScript, Zustand, react-router (hash), i18next |
-| Design system | Bento DS 2.7, vendored in `design/` |
-| Content store | SQLite via `rusqlite` (bundled), accessed from Rust only |
-| Media | ffmpeg as a Tauri sidecar, one pass per cue |
-| Tests | `cargo test` (Rust), Vitest + Testing Library (renderer) |
+| 外殼 | Tauri 2（Rust） |
+| 介面 | Vite + React 19 + TypeScript、Zustand、react-router（hash）、i18next |
+| 設計系統 | Bento DS 2.7，放在 `design/` |
+| 資料儲存 | SQLite，透過 `rusqlite`（內建），只從 Rust 存取 |
+| 媒體處理 | ffmpeg 作為 Tauri sidecar，每句台詞處理一次 |
+| 測試 | `cargo test`（Rust）、Vitest + Testing Library（介面） |
 
-## Layout
+## 目錄結構
 
 ```
-src/                     renderer
-  components/layout/     AppLayout + the right-hand collapsible SideNav
-  pages/                 Main, ScriptBook (角色簿), Lines (台詞頁), Settings, import/*
+src/                     介面
+  components/layout/     AppLayout 與右側可收合的 SideNav
+  pages/                 主頁、台詞本（ScriptBook）、台詞頁（Lines）、設定、import/*
   stores/                Zustand stores
-  lib/ipc.ts             the only place that calls `invoke`
-  lib/types.ts           TS mirrors of the Rust IPC types
-  i18n/locales/          zh-Hant (default), zh-Hans, ja, en — key parity is tested
-  styles/                tokens import, per-locale UI font, 台詞 fonts, --dc-* theme layer
-  assets/fonts, icons    OFL 台詞 fonts, Material Symbols SVGs
-src-tauri/src/           Rust core
-  subs/                  ASS / SRT → cues
-  media/                 ffmpeg sidecar, clip naming
-  store/                 SQLite connection rules, schema version
-  library/               library folder, settings.json / machine.json, export/import
-  import/                cue → clip pipeline, partial failure, retry, cancel
-  commands.rs            the Tauri command surface
-design/                  vendored canvas boards + Bento tokens (reference, re-pull to update)
+  lib/ipc.ts             唯一呼叫 `invoke` 的地方
+  lib/types.ts           Rust IPC 型別在 TS 的對應
+  i18n/locales/          zh-Hant（預設）、zh-Hans、ja、en，有測試檢查各語系的鍵一致
+  styles/                tokens 匯入、各語系的介面字型、台詞字型、--dc-* 主題層
+  assets/fonts, icons    OFL 授權的台詞字型、Material Symbols SVG
+src-tauri/src/           Rust 核心
+  subs/                  ASS／SRT → 台詞
+  media/                 ffmpeg sidecar、音檔命名
+  store/                 SQLite 連線規則、schema 版本
+  library/               收藏庫資料夾、settings.json／machine.json、匯出／匯入
+  import/                台詞 → 音檔的流程、部分失敗、重試、取消
+  menu.rs                macOS 功能表列（前往：主頁、台詞本、設定）
+  commands.rs            Tauri 指令介面
+design/                  canvas 畫板與 Bento tokens 的副本（參考用，需要時重新抓取）
 ```
 
-## Where things live on disk
+## 檔案存放位置
 
-The Windows installer (per-user) installs the program to `%LOCALAPPDATA%\Programs\DialogueCollector`. It uses a vendored copy of Tauri's NSIS template (`src-tauri/windows/installer.nsi`) with two changes: that install folder, because Tauri's default per-user location is the default library folder below; and shortcuts and the Apps & Features entry named in the installer's language. `node scripts/nsis/check-template.mjs` (run in CI) fails when a Tauri CLI upgrade leaves the copy stale; `--write` re-syncs it.
+Windows 安裝程式（個人安裝）會把程式裝到 `%LOCALAPPDATA%\Programs\DialogueCollector`。安裝程式使用一份 Tauri NSIS 範本的副本（`src-tauri/windows/installer.nsi`），改了兩處：一是安裝資料夾，因為 Tauri 預設的個人安裝位置就是下表的預設收藏庫資料夾；二是開始功能表、桌面捷徑與「應用程式與功能」的名稱會依安裝程式的語系顯示。`node scripts/nsis/check-template.mjs`（CI 會執行）會在 Tauri CLI 升級、副本過期時失敗；加上 `--write` 即可重新同步。
 
-| What | macOS | Windows |
+| 項目 | macOS | Windows |
 | --- | --- | --- |
-| `settings.json` + `machine.json` (fixed) | `~/Library/Preferences/DialogueCollector/` | `%APPDATA%\DialogueCollector\` |
-| Library folder (default, relocatable) | `~/Library/Application Support/DialogueCollector` | `%LOCALAPPDATA%\DialogueCollector` |
+| `settings.json` + `machine.json`（固定位置） | `~/Library/Preferences/DialogueCollector/` | `%APPDATA%\DialogueCollector\` |
+| 收藏庫資料夾（預設，可搬移） | `~/Library/Application Support/DialogueCollector` | `%LOCALAPPDATA%\DialogueCollector` |
 
-`settings.json` is portable and goes into the export zip; `machine.json` (library pointer, window geometry, last picker dir) never does.
+`settings.json` 可攜，會一起放進匯出的 zip；`machine.json`（收藏庫位置、視窗大小與位置、上次選檔的資料夾）則不會。
 
-## Develop
+## 開發
 
-Prerequisites: Node 20+, Rust stable (`rustup`), and on Windows the WebView2 runtime.
+需要：Node 20 以上、Rust stable（`rustup`），Windows 另需 WebView2 runtime。
 
 ```sh
 npm install
-scripts/ffmpeg/build-macos.sh          # macOS: LGPL ffmpeg sidecar for this Mac's arch
-scripts/ffmpeg/build-windows.sh        # Windows, in MSYS2 UCRT64: same, statically linked
-npm run tauri dev        # app with hot reload
-npm test                 # renderer tests
+scripts/ffmpeg/build-macos.sh          # macOS：建置這台 Mac 架構的 LGPL ffmpeg sidecar
+scripts/ffmpeg/build-windows.sh        # Windows，在 MSYS2 UCRT64 中執行：同上，靜態連結
+npm run tauri dev        # 啟動 app，支援熱更新
+npm test                 # 介面測試
 npm run typecheck
 cd src-tauri && cargo test
 ```
 
-### Walking-skeleton check
+### 打包冒煙測試
 
-`npm run tauri build`, then run the packaged binary with `--smoke` (`DialogueCollector.app/Contents/MacOS/dialogue-collector --smoke [--smoke-report <file>]`). It spawns the bundled ffmpeg, cuts a hardcoded 2 s cue from a generated source, writes one row to a throwaway database in the OS temp dir, loads the clip in the renderer through the asset protocol, prints `SMOKE OK|FAIL …` and exits 0 / 1 (2 on watchdog timeout). The same check runs from 設定 → 目前版本 → 診斷工具. CI: `.github/workflows/package-smoke.yml`.
+執行 `npm run tauri build`，再以 `--smoke` 執行打包後的程式（`DialogueCollector.app/Contents/MacOS/dialogue-collector --smoke [--smoke-report <file>]`）。它會啟動內附的 ffmpeg，從產生的來源剪出一段固定 2 秒的台詞，寫一筆資料到系統暫存資料夾裡的拋棄式資料庫，透過 asset protocol 在介面載入音檔，印出 `SMOKE OK|FAIL …` 後結束，結束碼為 0／1（逾時為 2）。同一項檢查也能從 設定 → 目前版本 → 診斷工具 執行。CI：`.github/workflows/package-smoke.yml`。
