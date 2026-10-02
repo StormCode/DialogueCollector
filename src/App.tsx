@@ -1,3 +1,4 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useEffect } from "react";
 import { HashRouter, Route, Routes } from "react-router";
 
@@ -15,7 +16,10 @@ import { runHeadlessSmokeIfRequested } from "./lib/smoke";
 import { useLibraryStore } from "./stores/libraryStore";
 import { useSettingsStore } from "./stores/settingsStore";
 
-/** Applies portable settings that live on the document root: theme, locale, 台詞 font. */
+/**
+ * Applies portable settings that live on the document root: theme, locale, 台詞 font. The window
+ * title is the app's name in the chosen language (user 2026-10-02), as the OS shows it.
+ */
 function useApplySettings() {
   const load = useSettingsStore((s) => s.load);
   const loadLibrary = useLibraryStore((s) => s.load);
@@ -31,7 +35,11 @@ function useApplySettings() {
     const root = document.documentElement;
     root.dataset.theme = theme;
     root.dataset.lineFont = lineFont;
-    void i18n.changeLanguage(locale);
+    void i18n.changeLanguage(locale).then(() => {
+      const title = i18n.t("app.title");
+      document.title = title;
+      if (inTauri()) void getCurrentWindow().setTitle(title).catch(() => {});
+    });
   }, [theme, locale, lineFont]);
 }
 

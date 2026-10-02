@@ -9,6 +9,25 @@
     "collapse": "收起菜单",
     "expand": "展开菜单"
   },
+  "menu": {
+    "go": "前往",
+    "about": "关于 {{name}}",
+    "hide": "隐藏 {{name}}",
+    "hideOthers": "隐藏其他",
+    "showAll": "全部显示",
+    "quit": "退出 {{name}}",
+    "edit": "编辑",
+    "undo": "撤销",
+    "redo": "重做",
+    "cut": "剪切",
+    "copy": "拷贝",
+    "paste": "粘贴",
+    "selectAll": "全选",
+    "window": "窗口",
+    "minimize": "最小化",
+    "zoom": "缩放",
+    "close": "关闭窗口"
+  },
   "main": {
     "fromSubtitle": "按字幕时间轴把视频切分成多个片段",
     "manual": "直接导入现有的视频或音频",

@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "セリフコレクター"
+    "title": "台詞コレクター"
   },
   "nav": {
     "home": "ホーム",
@@ -8,6 +8,25 @@
     "settings": "設定",
     "collapse": "メニューを閉じる",
     "expand": "メニューを開く"
+  },
+  "menu": {
+    "go": "移動",
+    "about": "{{name}} について",
+    "hide": "{{name}} を隠す",
+    "hideOthers": "ほかを隠す",
+    "showAll": "すべてを表示",
+    "quit": "{{name}} を終了",
+    "edit": "編集",
+    "undo": "取り消す",
+    "redo": "やり直す",
+    "cut": "カット",
+    "copy": "コピー",
+    "paste": "ペースト",
+    "selectAll": "すべてを選択",
+    "window": "ウインドウ",
+    "minimize": "しまう",
+    "zoom": "拡大／縮小",
+    "close": "ウインドウを閉じる"
   },
   "main": {
     "fromSubtitle": "字幕のタイミングで動画を分割する",

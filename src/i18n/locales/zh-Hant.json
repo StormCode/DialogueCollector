@@ -9,6 +9,25 @@
     "collapse": "收合選單",
     "expand": "展開選單"
   },
+  "menu": {
+    "go": "前往",
+    "about": "關於 {{name}}",
+    "hide": "隱藏 {{name}}",
+    "hideOthers": "隱藏其他",
+    "showAll": "顯示全部",
+    "quit": "結束 {{name}}",
+    "edit": "編輯",
+    "undo": "還原",
+    "redo": "重做",
+    "cut": "剪下",
+    "copy": "拷貝",
+    "paste": "貼上",
+    "selectAll": "全選",
+    "window": "視窗",
+    "minimize": "縮到最小",
+    "zoom": "縮放",
+    "close": "關閉視窗"
+  },
   "main": {
     "fromSubtitle": "依字幕的時間軸切分影片為多個片段",
     "manual": "直接匯入現有的影片或音訊",

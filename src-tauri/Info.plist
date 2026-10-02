@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Merged into the bundle's Info.plist by Tauri. The name follows the system language
+     (user 2026-10-02): macos/<lang>.lproj/InfoPlist.strings, bundled via tauri.conf.json. -->
+<plist version="1.0">
+<dict>
+  <key>CFBundleDevelopmentRegion</key>
+  <string>en</string>
+  <key>CFBundleLocalizations</key>
+  <array>
+    <string>en</string>
+    <string>zh-Hant</string>
+    <string>zh-Hans</string>
+    <string>ja</string>
+  </array>
+  <key>LSHasLocalizedDisplayName</key>
+  <true/>
+</dict>
+</plist>
