@@ -697,9 +697,32 @@ fn normalize(text: &str) -> String {
         .join("\n")
 }
 
+/// Start-time order, with a line split in two where it runs on joined back up (see
+/// `join_continued`).
 fn sort(mut cues: Vec<Cue>) -> Vec<Cue> {
     cues.sort_by_key(|c| (c.start_ms, c.index));
-    cues
+    join_continued(cues)
+}
+
+/// Typesetting often cuts one line into back-to-back events with the same words, to change its
+/// look partway (an outline, a blur). A cue that starts no later than the one before it ends and
+/// says the same thing is that line going on, so it is folded in (user 2026-10-02, 芙莉蓮 E28).
+/// A line said again after any gap stays a line of its own.
+fn join_continued(cues: Vec<Cue>) -> Vec<Cue> {
+    let mut out: Vec<Cue> = Vec::with_capacity(cues.len());
+    for cue in cues {
+        if let Some(last) = out.last_mut() {
+            if cue.start_ms <= last.end_ms
+                && cue.text == last.text
+                && cue.translation == last.translation
+            {
+                last.end_ms = last.end_ms.max(cue.end_ms);
+                continue;
+            }
+        }
+        out.push(cue);
+    }
+    out
 }
 
 #[cfg(test)]

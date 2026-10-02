@@ -380,3 +380,19 @@ fn sizes_dont_pair_what_the_languages_dont() {
     assert_eq!(cues.len(), 2);
     assert!(cues.iter().all(|c| c.translation.is_none()));
 }
+
+#[test]
+fn a_line_cut_in_two_to_restyle_it_is_one_line() {
+    let cues = parse_ass(&events(&[
+        "Dialogue: 1,0:13:32.25,0:13:33.04,Text - CN,,0,0,0,,{\\bord1.5}但我不願意拋下他們",
+        "Dialogue: 0,0:13:32.25,0:13:33.04,Text - JP,,0,0,0,,{\\bord1.5}見捨てるつもりはないよ",
+        "Dialogue: 1,0:13:33.04,0:13:36.96,Text - CN,,0,0,0,,{\\bord2}但我不願意拋下他們",
+        "Dialogue: 0,0:13:33.04,0:13:36.96,Text - JP,,0,0,0,,{\\bord2}見捨てるつもりはないよ",
+        // Said again after a pause: its own line.
+        "Dialogue: 0,0:13:40.00,0:13:41.00,Text - CN,,0,0,0,,但我不願意拋下他們",
+        "Dialogue: 0,0:13:40.00,0:13:41.00,Text - JP,,0,0,0,,見捨てるつもりはないよ",
+    ]))
+    .unwrap();
+    let got: Vec<_> = cues.iter().map(|c| (c.start_ms, c.end_ms)).collect();
+    assert_eq!(got, [(812_250, 816_960), (820_000, 821_000)]);
+}
