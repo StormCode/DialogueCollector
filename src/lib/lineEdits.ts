@@ -80,9 +80,23 @@ export function mergeRows(rows: Row[], chosen: Set<number>, newIndex: number): R
   return out;
 }
 
-/** 拆分: each chosen merged row is replaced by the rows it was made from. */
+/**
+ * 拆分: each chosen merged row gives back the rows it was made from, each at its own place by
+ * time (user 2026-10-02), so rows merged across unchosen ones go back around them.
+ */
 export function splitRows(rows: Row[], chosen: Set<number>): Row[] {
-  return rows.flatMap((r) => (chosen.has(r.index) && r.parts ? r.parts : [r]));
+  const out: Row[] = [];
+  const restored: Row[] = [];
+  for (const r of rows) {
+    if (chosen.has(r.index) && r.parts) restored.push(...r.parts);
+    else out.push(r);
+  }
+  const before = (a: Row, b: Row) => a.startMs < b.startMs || (a.startMs === b.startMs && a.index < b.index);
+  for (const part of restored) {
+    const at = out.findIndex((r) => before(part, r));
+    out.splice(at === -1 ? out.length : at, 0, part);
+  }
+  return out;
 }
 
 /** Whether any chosen row can be split. */

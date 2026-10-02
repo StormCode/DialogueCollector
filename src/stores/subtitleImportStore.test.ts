@@ -96,7 +96,7 @@ describe("選擇台詞 (T8, T28)", () => {
 
     useSubtitleImportStore.setState({ screen: "select", selected: new Set([merged.index]) });
     s().split();
-    expect(s().rows.map((r) => r.index)).toEqual([0, 2, 1, 3]);
+    expect(s().rows.map((r) => r.index), "back in place").toEqual([0, 1, 2, 3]);
     expect(s().assigned, "the parts take the merged row's character").toEqual({ 0: 7, 2: 7 });
     expect(s().selected.size).toBe(0);
   });
