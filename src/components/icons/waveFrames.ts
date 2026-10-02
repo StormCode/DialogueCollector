@@ -3,13 +3,16 @@
  * moving, so the whole line writhes: wherever it bulges now it will dip later, and the other way
  * round (user 2026-10-02). The wave is short, so more than one shows and the climb reads clearly
  * (user's pick over a fainter second wave), and low, so the edge stays nearly straight. The
- * boards are to be redrawn with this wave at phase 0. One full turn of `phase` brings it back
- * exactly.
+ * boards draw it at phase 0, so the still curve and the animation's start agree. One full turn
+ * of `phase` brings it back exactly.
  */
 
-/** The curve every board draws behind its page (`backdrop` in iconData, from Settings.dc.html). */
+/**
+ * The curve behind every page as the boards draw it (`backdrop` in iconData, from Main.dc.html):
+ * this wave at phase 0, a cubic between each crest, trough and crossing.
+ */
 export const BOARD_CURVE =
-  "M 1020,0 C 870,220 1140,480 1000,800 L 1284,804 L 1284,-4 Z";
+  "M 1032,0 C 1032,50 1021.5,100 1010,150 C 998.5,200 988,250 988,300 C 988,350 998.5,400 1010,450 C 1021.5,500 1032,550 1032,600 C 1032,650 1021.5,700 1010,750 C 1006.2,766.7 1002.3,783.3 999,800 L 1284,804 L 1284,-4 Z";
 
 /** The edge's middle line, in the board's 1280×800 units. */
 export const WAVE_CENTER = 1010;

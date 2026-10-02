@@ -18,6 +18,12 @@ describe("WaveBackdrop", () => {
 
   it("is the boards' backdrop, a low wave with more than one crest on the page", () => {
     expect(BOARD_ART.backdrop.body).toContain(`d="${BOARD_CURVE}"`);
+    // The board draws this wave at phase 0: every point its curves pass through lies on it.
+    const knots = [...BOARD_CURVE.matchAll(/(-?[\d.]+),(-?[\d.]+)/g)]
+      .map((m) => [Number(m[1]), Number(m[2])])
+      .filter((_, i, all) => i === 0 || (i % 3 === 0 && i < all.length - 2));
+    expect(knots.length).toBeGreaterThan(5);
+    for (const [x, y] of knots) expect(Math.abs(x - waveX(y, 0)), `at y=${y}`).toBeLessThan(0.1);
     expect(waveX(WAVE_CREST_Y, 0)).toBeCloseTo(WAVE_CENTER + WAVE_AMPLITUDE);
     for (const x of edge(wavePath(0)).values()) {
       expect(Math.abs(x - WAVE_CENTER)).toBeLessThanOrEqual(WAVE_AMPLITUDE + 0.1);
