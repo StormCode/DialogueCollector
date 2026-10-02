@@ -116,10 +116,11 @@ describe("SettingsPage", () => {
     expect(await screen.findByRole("status")).toHaveTextContent("匯入完成");
   });
 
-  it("shows export progress with a cancel action", () => {
+  it("shows export progress with a cancel action once the export runs past the delay", async () => {
     useBackupStore.setState({ exporting: true, exportProgress: { done: 642, total: 1284, finishing: false } });
     renderPage();
-    const modal = screen.getByRole("dialog", { name: "匯出" });
+    expect(screen.queryByRole("dialog", { name: "匯出" }), "a quick export shows no modal").toBeNull();
+    const modal = await screen.findByRole("dialog", { name: "匯出" });
     expect(modal).toHaveTextContent("匯出中…");
     expect(modal).toHaveTextContent("正在複製音檔 642 / 1,284");
     expect(within(modal).getByRole("progressbar")).toHaveAttribute("aria-valuenow", "50");
