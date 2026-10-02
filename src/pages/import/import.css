@@ -74,10 +74,11 @@
   color: var(--bento-neutral-60);
 }
 
+/* Filled like a solid button (the board's --solid-bg): 夜光黑's slate with a white tick. */
 .imp-steps__step.is-done .imp-steps__dot {
-  border-color: var(--dc-accent-40);
-  background: var(--dc-accent-40);
-  color: var(--bento-action-solid-primary-fg);
+  border-color: var(--dc-solid);
+  background: var(--dc-solid);
+  color: var(--dc-on-solid);
 }
 
 .imp-steps__step.is-current .imp-steps__dot {
