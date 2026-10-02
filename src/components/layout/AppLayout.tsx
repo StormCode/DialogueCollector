@@ -2,7 +2,7 @@ import { Outlet } from "react-router";
 
 import { useUiStore } from "../../stores/uiStore";
 import { Toast } from "../feedback/Toast";
-import { BoardArt } from "../icons/Icon";
+import { WaveBackdrop } from "../icons/WaveBackdrop";
 import { SideNav } from "./SideNav";
 
 export function AppLayout() {
@@ -10,8 +10,8 @@ export function AppLayout() {
   const dismissNotice = useUiStore((s) => s.dismissNotice);
   return (
     <div className="app-layout">
-      {/* The curve every board draws behind its page, in the theme's accent. */}
-      <BoardArt name="backdrop" className="app-layout__backdrop" preserveAspectRatio="none" />
+      {/* The curve every board draws behind its page, in the theme's accent, as a moving sine. */}
+      <WaveBackdrop className="app-layout__backdrop" />
       <main className="app-layout__content">
         <Outlet />
       </main>
