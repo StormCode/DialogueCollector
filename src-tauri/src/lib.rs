@@ -148,6 +148,7 @@ pub fn run() {
             manual_cmd::prepare_preview,
             manual_cmd::cancel_prepare,
             manual_cmd::list_subtitle_tracks,
+            manual_cmd::find_sibling_subtitles,
             manual_cmd::extract_subtitle_track,
             manual_cmd::start_manual_import,
             smoke::smoke_mode,

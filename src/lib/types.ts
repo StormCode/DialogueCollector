@@ -202,6 +202,8 @@ export interface SubtitleTrack {
   /** ISO 639 code, e.g. "jpn", "chi". */
   language: string | null;
   title: string | null;
+  /** A subtitle file beside the video instead of a stream in it (`find_sibling_subtitles`). */
+  path?: string;
 }
 
 export interface ExtractedSubtitle {

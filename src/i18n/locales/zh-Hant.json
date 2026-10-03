@@ -132,7 +132,9 @@
       "hint": "正在讀取字幕文件"
     },
     "readFailed": {
-      "title": "字幕讀取失敗"
+      "title": "字幕讀取失敗",
+      "noTracks": "這部影片沒有內嵌字幕",
+      "noTracksHint": "可以把字幕檔和影片一起拖進來"
     },
     "select": {
       "title": "Step {{n}}. 選擇台詞",
@@ -212,7 +214,8 @@
       "language": "語言",
       "next": "下一步",
       "unknown": "未標示語言",
-      "label": "字幕軌"
+      "label": "字幕軌",
+      "external": "外掛字幕"
     }
   },
   "settings": {

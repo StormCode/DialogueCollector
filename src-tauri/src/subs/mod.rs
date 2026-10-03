@@ -27,6 +27,38 @@ use serde::{Deserialize, Serialize};
 
 pub const SUBTITLE_EXTENSIONS: &[&str] = &["ass", "srt"];
 
+/// Subtitle files beside `video` that go with it (user 2026-10-02): named like the video, with
+/// any tags after its name (`Ep 03.ass`, `Ep 03.tc.ass`, `Ep 03.chs&jp.srt`), in name order. A
+/// video dropped alone offers them beside its own subtitle tracks.
+pub fn sibling_subtitles(video: &Path) -> Vec<PathBuf> {
+    let (Some(dir), Some(stem)) = (video.parent(), video.file_stem().and_then(|s| s.to_str()))
+    else {
+        return Vec::new();
+    };
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return Vec::new();
+    };
+    let mut found: Vec<PathBuf> = entries
+        .filter_map(Result::ok)
+        .map(|e| e.path())
+        .filter(|p| p.is_file())
+        .filter(|p| {
+            let ext_ok = p
+                .extension()
+                .and_then(|e| e.to_str())
+                .is_some_and(|e| SUBTITLE_EXTENSIONS.contains(&e.to_ascii_lowercase().as_str()));
+            let name_ok = p.file_stem().and_then(|s| s.to_str()).is_some_and(|s| {
+                s == stem
+                    || s.strip_prefix(stem)
+                        .is_some_and(|rest| rest.starts_with('.'))
+            });
+            ext_ok && name_ok
+        })
+        .collect();
+    found.sort();
+    found
+}
+
 /// One timed line from a subtitle file.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

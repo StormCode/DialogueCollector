@@ -135,7 +135,9 @@
       "hint": "Reading the subtitle file"
     },
     "readFailed": {
-      "title": "Couldn't read the subtitles"
+      "title": "Couldn't read the subtitles",
+      "noTracks": "This video has no built-in subtitles",
+      "noTracksHint": "Drop a subtitle file together with the video"
     },
     "select": {
       "title": "Step {{n}}. Choose lines",
@@ -216,7 +218,8 @@
       "language": "Language",
       "next": "Next",
       "unknown": "Language not given",
-      "label": "Subtitle track"
+      "label": "Subtitle track",
+      "external": "subtitle file"
     }
   },
   "settings": {

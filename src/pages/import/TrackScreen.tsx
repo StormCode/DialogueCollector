@@ -28,17 +28,26 @@ const ISO_639_2: Record<string, string> = {
   ara: "ar",
 };
 
-/** A track's 語言 cell: the language's name in the UI's language, with the track's title. */
-export function trackLabel(track: SubtitleTrack, uiLanguage: string, unknown: string): string {
-  let name: string | null = null;
-  if (track.language) {
-    const code = ISO_639_2[track.language.toLowerCase()] ?? track.language;
-    try {
-      name = new Intl.DisplayNames([uiLanguage], { type: "language" }).of(code) ?? null;
-    } catch {
-      name = track.language;
-    }
+function languageName(language: string, uiLanguage: string): string {
+  const code = ISO_639_2[language.toLowerCase()] ?? language;
+  try {
+    return new Intl.DisplayNames([uiLanguage], { type: "language" }).of(code) ?? language;
+  } catch {
+    return language;
   }
+}
+
+/**
+ * A track's 語言 cell: the language's name in the UI's language, with the track's title. A file
+ * beside the video shows its languages (`&`-joined, from its name) and is marked as such; one
+ * whose name says no language shows its file name.
+ */
+export function trackLabel(track: SubtitleTrack, uiLanguage: string, unknown: string, external = ""): string {
+  if (track.path) {
+    const names = track.language?.split("&").map((l) => languageName(l, uiLanguage));
+    return names?.length ? `${names.join(" & ")} · ${external}` : (track.title ?? unknown);
+  }
+  const name = track.language ? languageName(track.language, uiLanguage) : null;
   if (name && track.title && track.title !== name) return `${name} · ${track.title}`;
   return name ?? track.title ?? unknown;
 }
@@ -99,7 +108,9 @@ export function TrackScreen({
                   onClick={() => setPicked(track.index)}
                 >
                   <span className="trk-no">#{i + 1}</span>
-                  <span className="trk-lang">{trackLabel(track, i18n.language, t("import.tracks.unknown"))}</span>
+                  <span className="trk-lang" title={track.path ? track.title ?? undefined : undefined}>
+                    {trackLabel(track, i18n.language, t("import.tracks.unknown"), t("import.tracks.external"))}
+                  </span>
                 </button>
               );
             })}

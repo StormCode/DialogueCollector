@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ipc } from "../lib/ipc";
 import { rowsFrom } from "../lib/lineEdits";
 import type { Cue, JobOutcome } from "../lib/types";
-import { useSubtitleImportStore } from "./subtitleImportStore";
+import { fileLanguages, useSubtitleImportStore } from "./subtitleImportStore";
 
 vi.mock("@tauri-apps/api/event", () => ({ listen: vi.fn(async () => () => {}) }));
 
@@ -152,11 +152,36 @@ describe("opening the subtitle path (T27)", () => {
     expect(s().screen).toBe("tracks");
   });
 
-  it("a video without text subtitles is 字幕讀取失敗", async () => {
+  it("a video without text subtitles, and none beside it, has no tracks", async () => {
     vi.spyOn(ipc, "preparePreview").mockResolvedValue("/cache/v.m4a");
     vi.spyOn(ipc, "listSubtitleTracks").mockResolvedValue([]);
+    vi.spyOn(ipc, "findSiblingSubtitles").mockResolvedValue([]);
     await s().open("/v.mkv", null);
-    expect(s().screen).toBe("readFailed");
+    expect(s()).toMatchObject({ screen: "readFailed", error: "Subs.NoTracks" });
+  });
+
+  it("a lone subtitle file beside a video with no tracks is used at once", async () => {
+    vi.spyOn(ipc, "preparePreview").mockResolvedValue("/cache/v.m4a");
+    vi.spyOn(ipc, "listSubtitleTracks").mockResolvedValue([]);
+    vi.spyOn(ipc, "findSiblingSubtitles").mockResolvedValue(["/d/Ep 03.tc.ass"]);
+    const parse = vi.spyOn(ipc, "parseSubtitle").mockResolvedValue([cue(0)]);
+    await s().open("/d/Ep 03.mkv", null);
+    expect(parse).toHaveBeenCalledWith("/d/Ep 03.tc.ass");
+    expect(s()).toMatchObject({ screen: "select", subtitlePath: "/d/Ep 03.tc.ass" });
+  });
+
+  it("offers files beside the video after its own tracks", async () => {
+    vi.spyOn(ipc, "preparePreview").mockResolvedValue("/cache/v.m4a");
+    const own = { index: 2, codec: "ass", language: "jpn", title: null };
+    vi.spyOn(ipc, "listSubtitleTracks").mockResolvedValue([own]);
+    vi.spyOn(ipc, "findSiblingSubtitles").mockResolvedValue(["/d/Ep 03.sc.ass", "/d/Ep 03.tc.ass"]);
+    await s().open("/d/Ep 03.mkv", null);
+    expect(s().screen).toBe("tracks");
+    expect(s().tracks.map((t) => [t.path ?? null, t.language])).toEqual([
+      [null, "jpn"],
+      ["/d/Ep 03.sc.ass", "zh-Hans"],
+      ["/d/Ep 03.tc.ass", "zh-Hant"],
+    ]);
   });
 
   it("取消 during 抽取音訊 goes back without moving on", async () => {
@@ -171,5 +196,15 @@ describe("opening the subtitle path (T27)", () => {
     await opening;
     expect(s().screen).toBe("aborted");
     expect(list).not.toHaveBeenCalled();
+  });
+});
+
+describe("subtitle files beside a video", () => {
+  it("read their languages off the tags in their names", () => {
+    expect(fileLanguages("Ep 03.tc.ass")).toBe("zh-Hant");
+    expect(fileLanguages("Ep 03.SC.srt")).toBe("zh-Hans");
+    expect(fileLanguages("[Kamigami] Kuroshitsuji - 02.chs&jap.ass")).toBe("zh-Hans&ja");
+    expect(fileLanguages("Ep 03.ass"), "no tags").toBeNull();
+    expect(fileLanguages("Ep 03.final.ass"), "no language tag").toBeNull();
   });
 });

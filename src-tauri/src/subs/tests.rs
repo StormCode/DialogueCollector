@@ -396,3 +396,34 @@ fn a_line_cut_in_two_to_restyle_it_is_one_line() {
     let got: Vec<_> = cues.iter().map(|c| (c.start_ms, c.end_ms)).collect();
     assert_eq!(got, [(812_250, 816_960), (820_000, 821_000)]);
 }
+
+#[test]
+fn subtitle_files_named_like_the_video_go_with_it() {
+    let dir = tempfile::tempdir().unwrap();
+    for name in [
+        "Ep 03.mkv",
+        "Ep 03.tc.ass",
+        "Ep 03.sc.ass",
+        "Ep 03.SRT",
+        "Ep 03.chs&jp.srt",
+        "Ep 030.ass",
+        "Ep 03 extra.ass",
+        "Ep 03.txt",
+        "Ep 04.ass",
+    ] {
+        std::fs::write(dir.path().join(name), b"").unwrap();
+    }
+    let found: Vec<String> = sibling_subtitles(&dir.path().join("Ep 03.mkv"))
+        .iter()
+        .map(|p| p.file_name().unwrap().to_string_lossy().into_owned())
+        .collect();
+    assert_eq!(
+        found,
+        [
+            "Ep 03.SRT",
+            "Ep 03.chs&jp.srt",
+            "Ep 03.sc.ass",
+            "Ep 03.tc.ass"
+        ]
+    );
+}
