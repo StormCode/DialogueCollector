@@ -14,6 +14,7 @@ import { SearchBar } from "../components/ui/SearchBar";
 import { Switch } from "../components/ui/Switch";
 import { useRevealScrollbar } from "../components/ui/useRevealScrollbar";
 import { useFullyInView } from "../hooks/useFullyInView";
+import { useRevealOnView } from "../hooks/useRevealOnView";
 import { usePlayer, type PlayMode } from "../hooks/usePlayer";
 import { errorKind, inTauri, ipc } from "../lib/ipc";
 import type { Line, LinesPageData } from "../lib/types";
@@ -81,6 +82,8 @@ export function LinesPage() {
   // it waits until scrolled to (user 2026-10-04).
   const toolbar = useRef<HTMLDivElement>(null);
   const toolbarSeen = useFullyInView(toolbar, scroller, !!data);
+  // So do the cards, each as it comes wholly into view.
+  const cards = useRevealOnView<number>(scroller, !!data);
 
   const id = Number(characterId);
   const load = useCallback(async () => {
@@ -202,16 +205,18 @@ export function LinesPage() {
     </>
   );
 
-  const card = (line: Line, idx: number) => {
+  const card = (line: Line) => {
     const isCurrent = player.currentId === line.id;
     const isPlaying = isCurrent && !player.paused;
     const isPinned = line.pinnedAt !== null;
+    const delay = cards.delayOf(line.id);
     return (
       <div
         key={line.id}
+        ref={cards.refFor(line.id)}
         data-line-id={line.id}
-        className={`ln-card${isCurrent ? " is-active" : ""}${line.id === missingId ? " is-missing" : ""}`}
-        style={{ animationDelay: `${idx * 100}ms` }}
+        className={`ln-card${delay === undefined ? "" : " is-revealed"}${isCurrent ? " is-active" : ""}${line.id === missingId ? " is-missing" : ""}`}
+        style={delay ? { animationDelay: `${delay}ms` } : undefined}
       >
         <span className="ln-check">
           <Checkbox checked={checked.includes(line.id)} onChange={() => toggleCheck(line.id)} label={t("lines.check")} hideLabel />
