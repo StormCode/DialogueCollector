@@ -57,12 +57,12 @@ describe("useRevealOnView", () => {
       ]),
     );
     expect(reveals(container)).toEqual(["instant", "instant", "hidden"]);
-    // Scrolled to: it rises in, at once since nothing waits ahead of it.
+    // Scrolled to: it rises in, at once since none has risen before it.
     act(() => io.report([{ target: el(3), intersectionRatio: 1 }]));
     expect(reveals(container)).toEqual(["instant", "instant", "0"]);
   });
 
-  it("rises later items in one by one, queueing those that come while others wait", () => {
+  it("rises later items in one by one, each at least a step after the one before", () => {
     let now = 0;
     vi.spyOn(performance, "now").mockImplementation(() => now);
     const io = fakeObserver();
@@ -85,10 +85,10 @@ describe("useRevealOnView", () => {
     act(() => io.report([{ target: el(3), intersectionRatio: 1 }, { target: el(4), intersectionRatio: 1 }]));
     expect(reveals(container).slice(2, 4)).toEqual([String(2 * STAGGER_MS - 100), String(3 * STAGGER_MS - 100)]);
 
-    // Once every queued item has started, the next one rises at once, even right after.
-    now = 3 * STAGGER_MS + 1;
+    // Scrolled on just after the last one started: it still keeps a step behind it.
+    now = 3 * STAGGER_MS + 50;
     act(() => io.report([{ target: el(5), intersectionRatio: 1 }]));
-    expect(reveals(container)[4]).toBe("0");
+    expect(reveals(container)[4]).toBe(String(STAGGER_MS - 50));
   });
 
   it("queues correctly under StrictMode, which runs updaters twice", () => {
