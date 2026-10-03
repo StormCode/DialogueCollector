@@ -488,6 +488,12 @@
   animation: ln-fade-up 1100ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
+/* Already in view as the page opens: just there. */
+.ln-card.is-instant,
+.ln-toolbar.is-instant {
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ln-card.is-revealed,
   .ln-toolbar.is-revealed {
