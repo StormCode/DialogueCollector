@@ -12,8 +12,8 @@ Style: Default,Arial,20
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 Dialogue: 0,0:00:01.50,0:00:03.20,Default,芙莉蓮,0,0,0,,人類的壽命{\\i1}真的{\\i0}很短暫呢。
 Comment: 0,0:00:02.00,0:00:04.00,Default,,0,0,0,,這是註解，不該出現
-Dialogue: 0,0:00:05.00,0:00:07.00,Default,,0,0,0,,{\\an8\\pos(320,50)}第一行\\N第二行，有逗號, 也沒關係
-Dialogue: 1,0:00:05.00,0:00:07.00,Default,,0,0,0,,{\\blur3}第一行\\N第二行，有逗號, 也沒關係
+Dialogue: 0,0:00:05.00,0:00:07.00,Default,,0,0,0,,{\\an8\\pos(320,50)}第一行です\\N第二行，有逗號, 也沒關係
+Dialogue: 1,0:00:05.00,0:00:07.00,Default,,0,0,0,,{\\blur3}第一行です\\N第二行，有逗號, 也沒關係
 Dialogue: 0,0:00:08.00,0:00:09.00,Sign,,0,0,0,,{\\p1}m 0 0 l 100 0 100 100 0 100{\\p0}
 Dialogue: 0,0:00:10.00,0:00:11.00,Default,,0,0,0,,那就\\h再去一次吧
 Dialogue: 0,1:02:03.04,1:02:05.00,Default,,0,0,0,,{\\fad(200,200)}
@@ -29,7 +29,7 @@ fn ass_keeps_dialogue_and_skips_comments() {
         [
             "最早的一句",
             "人類的壽命真的很短暫呢。",
-            "第一行",
+            "第一行です",
             "那就 再去一次吧"
         ]
     );
@@ -40,7 +40,7 @@ fn ass_keeps_dialogue_and_skips_comments() {
 #[test]
 fn ass_hard_breaks_split_text_from_translation() {
     let cues = parse_ass(ASS).unwrap();
-    let split = cues.iter().find(|c| c.text == "第一行").unwrap();
+    let split = cues.iter().find(|c| c.text == "第一行です").unwrap();
     assert_eq!(
         split.translation.as_deref(),
         Some("第二行，有逗號, 也沒關係")
@@ -97,8 +97,8 @@ fn ass_without_a_format_line_is_a_parse_error() {
 
 const SRT: &str = "1\r
 00:00:01,000 --> 00:00:02,500\r
-<i>這一切都是</i>\r
-命運石之門的選擇。\r
+<i>これがシュタインズ・ゲートの選択だ</i>\r
+這一切都是命運石之門的選擇。\r
 \r
 2\r
 00:00:03,000 --> 00:00:04,000 X1:100 X2:200 Y1:10 Y2:20\r
@@ -116,9 +116,9 @@ const SRT: &str = "1\r
 fn srt_strips_tags_and_splits_lines_into_text_and_translation() {
     let cues = parse_srt(SRT).unwrap();
     let texts: Vec<&str> = cues.iter().map(|c| c.text.as_str()).collect();
-    assert_eq!(texts, ["這一切都是", "畫面上方的字", "最後一句"]);
+    assert_eq!(texts, ["これがシュタインズ・ゲートの選択だ", "畫面上方的字", "最後一句"]);
     // SRT follows the same rule: the first line is 原文, the rest 譯文.
-    assert_eq!(cues[0].translation.as_deref(), Some("命運石之門的選擇。"));
+    assert_eq!(cues[0].translation.as_deref(), Some("這一切都是命運石之門的選擇。"));
     assert_eq!(cues[1].translation, None);
     assert_eq!((cues[0].start_ms, cues[0].end_ms), (1000, 2500));
     assert_eq!(cues[2].start_ms, 3_600_250);
@@ -245,7 +245,7 @@ fn other_shared_timings_are_left_alone() {
         "Dialogue: 0,0:06:00.00,0:06:01.00,Text - JP,,0,0,0,,行こう",
         "Dialogue: 0,0:06:00.00,0:06:01.00,Text - JP - UP,,0,0,0,,待って",
         // Already bilingual through \N.
-        "Dialogue: 0,0:04:00.00,0:04:01.00,JP,,0,0,0,,原文\\N譯文",
+        "Dialogue: 0,0:04:00.00,0:04:01.00,JP,,0,0,0,,原文です\\N譯文",
         "Dialogue: 0,0:04:00.00,0:04:01.00,CN,,0,0,0,,另一句",
     ]))
     .unwrap();
@@ -257,7 +257,7 @@ fn other_shared_timings_are_left_alone() {
         .collect();
     assert_eq!(
         translated,
-        ["原文"],
+        ["原文です"],
         "only the \\N line carries a translation"
     );
 }
@@ -343,7 +343,7 @@ fn within_one_event_the_larger_line_is_the_translation() {
         &[
             "Dialogue: 0,0:00:01.00,0:00:02.00,Default,,0,0,0,,{\\fs40}この地に残して\\N{\\fs60}在這片土地留下的",
             // Same size: the first line, as before.
-            "Dialogue: 0,0:00:03.00,0:00:04.00,Default,,0,0,0,,一行目\\N二行目",
+            "Dialogue: 0,0:00:03.00,0:00:04.00,Default,,0,0,0,,一行目です\\N第二行",
             // \r goes back to the style's size; an animated \fs doesn't count.
             "Dialogue: 0,0:00:05.00,0:00:06.00,Default,,0,0,0,,{\\fs30}小さい\\N{\\r\\t(0,500,\\fs10)}大きい",
         ],
@@ -357,7 +357,7 @@ fn within_one_event_the_larger_line_is_the_translation() {
         got,
         [
             ("この地に残して", Some("在這片土地留下的")),
-            ("一行目", Some("二行目")),
+            ("一行目です", Some("第二行")),
             ("小さい", Some("大きい")),
         ]
     );
@@ -424,6 +424,56 @@ fn subtitle_files_named_like_the_video_go_with_it() {
             "Ep 03.chs&jp.srt",
             "Ep 03.sc.ass",
             "Ep 03.tc.ass"
+        ]
+    );
+}
+
+#[test]
+fn a_one_language_file_wraps_its_long_lines_instead_of_translating() {
+    // Netflix 繁中: a long line wrapped in two, nothing translated.
+    let srt = "1\n00:17:17,410 --> 00:17:21,081\n總之，我們就盡力\n讓婆婆對我們敞開心扉吧\n\n\
+               2\n00:17:47,816 --> 00:17:51,111\n這位老婆婆的心扉\n完全沒有要打開的意思\n\n\
+               3\n00:17:52,000 --> 00:17:53,000\n好\n";
+    let cues = parse_srt(srt).unwrap();
+    let got: Vec<_> = cues
+        .iter()
+        .map(|c| (c.text.as_str(), c.translation.as_deref()))
+        .collect();
+    assert_eq!(
+        got,
+        [
+            ("總之，我們就盡力 讓婆婆對我們敞開心扉吧", None),
+            ("這位老婆婆的心扉 完全沒有要打開的意思", None),
+            ("好", None),
+        ]
+    );
+
+    // The same in ASS, with \N.
+    let cues = parse_ass(&events(&[
+        "Dialogue: 0,0:00:01.00,0:00:02.00,Default,,0,0,0,,總之，我們就盡力\\N讓婆婆對我們敞開心扉吧",
+    ]))
+    .unwrap();
+    assert_eq!(cues[0].text, "總之，我們就盡力 讓婆婆對我們敞開心扉吧");
+    assert_eq!(cues[0].translation, None);
+}
+
+#[test]
+fn a_two_language_file_keeps_its_rows_apart_even_where_they_look_alike() {
+    // Mostly Japanese over Chinese; one Japanese row all in kanji still has its translation.
+    let srt = "1\n00:00:01,000 --> 00:00:02,000\nおはよう\n早安\n\n\
+               2\n00:00:03,000 --> 00:00:04,000\n行こう\n走吧\n\n\
+               3\n00:00:05,000 --> 00:00:06,000\n了解\n知道了\n";
+    let cues = parse_srt(srt).unwrap();
+    let got: Vec<_> = cues
+        .iter()
+        .map(|c| (c.text.as_str(), c.translation.as_deref()))
+        .collect();
+    assert_eq!(
+        got,
+        [
+            ("おはよう", Some("早安")),
+            ("行こう", Some("走吧")),
+            ("了解", Some("知道了"))
         ]
     );
 }

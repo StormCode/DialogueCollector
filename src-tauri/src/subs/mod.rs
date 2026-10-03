@@ -182,7 +182,7 @@ pub fn decode(bytes: &[u8]) -> String {
 
 pub fn parse_srt(text: &str) -> Result<Vec<Cue>, SubsError> {
     let text = text.replace("\r\n", "\n").replace('\r', "\n");
-    let mut cues = Vec::new();
+    let mut entries: Vec<(u32, u64, u64, Vec<String>)> = Vec::new();
     let mut lines = text.lines().peekable();
     let mut position = 0u32;
 
@@ -204,11 +204,76 @@ pub fn parse_srt(text: &str) -> Result<Vec<Cue>, SubsError> {
         }
         let cleaned = clean_srt_text(&body.join("\n"));
         if !cleaned.is_empty() {
-            cues.push(Cue::new(position, start, end, &cleaned));
+            entries.push((
+                position,
+                start,
+                end,
+                cleaned.lines().map(str::to_owned).collect(),
+            ));
         }
         position += 1;
     }
+    let bilingual = lines_are_translations(entries.iter().map(|(.., l)| l.as_slice()));
+    let cues = entries
+        .into_iter()
+        .map(|(position, start, end, lines)| {
+            let text = lines.join(if bilingual { "\n" } else { " " });
+            Cue::new(position, start, end, &text)
+        })
+        .collect();
     Ok(sort(cues))
+}
+
+/// The writing a line is mostly in: enough to tell a translation from a line that just wraps.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Script {
+    Kana,
+    Han,
+    Hangul,
+    Latin,
+}
+
+fn script_of(text: &str) -> Option<Script> {
+    if has_kana(text) {
+        return Some(Script::Kana);
+    }
+    let (mut han, mut hangul, mut latin) = (0, 0, 0);
+    for c in text.chars() {
+        match c {
+            '\u{AC00}'..='\u{D7AF}' | '\u{1100}'..='\u{11FF}' => hangul += 1,
+            '\u{3400}'..='\u{4DBF}' | '\u{4E00}'..='\u{9FFF}' | '\u{F900}'..='\u{FAFF}' => han += 1,
+            c if c.is_alphabetic() && (c as u32) < 0x250 => latin += 1,
+            _ => {}
+        }
+    }
+    [
+        (hangul, Script::Hangul),
+        (han, Script::Han),
+        (latin, Script::Latin),
+    ]
+    .into_iter()
+    .filter(|&(n, _)| n > 0)
+    .max_by_key(|&(n, _)| n)
+    .map(|(_, s)| s)
+}
+
+/// Whether a file's lines of more than one row carry a translation under the text (user
+/// 2026-09-29: first row 原文, the rest 譯文) or just wrap one long line (user 2026-10-04: a
+/// Netflix 繁中 track split 「總之，我們就盡力」 from 「讓婆婆對我們敞開心扉吧」). Decided for the whole
+/// file, by whether at least half of them change writing after the first row: a lone line all
+/// in kanji then can't pass for Chinese in a Japanese–Chinese file.
+fn lines_are_translations<'a>(cues: impl Iterator<Item = &'a [String]>) -> bool {
+    let (mut changed, mut total) = (0, 0);
+    for lines in cues.filter(|l| l.len() > 1) {
+        if let (Some(first), Some(rest)) = (script_of(&lines[0]), script_of(&lines[1..].join(" ")))
+        {
+            total += 1;
+            if first != rest {
+                changed += 1;
+            }
+        }
+    }
+    total == 0 || changed * 2 >= total
 }
 
 fn parse_srt_timing(line: &str) -> Option<(u64, u64)> {
@@ -288,12 +353,15 @@ enum Section {
     Other,
 }
 
+/// An event as read, before its rows become a cue: style, position, start, end, rows with sizes.
+type ParsedEvent = (String, u32, u64, u64, Vec<(String, Option<f64>)>);
+
 pub fn parse_ass(text: &str) -> Result<Vec<Cue>, SubsError> {
     let mut section = Section::Other;
     let mut format: Option<Vec<String>> = None;
     let mut style_format: Option<Vec<String>> = None;
     let mut styles: std::collections::HashMap<String, Size> = std::collections::HashMap::new();
-    let mut events: Vec<Event> = Vec::new();
+    let mut parsed: Vec<ParsedEvent> = Vec::new();
     let mut seen = std::collections::HashSet::new();
     let mut position = 0u32;
 
@@ -382,9 +450,32 @@ pub fn parse_ass(text: &str) -> Result<Vec<Cue>, SubsError> {
         if !seen.insert((start_ms, end_ms, joined)) {
             continue; // the same line repeated on another layer
         }
-        let (cue, height) = cue_from_lines(this_position, start_ms, end_ms, &lines);
-        events.push(Event { style, cue, height });
+        parsed.push((style, this_position, start_ms, end_ms, lines));
     }
+    // Rows drawn at different sizes are text and translation whatever the rest of the file does;
+    // rows at one size are too only if the file's rows carry translations (lines_are_translations).
+    let one_size = |lines: &[(String, Option<f64>)]| lines.windows(2).all(|w| w[0].1 == w[1].1);
+    let rows: Vec<Vec<String>> = parsed
+        .iter()
+        .filter(|(.., lines)| one_size(lines))
+        .map(|(.., lines)| lines.iter().map(|(l, _)| l.clone()).collect())
+        .collect();
+    let bilingual = lines_are_translations(rows.iter().map(Vec::as_slice));
+    let events = parsed
+        .into_iter()
+        .map(|(style, position, start_ms, end_ms, mut lines)| {
+            if !bilingual && lines.len() > 1 && one_size(&lines) {
+                let text = lines
+                    .iter()
+                    .map(|(l, _)| l.as_str())
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                lines = vec![(text, lines[0].1)];
+            }
+            let (cue, height) = cue_from_lines(position, start_ms, end_ms, &lines);
+            Event { style, cue, height }
+        })
+        .collect();
     Ok(sort(pair_bilingual(events)))
 }
 
