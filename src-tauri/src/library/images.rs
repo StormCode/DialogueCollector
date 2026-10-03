@@ -18,8 +18,9 @@ pub const MAX_BYTES: u64 = 20 * 1024 * 1024;
 pub const MAX_PIXELS: u64 = 32_000_000;
 
 /// A portrait whose sides both pass this is scaled down, keeping its shape, until the shorter
-/// side is this long (user 2026-10-04): 100 × N or N × 100. It shows at 72 px, cropped to fill.
-pub const PORTRAIT_SHORT_SIDE: u32 = 100;
+/// side is this long (user 2026-10-04): 480 × N or N × 480, so 編輯角色's 240 px preview stays
+/// sharp on a 2× screen (the 台詞本 card shows it at 72 px), cropped to fill.
+pub const PORTRAIT_SHORT_SIDE: u32 = 480;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ImageError {
@@ -251,27 +252,27 @@ mod tests {
     }
 
     #[test]
-    fn a_large_portrait_is_scaled_down_to_a_100_px_short_side() {
+    fn a_large_portrait_is_scaled_down_to_a_480_px_short_side() {
         let dir = tempfile::tempdir().unwrap();
         let lib = Library::create(&dir.path().join("lib")).unwrap();
         let wide = dir.path().join("wide.png");
-        fs::write(&wide, encoded(400, 200, image::ImageFormat::Png)).unwrap();
+        fs::write(&wide, encoded(1200, 600, image::ImageFormat::Png)).unwrap();
         let tall = dir.path().join("tall.jpg");
-        fs::write(&tall, encoded(300, 600, image::ImageFormat::Jpeg)).unwrap();
+        fs::write(&tall, encoded(600, 1200, image::ImageFormat::Jpeg)).unwrap();
 
         let name = store_portrait(lib.root(), &wide).unwrap();
         assert!(name.ends_with(".png"));
-        assert_eq!(stored_size(&lib, &name), (200, 100));
+        assert_eq!(stored_size(&lib, &name), (960, 480));
         // Its transparency survives.
         let back = image::open(lib.root().join(IMAGES_DIR).join(&name))
             .unwrap()
             .to_rgba8();
-        assert_eq!(back.get_pixel(5, 50)[3], 0);
-        assert_eq!(back.get_pixel(195, 50)[3], 255);
+        assert_eq!(back.get_pixel(5, 240)[3], 0);
+        assert_eq!(back.get_pixel(955, 240)[3], 255);
 
         let name = store_portrait(lib.root(), &tall).unwrap();
         assert!(name.ends_with(".jpg"));
-        assert_eq!(stored_size(&lib, &name), (100, 200));
+        assert_eq!(stored_size(&lib, &name), (480, 960));
     }
 
     #[test]
@@ -280,8 +281,8 @@ mod tests {
         let lib = Library::create(&dir.path().join("lib")).unwrap();
         let read = |name: &str| fs::read(lib.root().join(IMAGES_DIR).join(name)).unwrap();
 
-        // One side within 100 px: no shorter side to bring down.
-        let small = encoded(160, 90, image::ImageFormat::Png);
+        // One side within 480 px: no shorter side to bring down.
+        let small = encoded(800, 400, image::ImageFormat::Png);
         let src = dir.path().join("small.png");
         fs::write(&src, &small).unwrap();
         assert_eq!(read(&store_portrait(lib.root(), &src).unwrap()), small);

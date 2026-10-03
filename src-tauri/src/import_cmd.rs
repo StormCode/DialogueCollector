@@ -59,28 +59,46 @@ pub fn list_characters(state: State<'_, AppState>) -> CommandResult<Vec<Characte
     Ok(characters::list(lib.conn(), lib.root())?)
 }
 
+/// Runs `work` on a blocking thread, off the main one: a synchronous command runs on the main
+/// thread, and while it works the window cannot repaint, so a loading button never shows its
+/// spinner (user 2026-10-04: shrinking a portrait takes a second or two).
+async fn off_main<T: Send + 'static>(
+    app: AppHandle,
+    work: impl FnOnce(&AppState) -> CommandResult<T> + Send + 'static,
+) -> CommandResult<T> {
+    tauri::async_runtime::spawn_blocking(move || {
+        use tauri::Manager;
+        work(&app.state::<AppState>())
+    })
+    .await
+    .map_err(|e| CommandError::new("Internal.Join", e))?
+}
+
 /// 新增角色.
 #[tauri::command]
-pub fn create_character(
-    state: State<'_, AppState>,
-    character: NewCharacter,
-) -> CommandResult<Character> {
-    let library = lock(&state.library)?;
-    let lib = library.library().ok_or(LibraryError::NotReady)?;
-    Ok(characters::create(lib.conn(), lib.root(), character)?)
+pub async fn create_character(app: AppHandle, character: NewCharacter) -> CommandResult<Character> {
+    off_main(app, move |state| {
+        let library = lock(&state.library)?;
+        let lib = library.library().ok_or(LibraryError::NotReady)?;
+        Ok(characters::create(lib.conn(), lib.root(), character)?)
+    })
+    .await
 }
 
 /// 編輯角色.
 #[tauri::command]
-pub fn update_character(
-    state: State<'_, AppState>,
+pub async fn update_character(
+    app: AppHandle,
     id: i64,
     character: characters::CharacterEdit,
 ) -> CommandResult<Character> {
-    let mut library = lock(&state.library)?;
-    let lib = library.library_mut().ok_or(LibraryError::NotReady)?;
-    let root = lib.root().to_owned();
-    Ok(characters::update(lib.conn_mut(), &root, id, character)?)
+    off_main(app, move |state| {
+        let mut library = lock(&state.library)?;
+        let lib = library.library_mut().ok_or(LibraryError::NotReady)?;
+        let root = lib.root().to_owned();
+        Ok(characters::update(lib.conn_mut(), &root, id, character)?)
+    })
+    .await
 }
 
 /// 刪除角色 (ET3). Holds the library-busy guard: never beside an import of its lines.
