@@ -150,7 +150,7 @@ pub fn update(
             e => e.into(),
         })?;
     let new_file = match &edit.portrait {
-        PortraitChange::Replace(path) => Some(images::store(root, path)?),
+        PortraitChange::Replace(path) => Some(images::store_portrait(root, path)?),
         _ => None,
     };
     let portrait = match &edit.portrait {
@@ -256,7 +256,7 @@ pub fn create(
     let portrait = new
         .portrait
         .as_deref()
-        .map(|p| images::store(root, p))
+        .map(|p| images::store_portrait(root, p))
         .transpose()?;
     let now = store::now_ms();
     let inserted = conn.execute(
