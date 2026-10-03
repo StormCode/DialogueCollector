@@ -161,7 +161,7 @@ describe("subtitle import flow", () => {
     fireEvent.click(screen.getByLabelText("選取字幕 1"));
     fireEvent.click(screen.getByLabelText("選取字幕 3"));
     fireEvent.click(merge);
-    expect(screen.getByText("おはよう。今日は早いんだね。，そう言えば、昨日の話なんだけど。")).toBeInTheDocument();
+    expect(screen.getByText("おはよう。今日は早いんだね。そう言えば、昨日の話なんだけど。")).toBeInTheDocument();
     expect(screen.getAllByRole("checkbox")).toHaveLength(2);
 
     // Only the merged row has a 間隔秒數, 0.5 s to start with; its label doesn't check the row.

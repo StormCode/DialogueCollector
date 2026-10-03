@@ -46,9 +46,21 @@ export function joinSeparator(texts: string[]): string {
   return cjk >= letters ? "，" : ", ";
 }
 
+/** Ends in punctuation (`?`, `!`, `,`, 。, ？, 」, … — any Unicode punctuation). */
+const ENDS_IN_PUNCTUATION = /\p{P}$/u;
+
+/**
+ * The lines joined in order. A line that already ends in punctuation needs no comma after it
+ * (user 2026-10-04): CJK text then runs straight on, other text takes just the space.
+ */
 function join(texts: string[]): string {
   const kept = texts.map((t) => t.trim()).filter((t) => t !== "");
-  return kept.join(joinSeparator(kept));
+  if (kept.length === 0) return "";
+  const separator = joinSeparator(kept);
+  const afterPunctuation = separator === "，" ? "" : " ";
+  return kept.reduce((joined, text) =>
+    joined + (ENDS_IN_PUNCTUATION.test(joined) ? afterPunctuation : separator) + text,
+  );
 }
 
 /**
