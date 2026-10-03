@@ -126,6 +126,14 @@ pub async fn list_subtitle_tracks(video: PathBuf) -> CommandResult<Vec<ffmpeg::S
     .map_err(|e| CommandError::new("Internal.Join", e))?
 }
 
+/// 選擇字幕軌: subtitle files beside the video, named like it (`subs::sibling_subtitles`).
+#[tauri::command]
+pub async fn find_sibling_subtitles(video: PathBuf) -> CommandResult<Vec<PathBuf>> {
+    tauri::async_runtime::spawn_blocking(move || crate::subs::sibling_subtitles(&video))
+        .await
+        .map_err(|e| CommandError::new("Internal.Join", e))
+}
+
 /// The chosen track, written out as ASS or SRT and parsed like a dropped subtitle file.
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]

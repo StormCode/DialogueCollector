@@ -204,4 +204,25 @@ describe("subtitle import flow", () => {
     fireEvent.click(screen.getByRole("button", { name: "回上一步" }));
     expect(await screen.findByText("Step 2. 選擇字幕軌")).toBeInTheDocument();
   });
+
+  it("lists a subtitle file beside the video, by the language in its name", async () => {
+    vi.spyOn(ipc, "listSubtitleTracks").mockResolvedValue([{ index: 2, codec: "ass", language: "jpn", title: null }]);
+    vi.spyOn(ipc, "findSiblingSubtitles").mockResolvedValue(["/videos/ep01.tc.ass"]);
+    const parse = vi.spyOn(ipc, "parseSubtitle").mockResolvedValue(CUES);
+    renderFlow({ video: "/videos/ep01.mkv" });
+
+    const file = await screen.findByRole("radio", { name: /#2.*外掛字幕/ });
+    fireEvent.click(file);
+    fireEvent.click(screen.getByRole("button", { name: "下一步" }));
+    expect(await screen.findByText("Step 3. 選擇台詞")).toBeInTheDocument();
+    expect(parse).toHaveBeenCalledWith("/videos/ep01.tc.ass");
+  });
+
+  it("says so when a video has no subtitles at all, without 再試一次", async () => {
+    vi.spyOn(ipc, "listSubtitleTracks").mockResolvedValue([]);
+    vi.spyOn(ipc, "findSiblingSubtitles").mockResolvedValue([]);
+    renderFlow({ video: "/videos/ep01.mkv" });
+    expect(await screen.findByText("這部影片沒有內嵌字幕")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "再試一次" })).toBeNull();
+  });
 });

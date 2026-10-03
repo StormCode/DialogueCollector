@@ -57,6 +57,7 @@ export const ipc = {
     invoke<string | null>("set_poster", { characterId, path }),
   cancelPrepare: () => invoke<void>("cancel_prepare"),
   listSubtitleTracks: (video: string) => invoke<SubtitleTrack[]>("list_subtitle_tracks", { video }),
+  findSiblingSubtitles: (video: string) => invoke<string[]>("find_sibling_subtitles", { video }),
   extractSubtitleTrack: (video: string, index: number, codec: string) =>
     invoke<ExtractedSubtitle>("extract_subtitle_track", { video, index, codec }),
   probeMedia: (paths: string[]) => invoke<MediaInfo[]>("probe_media", { paths }),

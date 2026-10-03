@@ -117,6 +117,49 @@ const initial = {
   error: null,
 };
 
+/**
+ * A subtitle file beside the video, as a row of 選擇字幕軌: its language read off the tags
+ * between the video's name and the extension (`.tc`, `.chs&jp`), its file name as the title.
+ */
+export function fileTrack(path: string, i: number): SubtitleTrack {
+  const name = path.split(/[\\/]/).pop() ?? path;
+  const ext = name.split(".").pop()?.toLowerCase() ?? "";
+  return { index: -1 - i, codec: ext, language: fileLanguages(name), title: name, path };
+}
+
+const FILE_LANGUAGE_TAGS: Record<string, string> = {
+  tc: "zh-Hant",
+  cht: "zh-Hant",
+  big5: "zh-Hant",
+  trad: "zh-Hant",
+  "zh-tw": "zh-Hant",
+  "zh-hant": "zh-Hant",
+  sc: "zh-Hans",
+  chs: "zh-Hans",
+  gb: "zh-Hans",
+  simp: "zh-Hans",
+  "zh-cn": "zh-Hans",
+  "zh-hans": "zh-Hans",
+  chi: "zh",
+  zh: "zh",
+  jp: "ja",
+  ja: "ja",
+  jpn: "ja",
+  jap: "ja",
+  en: "en",
+  eng: "en",
+};
+
+/** The language tags in a subtitle file's name (`Ep 03.chs&jp.ass` → `zh-Hans&ja`), if any. */
+export function fileLanguages(name: string): string | null {
+  const parts = name.split(".").slice(1, -1);
+  const codes = parts
+    .flatMap((p) => p.split(/[&+_\s]/))
+    .map((tag) => FILE_LANGUAGE_TAGS[tag.toLowerCase()])
+    .filter((code): code is string => !!code);
+  return codes.length ? [...new Set(codes)].join("&") : null;
+}
+
 function screenFor(outcome: JobOutcome): Screen {
   if (outcome.status === "complete") return "complete";
   if (outcome.imported === 0 && outcome.status === "failed") return "failed";
@@ -205,10 +248,18 @@ export const useSubtitleImportStore = create<SubtitleImportState>((set, get) => 
       }
       if (!(await extractAudio(video))) return;
       try {
-        const tracks = await ipc.listSubtitleTracks(video);
+        // The video's own text tracks, then subtitle files named like it beside it.
+        const [embedded, files] = await Promise.all([
+          ipc.listSubtitleTracks(video),
+          ipc.findSiblingSubtitles(video).catch(() => [] as string[]),
+        ]);
         if (aborted()) return;
+        const tracks = [...embedded, ...files.map(fileTrack)];
+        set({ tracks });
         if (tracks.length === 0) set({ error: "Subs.NoTracks", screen: "readFailed" });
-        else set({ tracks, screen: "tracks" });
+        // A lone file beside a video with no tracks of its own is the subtitle: no need to ask.
+        else if (embedded.length === 0 && files.length === 1) await get().pickTrack(tracks[0]);
+        else set({ screen: "tracks" });
       } catch (e) {
         readFailed(e, null);
       }
@@ -229,6 +280,12 @@ export const useSubtitleImportStore = create<SubtitleImportState>((set, get) => 
       if (!video) return;
       set({ screen: "reading" });
       try {
+        if (track.path) {
+          const cues = await ipc.parseSubtitle(track.path);
+          if (aborted()) return;
+          showCues(cues, track.path);
+          return;
+        }
         const extracted = await ipc.extractSubtitleTrack(video, track.index, track.codec);
         if (aborted()) return;
         showCues(extracted.cues, extracted.path);

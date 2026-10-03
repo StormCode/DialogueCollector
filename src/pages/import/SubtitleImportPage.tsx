@@ -120,27 +120,32 @@ export function SubtitleImportPage() {
       );
     case "aborted":
       return <div className="imp-page" />;
-    case "readFailed":
+    case "readFailed": {
+      const noTracks = s.error === "Subs.NoTracks";
       return (
         <div className="imp-page">
           <StatusCard
             medallion={<OopsMedallion />}
-            title={t("import.readFailed.title")}
-            hint={t("import.oops")}
+            // A video with no subtitles of its own says so (user 2026-10-02); retrying won't help.
+            title={t(noTracks ? "import.readFailed.noTracks" : "import.readFailed.title")}
+            hint={t(noTracks ? "import.readFailed.noTracksHint" : "import.oops")}
             entrance="shake"
             actions={
               <>
                 <ImportButton kind="neutral" icon={<BentoIcon name="Home" size={24} />} onClick={home}>
                   {t("import.home")}
                 </ImportButton>
-                <ImportButton kind="primary" icon={<MaterialIcon name="refresh" />} onClick={() => void s.retryRead()}>
-                  {t("import.retry")}
-                </ImportButton>
+                {!noTracks && (
+                  <ImportButton kind="primary" icon={<MaterialIcon name="refresh" />} onClick={() => void s.retryRead()}>
+                    {t("import.retry")}
+                  </ImportButton>
+                )}
               </>
             }
           />
         </div>
       );
+    }
     case "select":
       return (
         <SelectScreen
