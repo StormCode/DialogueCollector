@@ -7,55 +7,71 @@ import { useCallback, useEffect, useRef, useState, type RefObject } from "react"
  */
 export const STAGGER_MS = 250;
 
+/** How an item shows: not yet (hidden), at once as the page opens, or rising in after a delay. */
+export type Reveal = undefined | "instant" | number;
+
 /**
  * Reveals items once each is wholly inside `root`'s visible area (user 2026-10-04: the 台詞頁
- * cards, like its toolbar). `refFor(key)` goes on each item; `delayOf(key)` is undefined until the
- * item has been seen, then how long it waits for its turn in the queue. Seen stays seen, so an
- * item reveals once. Without IntersectionObserver (tests, very old engines) every item is seen at
- * once.
+ * toolbar and cards). `refFor(key)` goes on each item; `revealOf(key)` says how it shows. Items
+ * already in view when the page opens just show, with no animation (user 2026-10-04); items that
+ * come into view later, by scrolling or as new ones mount, rise in, queued as above. Seen stays
+ * seen, so an item reveals once. Without IntersectionObserver (tests, very old engines) every
+ * item just shows.
  */
 export function useRevealOnView<K>(root: RefObject<HTMLElement | null>, ready = true) {
-  const [delays, setDelays] = useState<Map<K, number>>(new Map());
+  const [reveals, setReveals] = useState<Map<K, Reveal>>(new Map());
   const observer = useRef<IntersectionObserver | null>(null);
   /** The element each key is on now. */
   const elements = useRef(new Map<K, Element>());
   /** When the last item queued starts rising, on the `performance.now()` clock. */
   const lastStart = useRef(-Infinity);
-  /** Items already scheduled, so a second sighting doesn't queue them again. */
-  const scheduled = useRef(new Set<K>());
+  /** Items already given a reveal, so a second sighting changes nothing. */
+  const settled = useRef(new Set<K>());
 
-  // The queue is worked out here, once per sighting, not in the state updater: React may call
-  // an updater twice (StrictMode does in development), which pushed the first card back a step.
-  const reveal = useCallback((seen: K[]) => {
+  // Worked out here, once per sighting, not in a state updater: React may call an updater twice
+  // (StrictMode does in development), which pushed the first card back a step.
+  const reveal = useCallback((atOpen: K[], later: K[]) => {
     const now = performance.now();
-    const fresh = new Map<K, number>();
-    for (const key of seen) {
-      if (scheduled.current.has(key)) continue;
-      scheduled.current.add(key);
+    const fresh = new Map<K, Reveal>();
+    for (const key of atOpen) {
+      if (settled.current.has(key)) continue;
+      settled.current.add(key);
+      fresh.set(key, "instant");
+    }
+    for (const key of later) {
+      if (settled.current.has(key)) continue;
+      settled.current.add(key);
       // Behind an item starting now or later, wait a step after it; otherwise go at once.
       const start = lastStart.current >= now ? lastStart.current + STAGGER_MS : now;
       lastStart.current = start;
       fresh.set(key, Math.round(start - now));
     }
-    if (fresh.size) setDelays((prev) => new Map([...prev, ...fresh]));
+    if (fresh.size) setReveals((prev) => new Map([...prev, ...fresh]));
   }, []);
 
   useEffect(() => {
     if (!ready) return;
     if (typeof IntersectionObserver === "undefined") {
-      reveal([...elements.current.keys()]);
+      reveal([...elements.current.keys()], []);
       return;
     }
+    // What is on the page as it opens: its first report says whether each is already in view.
+    const atOpen = new Set(elements.current.values());
     const keyOf = (el: Element) => [...elements.current].find(([, e]) => e === el)?.[0];
     const io = new IntersectionObserver(
       (entries) => {
-        const seen = entries
-          .filter((e) => e.intersectionRatio >= 0.99)
-          .map((e) => e.target)
-          .sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1))
-          .map(keyOf)
-          .filter((k): k is K => k !== undefined);
-        if (seen.length) reveal(seen);
+        const inView: K[] = [];
+        const later: K[] = [];
+        const ordered = [...entries].sort((a, b) =>
+          a.target.compareDocumentPosition(b.target) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
+        );
+        for (const e of ordered) {
+          const first = atOpen.delete(e.target);
+          const key = keyOf(e.target);
+          if (key === undefined || e.intersectionRatio < 0.99) continue;
+          (first ? inView : later).push(key);
+        }
+        if (inView.length || later.length) reveal(inView, later);
       },
       { root: root.current, threshold: [0.99, 1] },
     );
@@ -78,11 +94,18 @@ export function useRevealOnView<K>(root: RefObject<HTMLElement | null>, ready = 
       if (!el) return;
       elements.current.set(key, el);
       if (observer.current) observer.current.observe(el);
-      else if (typeof IntersectionObserver === "undefined") reveal([key]);
+      else if (typeof IntersectionObserver === "undefined") reveal([key], []);
     },
     [reveal],
   );
 
-  const delayOf = useCallback((key: K) => delays.get(key), [delays]);
-  return { refFor, delayOf };
+  const revealOf = useCallback((key: K): Reveal => reveals.get(key), [reveals]);
+  return { refFor, revealOf };
+}
+
+/** The class and style an item takes for its reveal. */
+export function revealProps(reveal: Reveal): { className: string; style?: { animationDelay: string } } {
+  if (reveal === undefined) return { className: "" };
+  if (reveal === "instant") return { className: " is-revealed is-instant" };
+  return { className: " is-revealed", style: reveal ? { animationDelay: `${reveal}ms` } : undefined };
 }

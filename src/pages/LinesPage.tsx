@@ -13,8 +13,7 @@ import { Pagination } from "../components/ui/Pagination";
 import { SearchBar } from "../components/ui/SearchBar";
 import { Switch } from "../components/ui/Switch";
 import { useRevealScrollbar } from "../components/ui/useRevealScrollbar";
-import { useFullyInView } from "../hooks/useFullyInView";
-import { useRevealOnView } from "../hooks/useRevealOnView";
+import { revealProps, useRevealOnView } from "../hooks/useRevealOnView";
 import { usePlayer, type PlayMode } from "../hooks/usePlayer";
 import { errorKind, inTauri, ipc } from "../lib/ipc";
 import type { Line, LinesPageData } from "../lib/types";
@@ -78,12 +77,10 @@ export function LinesPage() {
   const [toast, setToast] = useState<string | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
   useRevealScrollbar(scroller);
-  // The toolbar rises in like the cards, but only once it can be seen whole: under a tall poster
-  // it waits until scrolled to (user 2026-10-04).
-  const toolbar = useRef<HTMLDivElement>(null);
-  const toolbarSeen = useFullyInView(toolbar, scroller, !!data);
-  // So do the cards, each as it comes wholly into view.
-  const cards = useRevealOnView<number>(scroller, !!data);
+  // The toolbar and each card show once wholly in view: at once if so as the page opens, else
+  // rising in, one after another, as they are scrolled to (user 2026-10-04).
+  const reveals = useRevealOnView<number | "toolbar">(scroller, !!data);
+  const toolbar = revealProps(reveals.revealOf("toolbar"));
 
   const id = Number(characterId);
   const load = useCallback(async () => {
@@ -209,14 +206,14 @@ export function LinesPage() {
     const isCurrent = player.currentId === line.id;
     const isPlaying = isCurrent && !player.paused;
     const isPinned = line.pinnedAt !== null;
-    const delay = cards.delayOf(line.id);
+    const reveal = revealProps(reveals.revealOf(line.id));
     return (
       <div
         key={line.id}
-        ref={cards.refFor(line.id)}
+        ref={reveals.refFor(line.id)}
         data-line-id={line.id}
-        className={`ln-card${delay === undefined ? "" : " is-revealed"}${isCurrent ? " is-active" : ""}${line.id === missingId ? " is-missing" : ""}`}
-        style={delay ? { animationDelay: `${delay}ms` } : undefined}
+        className={`ln-card${reveal.className}${isCurrent ? " is-active" : ""}${line.id === missingId ? " is-missing" : ""}`}
+        style={reveal.style}
       >
         <span className="ln-check">
           <Checkbox checked={checked.includes(line.id)} onChange={() => toggleCheck(line.id)} label={t("lines.check")} hideLabel />
@@ -333,7 +330,7 @@ export function LinesPage() {
 
       <div className="ln-divider" aria-hidden="true" />
 
-      <div ref={toolbar} className={`ln-toolbar${toolbarSeen ? " is-revealed" : ""}`}>
+      <div ref={reveals.refFor("toolbar")} className={`ln-toolbar${toolbar.className}`} style={toolbar.style}>
         <div className="ln-search">
           <SearchBar value={query} onChange={(v) => narrow(() => setQuery(v))} placeholder={t("lines.search")} />
         </div>

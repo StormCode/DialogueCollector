@@ -8,17 +8,34 @@ type Entry = { target: Element; intersectionRatio: number };
 
 function List({ ids }: { ids: number[] }) {
   const root = useRef<HTMLDivElement>(null);
-  const { refFor, delayOf } = useRevealOnView<number>(root);
+  const { refFor, revealOf } = useRevealOnView<number>(root);
   return (
     <div ref={root}>
       {ids.map((id) => (
-        <div key={id} ref={refFor(id)} data-id={id} data-delay={delayOf(id) ?? "hidden"} />
+        <div key={id} ref={refFor(id)} data-id={id} data-reveal={revealOf(id) ?? "hidden"} />
       ))}
     </div>
   );
 }
 
-const delays = (c: HTMLElement) => [...c.querySelectorAll("[data-id]")].map((el) => el.getAttribute("data-delay"));
+const reveals = (c: HTMLElement) => [...c.querySelectorAll("[data-id]")].map((el) => el.getAttribute("data-reveal"));
+
+/** A fake IntersectionObserver; `report` plays the browser's callback. */
+function fakeObserver() {
+  const io = { report: (_: Entry[]) => {} };
+  vi.stubGlobal(
+    "IntersectionObserver",
+    class {
+      constructor(cb: (entries: Entry[]) => void) {
+        io.report = cb;
+      }
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    },
+  );
+  return io;
+}
 
 describe("useRevealOnView", () => {
   afterEach(() => {
@@ -26,78 +43,76 @@ describe("useRevealOnView", () => {
     vi.restoreAllMocks();
   });
 
-  it("reveals items one by one as each comes wholly into view, queueing those that come later", () => {
-    let now = 0;
-    vi.spyOn(performance, "now").mockImplementation(() => now);
-    let report: (entries: Entry[]) => void = () => {};
-    vi.stubGlobal(
-      "IntersectionObserver",
-      class {
-        constructor(cb: (entries: Entry[]) => void) {
-          report = cb;
-        }
-        observe() {}
-        unobserve() {}
-        disconnect() {}
-      },
-    );
-    const { container } = render(<List ids={[1, 2, 3, 4, 5]} />);
+  it("just shows what is wholly in view as the page opens", () => {
+    const io = fakeObserver();
+    const { container } = render(<List ids={[1, 2, 3]} />);
     const el = (id: number) => container.querySelector(`[data-id="${id}"]`)!;
-    expect(delays(container)).toEqual(["hidden", "hidden", "hidden", "hidden", "hidden"]);
-
-    // The first two come into view together (reported out of order); the third only partly.
+    expect(reveals(container)).toEqual(["hidden", "hidden", "hidden"]);
+    // The first report: two wholly in view, the third cut off by the bottom edge.
     act(() =>
-      report([
-        { target: el(2), intersectionRatio: 1 },
+      io.report([
         { target: el(1), intersectionRatio: 1 },
+        { target: el(2), intersectionRatio: 1 },
         { target: el(3), intersectionRatio: 0.4 },
       ]),
     );
-    expect(delays(container)).toEqual(["0", String(STAGGER_MS), "hidden", "hidden", "hidden"]);
-
-    // Scrolled on 100 ms later, while the second still waits: the next ones queue behind it.
-    now = 100;
-    act(() => report([{ target: el(3), intersectionRatio: 1 }, { target: el(4), intersectionRatio: 1 }]));
-    expect(delays(container).slice(2, 4)).toEqual([String(2 * STAGGER_MS - 100), String(3 * STAGGER_MS - 100)]);
-
-    // Once every queued item has started, the next one rises at once, even right after.
-    now = 100 + 3 * STAGGER_MS - 100 + 1;
-    act(() => report([{ target: el(5), intersectionRatio: 1 }]));
-    expect(delays(container)[4]).toBe("0");
+    expect(reveals(container)).toEqual(["instant", "instant", "hidden"]);
+    // Scrolled to: it rises in, at once since nothing waits ahead of it.
+    act(() => io.report([{ target: el(3), intersectionRatio: 1 }]));
+    expect(reveals(container)).toEqual(["instant", "instant", "0"]);
   });
 
-  it("starts the first item at once under StrictMode, which runs updaters twice", () => {
-    let report: (entries: Entry[]) => void = () => {};
-    vi.spyOn(performance, "now").mockReturnValue(5_000);
-    vi.stubGlobal(
-      "IntersectionObserver",
-      class {
-        constructor(cb: (entries: Entry[]) => void) {
-          report = cb;
-        }
-        observe() {}
-        unobserve() {}
-        disconnect() {}
-      },
+  it("rises later items in one by one, queueing those that come while others wait", () => {
+    let now = 0;
+    vi.spyOn(performance, "now").mockImplementation(() => now);
+    const io = fakeObserver();
+    const { container } = render(<List ids={[1, 2, 3, 4, 5]} />);
+    const el = (id: number) => container.querySelector(`[data-id="${id}"]`)!;
+    // As the page opens, all are below the fold.
+    act(() => io.report([1, 2, 3, 4, 5].map((id) => ({ target: el(id), intersectionRatio: 0 }))));
+
+    // Two come into view together (reported out of order): page order, one step apart.
+    act(() =>
+      io.report([
+        { target: el(2), intersectionRatio: 1 },
+        { target: el(1), intersectionRatio: 1 },
+      ]),
     );
+    expect(reveals(container).slice(0, 2)).toEqual(["0", String(STAGGER_MS)]);
+
+    // 100 ms later, while the second still waits: the next ones queue behind it.
+    now = 100;
+    act(() => io.report([{ target: el(3), intersectionRatio: 1 }, { target: el(4), intersectionRatio: 1 }]));
+    expect(reveals(container).slice(2, 4)).toEqual([String(2 * STAGGER_MS - 100), String(3 * STAGGER_MS - 100)]);
+
+    // Once every queued item has started, the next one rises at once, even right after.
+    now = 3 * STAGGER_MS + 1;
+    act(() => io.report([{ target: el(5), intersectionRatio: 1 }]));
+    expect(reveals(container)[4]).toBe("0");
+  });
+
+  it("queues correctly under StrictMode, which runs updaters twice", () => {
+    vi.spyOn(performance, "now").mockReturnValue(5_000);
+    const io = fakeObserver();
     const { container } = render(
       <StrictMode>
         <List ids={[1, 2]} />
       </StrictMode>,
     );
     const el = (id: number) => container.querySelector(`[data-id="${id}"]`)!;
-    // Two sightings in one task (as when the toolbar and the cards come into view together): the
-    // second update waits for render, where StrictMode runs its updater twice.
+    act(() => io.report([1, 2].map((id) => ({ target: el(id), intersectionRatio: 0 }))));
+    // Two sightings in one task: the second update waits for render, where StrictMode runs its
+    // updater twice.
     act(() => {
-      report([{ target: el(1), intersectionRatio: 1 }]);
-      report([{ target: el(2), intersectionRatio: 1 }]);
+      io.report([{ target: el(1), intersectionRatio: 1 }]);
+      io.report([{ target: el(2), intersectionRatio: 1 }]);
     });
-    expect(delays(container)).toEqual(["0", String(STAGGER_MS)]);
+    expect(reveals(container)).toEqual(["0", String(STAGGER_MS)]);
   });
 
-  it("shows everything where IntersectionObserver is missing", () => {
+  it("just shows everything where IntersectionObserver is missing", () => {
     vi.stubGlobal("IntersectionObserver", undefined);
     const { container } = render(<List ids={[1, 2]} />);
-    expect(delays(container).every((d) => d !== "hidden")).toBe(true);
+    expect(reveals(container)).toEqual(["instant", "instant"]);
   });
 });
