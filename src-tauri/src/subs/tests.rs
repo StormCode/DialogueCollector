@@ -302,7 +302,7 @@ fn styled(styles: &[&str], lines: &[&str]) -> String {
 }
 
 #[test]
-fn the_larger_side_of_a_bilingual_pair_is_the_original() {
+fn the_larger_side_of_a_bilingual_pair_is_the_translation() {
     let cues = parse_ass(&styled(
         &[
             "Style: Dial_JP,A,65,&H0,100,100,2",
@@ -310,7 +310,7 @@ fn the_larger_side_of_a_bilingual_pair_is_the_original() {
             "Style: Small_CH,B,90,&H0,100,50,2",
         ],
         &[
-            // 主字幕 is the larger one, whatever its language.
+            // The 譯文 is the larger one, whatever its language.
             "Dialogue: 0,0:00:01.00,0:00:02.00,Dial_JP,,0,0,0,,待ってフリーレン",
             "Dialogue: 0,0:00:01.00,0:00:02.00,Dial_CH,,0,0,0,,等等芙莉蓮",
             // ScaleY counts: 90 × 50% is smaller than 65.
@@ -329,15 +329,15 @@ fn the_larger_side_of_a_bilingual_pair_is_the_original() {
     assert_eq!(
         got,
         [
-            ("等等芙莉蓮", Some("待ってフリーレン")),
-            ("歩けない", Some("走不動了")),
-            ("はい", Some("是")),
+            ("待ってフリーレン", Some("等等芙莉蓮")),
+            ("走不動了", Some("歩けない")),
+            ("是", Some("はい")),
         ]
     );
 }
 
 #[test]
-fn within_one_event_the_larger_line_is_the_original() {
+fn within_one_event_the_larger_line_is_the_translation() {
     let cues = parse_ass(&styled(
         &["Style: Default,A,60,&H0,100,100,2"],
         &[
@@ -356,9 +356,9 @@ fn within_one_event_the_larger_line_is_the_original() {
     assert_eq!(
         got,
         [
-            ("在這片土地留下的", Some("この地に残して")),
+            ("この地に残して", Some("在這片土地留下的")),
             ("一行目", Some("二行目")),
-            ("大きい", Some("小さい")),
+            ("小さい", Some("大きい")),
         ]
     );
 }
