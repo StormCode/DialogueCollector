@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 
 /**
- * Items rise in one after another, this far apart (user 2026-10-04: together looked unnatural),
- * in page order. Only items behind one still waiting are held: the first to come into view
- * rises at once (user: a delay on it reads as lag).
+ * Items rise in one after another, at least this far apart (user 2026-10-04: together looked
+ * unnatural), in page order. Scrolling brings cards into view a few ms apart, so each waits for
+ * the one before it; one coming into view after a pause rises at once.
  */
 export const STAGGER_MS = 250;
 
@@ -41,8 +41,8 @@ export function useRevealOnView<K>(root: RefObject<HTMLElement | null>, ready = 
     for (const key of later) {
       if (settled.current.has(key)) continue;
       settled.current.add(key);
-      // Behind an item starting now or later, wait a step after it; otherwise go at once.
-      const start = lastStart.current >= now ? lastStart.current + STAGGER_MS : now;
+      // A step after the last one to start, or at once if that was a step ago or more.
+      const start = Math.max(now, lastStart.current + STAGGER_MS);
       lastStart.current = start;
       fresh.set(key, Math.round(start - now));
     }
