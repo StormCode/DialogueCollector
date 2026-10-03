@@ -163,12 +163,30 @@ export function SelectScreen({
       const cr = cardEl.getBoundingClientRect();
       const br = e.currentTarget.getBoundingClientRect();
       left = br.right - cr.left + 12;
-      top = Math.max(12, Math.min(br.top - cr.top - 12, cardEl.offsetHeight - 280));
+      // Beside the avatar; kept inside the window once its real height is known (below).
+      top = br.top - cr.top - 12;
     }
     setMenuOpen(false);
     setPickQuery("");
     setPicker({ index, left, top });
   };
+
+  // The picker is about 400 px tall (search, 未指派, a 280 px list, padding). It was placed for
+  // 280, so near the window's foot it ran off the bottom and was cut. Once drawn, it moves up
+  // as far as it must to fit the window, never past its top.
+  const pickerEl = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = pickerEl.current;
+    const cardEl = card.current;
+    if (!picker || !el || !cardEl) return;
+    const margin = 12;
+    const cardTop = cardEl.getBoundingClientRect().top;
+    // offsetHeight, not the box on screen: the pop-in animation moves it as it opens.
+    const bottom = cardTop + picker.top + el.offsetHeight;
+    const overflow = bottom - (window.innerHeight - margin);
+    const top = Math.max(margin - cardTop, picker.top - Math.max(0, overflow));
+    if (Math.abs(top - picker.top) > 0.5) setPicker({ ...picker, top });
+  }, [picker]);
 
   const pick = (characterId: number | null) => {
     if (picker) s.assignOne(picker.index, characterId);
@@ -437,6 +455,7 @@ export function SelectScreen({
           <>
             <div className="sel-dismiss" aria-hidden="true" onClick={() => setPicker(null)} />
             <div
+              ref={pickerEl}
               className="sel-picker"
               role="dialog"
               aria-label={t("import.select.pickCharacter")}

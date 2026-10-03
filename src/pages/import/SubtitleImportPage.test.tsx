@@ -78,6 +78,23 @@ describe("subtitle import flow", () => {
     expect(screen.queryByRole("dialog", { name: "選擇角色" })).not.toBeInTheDocument();
   });
 
+  it("keeps a row's picker inside the window near its foot", async () => {
+    vi.spyOn(ipc, "parseSubtitle").mockResolvedValue(CUES);
+    renderFlow();
+    const avatar = await screen.findByRole("button", { name: "為第 3 句選擇角色" });
+    // A 600 px window, the card from its top, the avatar 500 px down, a 400 px picker.
+    vi.spyOn(window, "innerHeight", "get").mockReturnValue(600);
+    vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(400);
+    const rect = (top: number) => ({ top, bottom: top + 40, left: 0, right: 40, width: 40, height: 40, x: 0, y: top, toJSON: () => ({}) });
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      return (this === avatar ? rect(500) : rect(0)) as DOMRect;
+    });
+    fireEvent.click(avatar);
+    const picker = screen.getByRole("dialog", { name: "選擇角色" });
+    // Placed for 488 (500 − 12) it would end at 888; moved up to end 12 px above the foot.
+    expect(picker.style.top).toBe("188px");
+  });
+
   it("offers 未指派 and 新增角色 in the picker, and assigns a new character to that row", async () => {
     vi.spyOn(ipc, "parseSubtitle").mockResolvedValue(CUES);
     vi.spyOn(ipc, "listCharacters").mockResolvedValue([]);
