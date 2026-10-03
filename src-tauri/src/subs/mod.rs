@@ -13,9 +13,10 @@
 //!   text, any further lines the translation.
 //! - Bilingual ASS that puts each language in its own event (`Text - JP` and `Text - CN` with
 //!   the same timing) is paired into one cue (user 2026-09-29): see `pair_bilingual`.
-//! - ASS 主／副字幕 (user 2026-10-02): players can't tell them apart either, but the main one
-//!   is usually set larger. When a bilingual line's two parts are drawn at different sizes
-//!   (the style's Fontsize × ScaleY, or `\fs`/`\fscy` overrides), the larger is the 原文.
+//! - ASS 原文／譯文 by size (user 2026-10-04, reversing 2026-10-02): the translation is usually
+//!   set larger, for the viewers who can't read the original. When a bilingual line's two parts
+//!   are drawn at different sizes (the style's Fontsize × ScaleY, or `\fs`/`\fscy` overrides),
+//!   the larger is the 譯文 and the other the 原文.
 //!
 //! Cues are returned in start-time order; `index` keeps each one's position in the file.
 
@@ -403,8 +404,8 @@ fn parse_style(fields: &[String], rest: &str) -> Option<(String, Size)> {
     Some((field("name")?.to_owned(), Size { font, scale_y }))
 }
 
-/// A cue from an event's lines. Lines drawn at different heights put the tallest first as the
-/// 原文 (主字幕) and the rest, in order, as the 譯文; otherwise the first line is the 原文. Also
+/// A cue from an event's lines. Lines drawn at different heights make the tallest the 譯文 and
+/// the rest, in order, the 原文; otherwise the first line is the 原文 and the rest the 譯文. Also
 /// returns the 原文's height.
 fn cue_from_lines(
     index: u32,
@@ -422,7 +423,11 @@ fn cue_from_lines(
                 .is_some_and(|hs| hs.iter().any(|&h| h < max))
         });
     let (main, rest): (Vec<_>, Vec<_>) = match tallest {
-        Some(max) => lines.iter().partition(|(_, h)| *h == Some(max)),
+        Some(max) => {
+            let (larger, smaller): (Vec<_>, Vec<_>) =
+                lines.iter().partition(|(_, h)| *h == Some(max));
+            (smaller, larger)
+        }
         None => {
             let (first, rest) = lines.split_first().expect("lines is not empty");
             (vec![first], rest.iter().collect())
@@ -487,9 +492,8 @@ fn has_kana(text: &str) -> bool {
 /// 譯文. Two one-line events in different, untagged styles pair too when exactly one has kana:
 /// that one is the 原文. Anything else sharing a timing (two lines in one style, a title card's
 /// two lines, an event of neither language among them) is left as it is. Whichever side is
-/// drawn larger is the 原文 (主字幕), overriding the language when every size is known
-/// (user 2026-10-02): sizes alone don't decide *whether* to pair, as two speakers at once often
-/// differ in size too.
+/// drawn larger is the 譯文, overriding the language when every size is known (user 2026-10-04):
+/// sizes alone don't decide *whether* to pair, as two speakers at once often differ in size too.
 fn pair_bilingual(events: Vec<Event>) -> Vec<Cue> {
     use std::collections::{HashMap, HashSet};
     let mut by_time: HashMap<(u64, u64), Vec<usize>> = HashMap::new();
@@ -544,7 +548,8 @@ fn pair_bilingual(events: Vec<Event>) -> Vec<Cue> {
         } else {
             continue;
         };
-        let (originals, translations) = if taller(&events, &translations, &originals) {
+        // The larger side is the 譯文.
+        let (originals, translations) = if taller(&events, &originals, &translations) {
             (translations, originals)
         } else {
             (originals, translations)
