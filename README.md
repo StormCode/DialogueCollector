@@ -18,7 +18,7 @@
 
 所有版本：https://github.com/StormCode/DialogueCollector/releases
 
-本程式沒有程式碼簽章：macOS 與 Windows 第一次開啟時會跳出警告，略過一次即可（macOS：按右鍵 → 打開；Windows：其他資訊 → 仍要執行）。
+本程式沒有程式碼簽章：macOS 與 Windows 第一次開啟時會跳出警告，略過一次即可（macOS：按右邊的打開；Windows：其他資訊 → 仍要執行）。
 
 ## 功能特點
 
