@@ -16,15 +16,19 @@ describe("FileManagementSection", () => {
         ready: true,
         path: "/Users/me/Library/Application Support/DialogueCollector",
         reason: null,
-        stats: { clipCount: 1284, bytes: 2.36 * 1024 ** 3 },
+        stats: { clipCount: 1284, bytes: 2.21 * 1024 ** 3, imageCount: 86, imageBytes: 152 * 1024 ** 2 },
       },
     });
     render(<FileManagementSection />);
     expect(screen.getByLabelText("台詞音檔的預設存放位置")).toHaveValue(
       "/Users/me/Library/Application Support/DialogueCollector",
     );
-    expect(screen.getByText("1,284")).toBeInTheDocument();
-    expect(screen.getByText("2.36 GB")).toBeInTheDocument();
+    // The board's "1,284 / 86" and "2.36 GB (2.21 GB / 152 MB)": clips and images, then together.
+    const boxes = document.querySelectorAll(".stat-box .stat-num");
+    expect(boxes[0]).toHaveTextContent("1,284 / 86");
+    expect(boxes[1]).toHaveTextContent("2.36 GB (2.21 GB / 152 MB)");
+    expect(screen.getByText("音檔數 / 圖片數")).toBeInTheDocument();
+    expect(screen.getByText("佔用的硬碟空間 (音檔 / 圖片)")).toBeInTheDocument();
   });
 
   it("shows the board's 找不到收藏庫 toast when the library is missing", () => {

@@ -196,6 +196,11 @@
   flex: 1 1 0;
 }
 
+/* The storage boxes keep one height when the space's breakdown wraps under its total. */
+.st-inline--stats {
+  align-items: stretch;
+}
+
 .st-stack {
   display: flex;
   flex-direction: column;
@@ -301,6 +306,18 @@
 .stat-cap {
   font: var(--bento-weight-regular) 13px/18px var(--dc-ui-font);
   color: var(--bento-content-secondary);
+}
+
+/* "1,284 / 86" and "2.36 GB (2.21 GB / 152 MB)" (Settings board). */
+.stat-sep {
+  font-weight: var(--bento-weight-regular);
+  color: var(--bento-neutral-40);
+}
+
+.stat-sub {
+  font: var(--bento-weight-regular) 15px/30px var(--dc-ui-font);
+  color: var(--bento-content-secondary);
+  white-space: nowrap;
 }
 
 /* ---- modals: progress (SettingsExporting) and import confirmation ---- */

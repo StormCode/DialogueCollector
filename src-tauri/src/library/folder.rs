@@ -63,8 +63,13 @@ pub fn classify_dir(path: &Path) -> Result<DirKind, LibraryError> {
 pub struct LibraryStats {
     /// 台詞音檔總數.
     pub clip_count: i64,
-    /// 佔用的硬碟空間: clips plus files queued for deletion that are still on disk (ENG3).
+    /// 佔用的硬碟空間 of the clips: clips plus files queued for deletion that are still on disk
+    /// (ENG3).
     pub bytes: i64,
+    /// 圖片數: the portraits and posters characters use (user 2026-10-04: counted beside clips).
+    pub image_count: i64,
+    /// Their size on disk; 佔用的硬碟空間 is `bytes` plus this.
+    pub image_bytes: i64,
 }
 
 /// An open library: its folder and a connection to its database.
@@ -136,22 +141,42 @@ impl Library {
     }
 
     pub fn stats(&self) -> Result<LibraryStats, LibraryError> {
-        let stats = self
+        let (clip_count, bytes) = self
             .conn
             .query_row(
                 "SELECT (SELECT COUNT(*) FROM lines),
                         (SELECT COALESCE(SUM(audio_bytes), 0) FROM lines)
                       + (SELECT COALESCE(SUM(bytes), 0) FROM pending_deletions)",
                 [],
-                |r| {
-                    Ok(LibraryStats {
-                        clip_count: r.get(0)?,
-                        bytes: r.get(1)?,
-                    })
-                },
+                |r| Ok((r.get(0)?, r.get(1)?)),
             )
             .map_err(store::StoreError::from)?;
-        Ok(stats)
+        // Images keep no size in the database: read it off the files the characters name.
+        let mut stmt = self
+            .conn
+            .prepare(
+                "SELECT portrait_file FROM characters WHERE portrait_file IS NOT NULL
+                 UNION ALL
+                 SELECT poster_file FROM characters WHERE poster_file IS NOT NULL",
+            )
+            .map_err(store::StoreError::from)?;
+        let files: Vec<String> = stmt
+            .query_map([], |r| r.get(0))
+            .map_err(store::StoreError::from)?
+            .collect::<Result<_, _>>()
+            .map_err(store::StoreError::from)?;
+        let images = self.root.join(IMAGES_DIR);
+        let sizes: Vec<u64> = files
+            .iter()
+            .filter_map(|f| fs::metadata(images.join(f)).ok())
+            .map(|m| m.len())
+            .collect();
+        Ok(LibraryStats {
+            clip_count,
+            bytes,
+            image_count: sizes.len() as i64,
+            image_bytes: sizes.iter().sum::<u64>() as i64,
+        })
     }
 
     /// 驗證收藏庫 (ENG2): clips in the folder that no row points at — what a crash between
@@ -430,8 +455,36 @@ mod tests {
             lib.stats().unwrap(),
             LibraryStats {
                 clip_count: 2,
-                bytes: 3500
+                bytes: 3500,
+                image_count: 0,
+                image_bytes: 0,
             }
+        );
+    }
+
+    #[test]
+    fn stats_count_the_images_characters_use() {
+        let dir = tempfile::tempdir().unwrap();
+        let lib = Library::create(dir.path()).unwrap();
+        let images = dir.path().join(IMAGES_DIR);
+        fs::write(images.join("P1.png"), vec![0u8; 300]).unwrap();
+        fs::write(images.join("B1.jpg"), vec![0u8; 700]).unwrap();
+        fs::write(images.join("P2.png"), vec![0u8; 50]).unwrap();
+        // Left behind, used by no character: not counted.
+        fs::write(images.join("OLD.png"), vec![0u8; 9999]).unwrap();
+        lib.conn()
+            .execute_batch(
+                "INSERT INTO characters (name, category, source, portrait_file, poster_file, created_at, updated_at)
+                     VALUES ('a', 'tv', 'b', 'P1.png', 'B1.jpg', 0, 0),
+                            ('c', 'tv', 'd', 'P2.png', NULL, 0, 0),
+                            ('e', 'tv', 'f', 'GONE.png', NULL, 0, 0);",
+            )
+            .unwrap();
+        let stats = lib.stats().unwrap();
+        assert_eq!(
+            (stats.image_count, stats.image_bytes),
+            (3, 1050),
+            "a missing file counts for nothing"
         );
     }
 }

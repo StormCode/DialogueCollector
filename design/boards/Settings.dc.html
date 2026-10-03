@@ -48,6 +48,8 @@
 
     .stat-box { flex: 1 1 0; display: flex; flex-direction: column; gap: 4px; padding: 16px 20px; border-radius: var(--bento-radius-16); background: var(--bento-bg-secondary); }
     .stat-num { font: var(--bento-weight-semibold) 24px/30px var(--font-bento-font-ui); color: var(--bento-content-primary); }
+    .stat-sep { font-weight: var(--bento-weight-regular); color: var(--bento-neutral-40); }
+    .stat-sub { font: var(--bento-weight-regular) 15px/30px var(--font-bento-font-ui); color: var(--bento-content-secondary); white-space: nowrap; }
     .stat-cap { font: var(--bento-weight-regular) 13px/18px var(--font-bento-font-ui); color: var(--bento-content-secondary); }
 
     .font-preview { margin-top: 12px; padding: 14px 16px; border-radius: var(--bento-radius-12); background: var(--bento-bg-secondary); font-size: 18px; line-height: 28px; color: var(--bento-content-primary); }
@@ -88,7 +90,7 @@
     @media (prefers-reduced-motion: reduce) { .st-anim-title, .st-anim-toc, .st-anim-sec { animation: none; } }
   </style>
 </helmet>
-<div style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 56px 104px; gap: 28px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0; {{themeVars}}">
+<div style="width: 1280px; height: 814px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; padding: 56px 104px; gap: 28px; font-family: var(--font-bento-font-ui); position: relative; z-index: 0; {{themeVars}}">
 
   <svg viewBox="0 0 1280 800" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
     <path d="M 1020,0 C 870,220 1140,480 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--accent-5);"></path>
@@ -197,12 +199,12 @@
           <div class="st-label">儲存空間</div>
           <div style="display: flex; gap: 16px;">
             <div class="stat-box">
-              <span class="stat-num">1,284</span>
-              <span class="stat-cap">台詞音檔總數</span>
+              <span class="stat-num">1,284 <span class="stat-sep">/</span> 86</span>
+              <span class="stat-cap">音檔數 / 圖片數</span>
             </div>
             <div class="stat-box">
-              <span class="stat-num">2.36 GB</span>
-              <span class="stat-cap">佔用的硬碟空間</span>
+              <span class="stat-num">2.36 GB <span class="stat-sub">(2.21 GB / 152 MB)</span></span>
+              <span class="stat-cap">佔用的硬碟空間 (音檔 / 圖片)</span>
             </div>
             <sc-if value="{{hasMissing}}" hint-placeholder-val="{{false}}">
               <button type="button" class="stat-box stat-missing" aria-haspopup="dialog" onClick="{{openMissing}}">
@@ -380,7 +382,7 @@
   </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"toast":{"editor":"enum","options":["none","exportSuccess","exportFailed","importSuccess","importFailed","libraryNotFound","networkDriveDenied"],"default":"none"},"exportTarget":{"editor":"text","default":"~/Downloads"},"updateStatus":{"editor":"enum","options":["none","latest","updating"],"default":"none"},"importConfirm":{"editor":"boolean","default":false},"exporting":{"editor":"boolean","default":false},"missingFiles":{"editor":"boolean","default":false},"theme":{"editor":"enum","options":["indigo","blue","red","jade","orange","pink","neutral"],"default":"indigo"},"initialSection":{"editor":"enum","options":["ui","book","lines","files","version"],"default":"ui"},"missingModal":{"editor":"boolean","default":false},"deleteAllConfirm":{"editor":"boolean","default":false},"exportProgress":{"editor":"range","min":0,"max":100,"step":1,"default":50},"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"toast":{"editor":"enum","options":["none","exportSuccess","exportFailed","importSuccess","importFailed","libraryNotFound","networkDriveDenied"],"default":"none"},"exportTarget":{"editor":"text","default":"~/Downloads"},"updateStatus":{"editor":"enum","options":["none","latest","updating"],"default":"none"},"importConfirm":{"editor":"boolean","default":false},"exporting":{"editor":"boolean","default":false},"missingFiles":{"editor":"boolean","default":false},"theme":{"editor":"enum","options":["indigo","blue","red","jade","orange","pink","neutral"],"default":"indigo"},"initialSection":{"editor":"enum","options":["ui","book","lines","files","version"],"default":"ui"},"missingModal":{"editor":"boolean","default":false},"deleteAllConfirm":{"editor":"boolean","default":false},"exportProgress":{"editor":"range","min":0,"max":100,"step":1,"default":50},"$preview":{"width":1280,"height":814}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
