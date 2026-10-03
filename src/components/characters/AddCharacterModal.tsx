@@ -95,9 +95,9 @@ function CharacterFormModal({ mode, onClose }: { mode: Mode; onClose: () => void
     if (typeof picked === "string") await pick(picked);
   };
 
-  const ready = name.trim() !== "" && source.trim() !== "" && !saving;
+  const ready = name.trim() !== "" && source.trim() !== "";
   const submit = async () => {
-    if (!ready) return;
+    if (!ready || saving) return;
     setSaving(true);
     setError(null);
     try {
@@ -224,7 +224,8 @@ function CharacterFormModal({ mode, onClose }: { mode: Mode; onClose: () => void
         className="char-form-modal"
         actions={{
           secondary: { label: t("characters.add.cancel"), onClick: onClose },
-          primary: { label: t("characters.add.submit"), onClick: () => void submit(), disabled: !ready },
+          // Shrinking a large portrait takes a moment: the button spins until it's saved.
+          primary: { label: t("characters.add.submit"), onClick: () => void submit(), disabled: !ready, loading: saving },
         }}
       >
         {form}
@@ -245,7 +246,7 @@ function CharacterFormModal({ mode, onClose }: { mode: Mode; onClose: () => void
             <Button variant="neutral" onClick={onClose}>
               {t("characters.add.cancel")}
             </Button>
-            <Button variant="solid" disabled={!ready} onClick={() => void submit()}>
+            <Button variant="solid" disabled={!ready} loading={saving} onClick={() => void submit()}>
               {t("characters.edit.submit")}
             </Button>
           </div>

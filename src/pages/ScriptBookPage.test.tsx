@@ -109,4 +109,24 @@ describe("ScriptBookPage", () => {
     fireEvent.click(within(screen.getByRole("dialog", { name: "編輯角色" })).getByRole("button", { name: "刪除角色" }));
     expect(screen.getByRole("dialog", { name: "確認" })).toHaveTextContent("刪除「周公旦」後將無法復原。");
   });
+
+  it("編輯 spins and takes no second click while the character is saved", async () => {
+    vi.spyOn(ipc, "listCharacters").mockResolvedValue(CAST);
+    let finish: () => void = () => {};
+    const update = vi
+      .spyOn(ipc, "updateCharacter")
+      .mockImplementation(() => new Promise((resolve) => (finish = () => resolve(CAST[3]))));
+    renderPage();
+    fireEvent.click(await screen.findByRole("button", { name: "編輯周公旦" }));
+    const edit = screen.getByRole("dialog", { name: "編輯角色" });
+    const save = within(edit).getByRole("button", { name: "編輯" });
+    fireEvent.click(save);
+    await vi.waitFor(() => expect(save).toHaveAttribute("aria-busy", "true"));
+    expect(save).toBeDisabled();
+    fireEvent.click(save);
+    expect(update).toHaveBeenCalledTimes(1);
+    finish();
+    await vi.waitFor(() => expect(screen.queryByRole("dialog", { name: "編輯角色" })).toBeNull());
+  });
 });
+

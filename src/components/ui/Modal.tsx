@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 import { BentoIcon } from "../icons/Icon";
+import { ButtonSpinner } from "./Button";
 import "./ui.css";
 
 interface ModalProps {
@@ -15,7 +16,7 @@ interface ModalProps {
   className?: string;
   /** Bento Modal's Actions row: a transparent secondary and a solid primary button. */
   actions?: {
-    primary: { label: string; onClick: () => void; disabled?: boolean };
+    primary: { label: string; onClick: () => void; disabled?: boolean; loading?: boolean };
     secondary: { label: string; onClick: () => void };
   };
 }
@@ -87,10 +88,12 @@ export function Modal({ title, children, onClose, size = "medium", actions, clas
             </button>
             <button
               type="button"
-              className="ui-btn ui-btn--medium ui-btn--solid"
+              className={`ui-btn ui-btn--medium ui-btn--solid${actions.primary.loading ? " is-loading" : ""}`}
               onClick={actions.primary.onClick}
-              disabled={actions.primary.disabled}
+              disabled={actions.primary.disabled || actions.primary.loading}
+              aria-busy={actions.primary.loading || undefined}
             >
+              {actions.primary.loading && <ButtonSpinner />}
               {actions.primary.label}
             </button>
           </div>
