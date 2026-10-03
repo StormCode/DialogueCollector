@@ -13,6 +13,7 @@ import { Pagination } from "../components/ui/Pagination";
 import { SearchBar } from "../components/ui/SearchBar";
 import { Switch } from "../components/ui/Switch";
 import { useRevealScrollbar } from "../components/ui/useRevealScrollbar";
+import { useFullyInView } from "../hooks/useFullyInView";
 import { usePlayer, type PlayMode } from "../hooks/usePlayer";
 import { errorKind, inTauri, ipc } from "../lib/ipc";
 import type { Line, LinesPageData } from "../lib/types";
@@ -76,6 +77,10 @@ export function LinesPage() {
   const [toast, setToast] = useState<string | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
   useRevealScrollbar(scroller);
+  // The toolbar rises in like the cards, but only once it can be seen whole: under a tall poster
+  // it waits until scrolled to (user 2026-10-04).
+  const toolbar = useRef<HTMLDivElement>(null);
+  const toolbarSeen = useFullyInView(toolbar, scroller, !!data);
 
   const id = Number(characterId);
   const load = useCallback(async () => {
@@ -323,7 +328,7 @@ export function LinesPage() {
 
       <div className="ln-divider" aria-hidden="true" />
 
-      <div className="ln-toolbar">
+      <div ref={toolbar} className={`ln-toolbar${toolbarSeen ? " is-revealed" : ""}`}>
         <div className="ln-search">
           <SearchBar value={query} onChange={(v) => narrow(() => setQuery(v))} placeholder={t("lines.search")} />
         </div>
