@@ -15,12 +15,25 @@ describe("選擇台詞 line edits", () => {
     expect(joinSeparator(["OK 好的", "走吧"])).toBe("，");
   });
 
+  it("adds no comma after a line that already ends in punctuation", () => {
+    const lines = rowsFrom([
+      { index: 0, startMs: 0, endMs: 1, text: "Really?", translation: "本当に？" },
+      { index: 1, startMs: 2, endMs: 3, text: "Then let's go", translation: "じゃあ行こう" },
+      { index: 2, startMs: 4, endMs: 5, text: "now", translation: "「今すぐ」" },
+      { index: 3, startMs: 6, endMs: 7, text: "Hey!", translation: "おい" },
+    ]);
+    const m = mergeRows(lines, new Set([0, 1, 2, 3]), 100)[0];
+    expect(m.text).toBe("Really? Then let's go, now, Hey!");
+    expect(m.translation).toBe("本当に？じゃあ行こう，「今すぐ」おい");
+  });
+
   it("merges any chosen rows, leaving the unchosen ones between them out", () => {
     const merged = mergeRows(rows, new Set([0, 2]), 100);
     expect(merged.map((r) => r.index)).toEqual([100, 1]);
     const m = merged[0];
-    expect(m.text).toBe("おはよう。，行こう，今すぐ");
-    expect(m.translation).toBe("早安。，走吧，現在就走");
+    // 「。」 already ends the first line: no comma after it.
+    expect(m.text).toBe("おはよう。行こう，今すぐ");
+    expect(m.translation).toBe("早安。走吧，現在就走");
     expect(m.segments).toEqual([
       [1000, 2000],
       [4000, 5000],
@@ -64,7 +77,7 @@ describe("選擇台詞 line edits", () => {
     expect(isBilingual(rowsFrom([{ index: 0, startMs: 0, endMs: 1, text: "a", translation: null }]))).toBe(false);
     const merged = mergeRows(rows, new Set([0, 2]), 100);
     const swapped = swapRows(merged);
-    expect(swapped[0].text).toBe("早安。，走吧，現在就走");
+    expect(swapped[0].text).toBe("早安。走吧，現在就走");
     expect(swapped[1].text, "no translation: unchanged").toBe("ん？");
     const parts = splitRows(swapped, new Set([100]));
     expect(parts[0]).toMatchObject({ text: "早安。", translation: "おはよう。" });
