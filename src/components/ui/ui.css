@@ -686,3 +686,30 @@
   font: var(--bento-weight-regular) 16px/20px var(--dc-ui-font);
   color: var(--bento-content-primary);
 }
+
+/* A button at work: its spinner turns, and it stays at full colour though it takes no clicks. */
+.ui-spin {
+  display: inline-flex;
+  animation: ui-spin 1.4s linear infinite;
+}
+
+@keyframes ui-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ui-btn.is-loading:disabled {
+  cursor: progress;
+}
+
+.ui-btn--solid.is-loading:disabled {
+  background: var(--bento-action-solid-primary-bg);
+  color: var(--bento-action-solid-primary-fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-spin {
+    animation-duration: 4s;
+  }
+}
