@@ -1,27 +1,43 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 
-/** Cards that come into view together rise in this far apart, in page order. */
-const STAGGER_MS = 100;
+/**
+ * Items rise in one after another, this far apart (user 2026-10-04: together looked unnatural),
+ * in page order. Only items behind one still waiting are held: the first to come into view
+ * rises at once (user: a delay on it reads as lag).
+ */
+export const STAGGER_MS = 250;
 
 /**
  * Reveals items once each is wholly inside `root`'s visible area (user 2026-10-04: the 台詞頁
  * cards, like its toolbar). `refFor(key)` goes on each item; `delayOf(key)` is undefined until the
- * item has been seen, then its stagger among the items seen with it. Seen stays seen, so an item
- * reveals once. Without IntersectionObserver (tests, very old engines) every item is seen at once.
+ * item has been seen, then how long it waits for its turn in the queue. Seen stays seen, so an
+ * item reveals once. Without IntersectionObserver (tests, very old engines) every item is seen at
+ * once.
  */
 export function useRevealOnView<K>(root: RefObject<HTMLElement | null>, ready = true) {
   const [delays, setDelays] = useState<Map<K, number>>(new Map());
   const observer = useRef<IntersectionObserver | null>(null);
   /** The element each key is on now. */
   const elements = useRef(new Map<K, Element>());
+  /** When the last item queued starts rising, on the `performance.now()` clock. */
+  const lastStart = useRef(-Infinity);
+  /** Items already scheduled, so a second sighting doesn't queue them again. */
+  const scheduled = useRef(new Set<K>());
 
+  // The queue is worked out here, once per sighting, not in the state updater: React may call
+  // an updater twice (StrictMode does in development), which pushed the first card back a step.
   const reveal = useCallback((seen: K[]) => {
-    setDelays((prev) => {
-      const next = new Map(prev);
-      let i = 0;
-      for (const key of seen) if (!next.has(key)) next.set(key, i++ * STAGGER_MS);
-      return i === 0 ? prev : next;
-    });
+    const now = performance.now();
+    const fresh = new Map<K, number>();
+    for (const key of seen) {
+      if (scheduled.current.has(key)) continue;
+      scheduled.current.add(key);
+      // Behind an item starting now or later, wait a step after it; otherwise go at once.
+      const start = lastStart.current >= now ? lastStart.current + STAGGER_MS : now;
+      lastStart.current = start;
+      fresh.set(key, Math.round(start - now));
+    }
+    if (fresh.size) setDelays((prev) => new Map([...prev, ...fresh]));
   }, []);
 
   useEffect(() => {
