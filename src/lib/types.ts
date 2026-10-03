@@ -77,7 +77,11 @@ export type UnavailableReason =
 
 export interface LibraryStats {
   clipCount: number;
+  /** The clips' size on disk. */
   bytes: number;
+  /** Portraits and posters the characters use. */
+  imageCount: number;
+  imageBytes: number;
 }
 
 export interface LibraryStatus {

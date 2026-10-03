@@ -29,7 +29,7 @@ describe("SettingsPage", () => {
         ready: true,
         path: "/Users/me/Library/Application Support/DialogueCollector",
         reason: null,
-        stats: { clipCount: 1284, bytes: 2.36 * 1024 ** 3 },
+        stats: { clipCount: 1284, bytes: 2.36 * 1024 ** 3, imageCount: 0, imageBytes: 0 },
       },
       relocating: false,
       progress: null,

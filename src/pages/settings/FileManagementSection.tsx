@@ -92,6 +92,7 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
   const [missingOpen, setMissingOpen] = useState(false);
   const dismissToast = useCallback(() => setToast(null), []);
   const busy = relocating || exporting || importing;
+  const stats = status?.stats;
   // 匯出中 shows only once the export runs past BUSY_CARD_DELAY_MS (user 2026-10-02).
   const showExporting = useBusyReveal(exporting);
 
@@ -217,13 +218,34 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
 
       <div className="st-row">
         <div className="st-label">{t("settings.files.storage")}</div>
-        <div className="st-inline">
+        <div className="st-inline st-inline--stats">
+          {/* Settings board: clips / images, and the space they take together with each part. */}
           <div className="stat-box">
-            <span className="stat-num">{status?.stats ? formatCount(status.stats.clipCount, i18n.language) : "—"}</span>
+            <span className="stat-num">
+              {stats ? (
+                <>
+                  {formatCount(stats.clipCount, i18n.language)} <span className="stat-sep">/</span>{" "}
+                  {formatCount(stats.imageCount, i18n.language)}
+                </>
+              ) : (
+                "—"
+              )}
+            </span>
             <span className="stat-cap">{t("settings.files.clipCount")}</span>
           </div>
           <div className="stat-box">
-            <span className="stat-num">{status?.stats ? formatBytes(status.stats.bytes, i18n.language) : "—"}</span>
+            <span className="stat-num">
+              {stats ? (
+                <>
+                  {formatBytes(stats.bytes + stats.imageBytes, i18n.language)}{" "}
+                  <span className="stat-sub">
+                    ({formatBytes(stats.bytes, i18n.language)} / {formatBytes(stats.imageBytes, i18n.language)})
+                  </span>
+                </>
+              ) : (
+                "—"
+              )}
+            </span>
             <span className="stat-cap">{t("settings.files.diskUsage")}</span>
           </div>
           {missing.length > 0 && (
