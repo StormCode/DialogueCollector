@@ -3,7 +3,8 @@
 //! The feed, public key and signature rules are configuration (`tauri.conf.json`); this file
 //! only decides when to check and when to install:
 //!
-//! - 檢查更新: check → download (signature verified) → install → restart, reporting progress.
+//! - 檢查更新: check → download (signature verified) → install → restart, reporting progress
+//!   (on macOS through LaunchServices, see `relaunch`).
 //! - 自動更新 on: one silent check at startup; a found update is downloaded in the background
 //!   and installed when the app quits, so nothing the user is doing gets interrupted.
 //! - Offline or rate-limited: `UpdateError::Unreachable`, which the startup check swallows.
@@ -130,7 +131,7 @@ pub async fn check_and_install<R: Runtime>(
             Some(bytes.len() as u64),
         );
         update.restart_after_install(true).install(bytes)?;
-        app.restart();
+        relaunch(app);
     }
 
     log::info!("checking for updates");
@@ -144,7 +145,43 @@ pub async fn check_and_install<R: Runtime>(
     let bytes = download(app, &update).await?;
     update.install(bytes)?;
     log::info!("update {} installed, restarting", update.version);
+    relaunch(app);
+}
+
+/// Restarts into the freshly installed version.
+///
+/// On macOS `AppHandle::restart` spawns the new binary as a child, and the system takes every
+/// process of a LaunchServices-launched app down with it when it quits, so the update closed
+/// the app without reopening it (0.1.7). Asking LaunchServices to start a second instance
+/// first gives the new version a life of its own; the old one then exits.
+fn relaunch<R: Runtime>(app: &AppHandle<R>) -> ! {
+    #[cfg(target_os = "macos")]
+    if let Some(bundle) = app_bundle(app) {
+        match std::process::Command::new("/usr/bin/open")
+            .arg("-n")
+            .arg(&bundle)
+            .status()
+        {
+            Ok(status) if status.success() => {
+                app.exit(0);
+                // Like `restart`, never return: the exit is handled on the main thread.
+                loop {
+                    std::thread::sleep(Duration::MAX);
+                }
+            }
+            Ok(status) => log::warn!("relaunching {} failed: {status}", bundle.display()),
+            Err(e) => log::warn!("relaunching {} failed: {e}", bundle.display()),
+        }
+    }
     app.restart();
+}
+
+/// The `.app` this binary runs from; `None` outside a bundle (`tauri dev`).
+#[cfg(target_os = "macos")]
+fn app_bundle<R: Runtime>(app: &AppHandle<R>) -> Option<std::path::PathBuf> {
+    let exe = tauri::process::current_binary(&app.env()).ok()?;
+    let bundle = exe.parent()?.parent()?.parent()?;
+    (bundle.extension()? == "app").then(|| bundle.to_path_buf())
 }
 
 /// 自動更新: runs once after startup. Failures are logged, never shown.
