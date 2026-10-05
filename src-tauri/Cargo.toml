@@ -1,6 +1,6 @@
 [package]
 name = "dialogue-collector"
-version = "0.1.8"
+version = "0.1.9"
 description = "台詞收藏家 — a character-organized library of dialogue clips"
 authors = ["nerixori"]
 edition = "2021"
