@@ -800,7 +800,7 @@ dependencies = [
 
 [[package]]
 name = "dialogue-collector"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "chardetng",
  "dirs",
