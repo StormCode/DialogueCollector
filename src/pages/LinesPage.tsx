@@ -1,6 +1,6 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 
@@ -11,7 +11,6 @@ import { Checkbox } from "../components/ui/Checkbox";
 import { ConfirmDialog } from "../components/ui/ConfirmDialog";
 import { Pagination } from "../components/ui/Pagination";
 import { SearchBar } from "../components/ui/SearchBar";
-import { Switch } from "../components/ui/Switch";
 import { useRevealScrollbar } from "../components/ui/useRevealScrollbar";
 import { revealProps, useRevealOnView } from "../hooks/useRevealOnView";
 import { usePlayer, type PlayMode } from "../hooks/usePlayer";
@@ -35,6 +34,20 @@ export function lineTitle(line: Pick<Line, "text" | "translation">) {
 /** The gray subtitle under it (簡短 and 詳細): the 譯文, when the 原文 is already the title. */
 export function lineSubtitle(line: Pick<Line, "text" | "translation">) {
   return line.text.trim() ? line.translation?.trim() || null : null;
+}
+
+/** Gap between a card's ┆ button and its menu (`.ln-more-menu`). */
+const MENU_GAP = 6;
+
+/** Whether the ┆ menu opens upward: only when it doesn't fit below and there is more room above. */
+export function menuOpensUp(
+  anchor: { top: number; bottom: number },
+  menuHeight: number,
+  bounds: { top: number; bottom: number },
+) {
+  const below = bounds.bottom - anchor.bottom - MENU_GAP;
+  const above = anchor.top - bounds.top - MENU_GAP;
+  return menuHeight > below && above > below;
 }
 
 export function formatDuration(ms: number) {
@@ -67,7 +80,9 @@ export function LinesPage() {
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [sortOpen, setSortOpen] = useState(false);
   const [view, setView] = useState<View>("compact");
-  const [editMode, setEditMode] = useState(false);
+  const [menuFor, setMenuFor] = useState<number | null>(null);
+  const [menuUp, setMenuUp] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [pinCollapsed, setPinCollapsed] = useState(false);
   const [checked, setChecked] = useState<number[]>([]);
   const [page, setPage] = useState(1);
@@ -79,6 +94,15 @@ export function LinesPage() {
   useRevealScrollbar(scroller);
   // The toolbar and each card show once wholly in view: at once if so as the page opens, else
   // rising in, one after another, as they are scrolled to (user 2026-10-04).
+  // Measured before paint, so a menu near the bottom never shows below first.
+  useLayoutEffect(() => {
+    const menu = menuRef.current;
+    const anchor = menu?.parentElement;
+    if (!menu || !anchor || !scroller.current) return setMenuUp(false);
+    const view = scroller.current.getBoundingClientRect();
+    const bounds = { top: Math.max(view.top, 0), bottom: Math.min(view.bottom, window.innerHeight) };
+    setMenuUp(menuOpensUp(anchor.getBoundingClientRect(), menu.offsetHeight, bounds));
+  }, [menuFor]);
   const reveals = useRevealOnView<number | "toolbar">(scroller, !!data);
   const toolbar = revealProps(reveals.revealOf("toolbar"));
 
@@ -150,11 +174,6 @@ export function LinesPage() {
   const toggleSeq = () =>
     seqPlaying ? player.stop() : playQueue(ordered.filter((l) => checked.includes(l.id)), "seq");
 
-  const switchEditMode = (on: boolean) => {
-    if (on) player.stop();
-    setEditMode(on);
-  };
-
   const togglePin = async (line: Line) => {
     try {
       await ipc.setLinePinned(line.id, line.pinnedAt === null);
@@ -162,6 +181,11 @@ export function LinesPage() {
       setToast(t("lines.saveFailed"));
     }
     await load();
+  };
+
+  const menuAction = (fn: () => unknown) => {
+    setMenuFor(null);
+    void fn();
   };
 
   const pickPoster = async () => {
@@ -206,59 +230,27 @@ export function LinesPage() {
     const isCurrent = player.currentId === line.id;
     const isPlaying = isCurrent && !player.paused;
     const isPinned = line.pinnedAt !== null;
+    const menuOpen = menuFor === line.id;
     const reveal = revealProps(reveals.revealOf(line.id));
     return (
       <div
         key={line.id}
         ref={reveals.refFor(line.id)}
         data-line-id={line.id}
-        className={`ln-card${reveal.className}${isCurrent ? " is-active" : ""}${line.id === missingId ? " is-missing" : ""}`}
+        className={`ln-card${reveal.className}${menuOpen ? " is-menu-open" : ""}${isCurrent ? " is-active" : ""}${line.id === missingId ? " is-missing" : ""}`}
         style={reveal.style}
       >
         <span className="ln-check">
           <Checkbox checked={checked.includes(line.id)} onChange={() => toggleCheck(line.id)} label={t("lines.check")} hideLabel />
         </span>
-        {editMode ? (
-          <div className="ln-actions">
-            <button
-              type="button"
-              className={`ln-act ln-act-pin${isPinned ? " is-pinned" : ""}`}
-              aria-label={t(isPinned ? "lines.unpin" : "lines.pin")}
-              title={t(isPinned ? "lines.unpin" : "lines.pin")}
-              aria-pressed={isPinned}
-              onClick={() => void togglePin(line)}
-            >
-              <MaterialIcon name={isPinned ? "keep:wght300fill1" : "keep:wght300"} />
-            </button>
-            <button
-              type="button"
-              className="ln-act ln-act-edit"
-              aria-label={t("lines.edit")}
-              title={t("lines.edit")}
-              onClick={() => setEditing(line)}
-            >
-              <BentoIcon name="PencilWeightRegular" size={22} />
-            </button>
-            <button
-              type="button"
-              className="ln-act ln-act-del"
-              aria-label={t("lines.delete")}
-              title={t("lines.delete")}
-              onClick={() => setDeleting(line)}
-            >
-              <BentoIcon name="Bin" size={24} />
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            className="ln-play"
-            aria-label={t(isPlaying ? "lines.pause" : "lines.play")}
-            onClick={() => player.toggle({ id: line.id, audioPath: line.audioPath })}
-          >
-            <MaterialIcon name={isPlaying ? "pause:fill1" : "play_arrow:fill1"} size={26} />
-          </button>
-        )}
+        <button
+          type="button"
+          className="ln-play"
+          aria-label={t(isPlaying ? "lines.pause" : "lines.play")}
+          onClick={() => player.toggle({ id: line.id, audioPath: line.audioPath })}
+        >
+          <MaterialIcon name={isPlaying ? "pause:fill1" : "play_arrow:fill1"} size={26} />
+        </button>
         <div className="ln-card-body">
           <div className="ln-card-text" title={lineTitle(line)}>
             {lineTitle(line)}
@@ -278,6 +270,44 @@ export function LinesPage() {
               {formatCreated(line.createdAt)}
             </span>
           </div>
+        </div>
+        <div className="ln-more-wrap">
+          <button
+            type="button"
+            className={`ln-more${menuOpen ? " is-open" : ""}`}
+            aria-label={t("lines.more")}
+            title={t("lines.more")}
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuFor(menuOpen ? null : line.id)}
+          >
+            <MaterialIcon name="more_vert" />
+          </button>
+          {menuOpen && (
+            <>
+              <div className="ln-dismiss" aria-hidden="true" onClick={() => setMenuFor(null)} />
+              <div ref={menuRef} className={`ln-more-menu${menuUp ? " is-up" : ""}`} role="menu">
+                <button type="button" role="menuitem" className="ln-more-item" onClick={() => menuAction(() => togglePin(line))}>
+                  <MaterialIcon name={isPinned ? "keep:wght300fill1" : "keep"} size={20} className="ln-more-ic" />
+                  {t(isPinned ? "lines.unpin" : "lines.pin")}
+                </button>
+                <button type="button" role="menuitem" className="ln-more-item" onClick={() => menuAction(() => setEditing(line))}>
+                  <BentoIcon name="PencilWeightRegular" size={20} className="ln-more-ic" />
+                  {t("lines.edit")}
+                </button>
+                <div className="ln-more-sep" role="separator" />
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="ln-more-item ln-more-danger"
+                  onClick={() => menuAction(() => setDeleting(line))}
+                >
+                  <BentoIcon name="Bin" size={20} className="ln-more-ic" />
+                  {t("lines.delete")}
+                </button>
+              </div>
+            </>
+          )}
         </div>
         {isCurrent && (
           <span className="ln-progress" aria-hidden="true" style={{ width: `${Math.round(player.progress * 1000) / 10}%` }} />
@@ -382,9 +412,6 @@ export function LinesPage() {
           )}
         </div>
         <div className="ln-grow" aria-hidden="true" />
-        <div className="ln-edit-toggle">
-          <Switch checked={editMode} onChange={switchEditMode} label={t("lines.editMode")} />
-        </div>
         <div className="ln-view-group" role="group" aria-label={t("lines.view.label")}>
           {(["compact", "detail"] as const).map((v) => (
             <button

@@ -7,7 +7,7 @@ import { ipc } from "../lib/ipc";
 import type { Line, LinesPageData } from "../lib/types";
 import { DEFAULT_SETTINGS } from "../lib/types";
 import { useSettingsStore } from "../stores/settingsStore";
-import { formatCreated, formatDuration, lineSubtitle, lineTitle, LinesPage } from "./LinesPage";
+import { formatCreated, formatDuration, lineSubtitle, lineTitle, LinesPage, menuOpensUp } from "./LinesPage";
 
 vi.mock("@tauri-apps/plugin-dialog", () => ({ open: vi.fn() }));
 
@@ -60,6 +60,16 @@ describe("LinesPage", () => {
   it("formats durations and creation times as the board does", () => {
     expect(formatDuration(65_400)).toBe("1:05");
     expect(formatCreated(new Date(2026, 8, 22, 21, 5).getTime())).toBe("2026/09/22 21:05");
+  });
+
+  it("opens the ┆ menu upward only when it doesn't fit below and there's more room above", () => {
+    const view = { top: 0, bottom: 800 };
+    expect(menuOpensUp({ top: 300, bottom: 340 }, 150, view)).toBe(false);
+    expect(menuOpensUp({ top: 700, bottom: 740 }, 150, view)).toBe(true);
+    // Fits below, just barely.
+    expect(menuOpensUp({ top: 600, bottom: 640 }, 150, view)).toBe(false);
+    // Too tall for either side: below still wins when it has the more room.
+    expect(menuOpensUp({ top: 100, bottom: 140 }, 900, view)).toBe(false);
   });
 
   it("titles a card with the 譯文 when there is no 原文", () => {
@@ -128,25 +138,49 @@ describe("LinesPage", () => {
     expect(screen.getByRole("button", { name: /停止依序播放/ })).toBeInTheDocument();
   });
 
-  it("edit mode pins, opens EditLine and deletes after confirming", async () => {
+  it("each card's menu pins, opens EditLine and deletes after confirming", async () => {
     vi.spyOn(ipc, "openLines").mockResolvedValue(page(LINES));
     const pin = vi.spyOn(ipc, "setLinePinned").mockResolvedValue();
     const del = vi.spyOn(ipc, "deleteLine").mockResolvedValue();
     renderPage();
-    fireEvent.click(await screen.findByRole("switch", { name: "編輯模式" }));
-    expect(screen.queryByRole("button", { name: "播放" })).not.toBeInTheDocument();
+    await screen.findByRole("heading", { name: "優希的台詞" });
+    const openMenu = () => fireEvent.click(within(mainList()).getAllByRole("button", { name: "更多動作" })[0]);
+    // Play stays on every card; the actions live in the menu.
+    expect(within(mainList()).getAllByRole("button", { name: "播放" })).toHaveLength(2);
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
 
-    fireEvent.click(within(mainList()).getAllByRole("button", { name: "釘選" })[0]);
+    openMenu();
+    fireEvent.click(within(screen.getByRole("menu")).getByRole("menuitem", { name: "釘選" }));
     expect(pin).toHaveBeenCalledWith(4, true);
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
 
-    fireEvent.click(within(mainList()).getAllByRole("button", { name: "刪除" })[0]);
+    openMenu();
+    fireEvent.click(within(screen.getByRole("menu")).getByRole("menuitem", { name: "刪除" }));
     expect(screen.getByText("確定要刪除台詞嗎？")).toBeInTheDocument();
     fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "刪除" }));
     await waitFor(() => expect(del).toHaveBeenCalledWith(4));
 
     vi.spyOn(ipc, "listCharacters").mockResolvedValue([]);
-    fireEvent.click(within(mainList()).getAllByRole("button", { name: "編輯" })[0]);
+    openMenu();
+    fireEvent.click(within(screen.getByRole("menu")).getByRole("menuitem", { name: "編輯" }));
     expect(await screen.findByRole("dialog", { name: "編輯台詞" })).toBeInTheDocument();
+  });
+
+  it("offers 取消釘選 on a pinned card and closes the menu on an outside click", async () => {
+    vi.spyOn(ipc, "openLines").mockResolvedValue(page(LINES));
+    const pin = vi.spyOn(ipc, "setLinePinned").mockResolvedValue();
+    renderPage();
+    const pinned = await screen.findByRole("region", { name: "已釘選的台詞" });
+    const more = within(pinned).getByRole("button", { name: "更多動作" });
+
+    fireEvent.click(more);
+    expect(more).toHaveAttribute("aria-expanded", "true");
+    fireEvent.click(document.querySelector(".ln-dismiss")!);
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+
+    fireEvent.click(more);
+    fireEvent.click(within(screen.getByRole("menu")).getByRole("menuitem", { name: "取消釘選" }));
+    expect(pin).toHaveBeenCalledWith(3, false);
   });
 
   it("opens on the page of a missing line and marks it (LinesMissing)", async () => {

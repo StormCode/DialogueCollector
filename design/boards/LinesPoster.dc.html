@@ -120,9 +120,30 @@
     .ln-page-ellipsis { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; color: var(--bento-neutral-40); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); }
     [data-theme="midnight"] img[src*="a41f06bab49514a736e15468dc1a8344"], [data-theme="midnight"] img[src*="3743135e47e2a77f4bf75b0b0b47f5eb"] { mix-blend-mode: normal !important; }
     [data-theme="midnight"] .ln-card:not(.is-active):hover { background: color-mix(in srgb, var(--bento-bg-primary) 95%, #ffffff); box-shadow: none; }
+    .ln-card.is-menu-open { overflow: visible; z-index: 20; }
+    .ln-more-wrap { position: relative; flex-shrink: 0; margin-left: 4px; }
+    .ln-more { appearance: none; -webkit-appearance: none; box-sizing: border-box; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 12px; background: transparent; color: var(--bento-icon-secondary); cursor: pointer; transition: background-color 120ms ease, color 120ms ease, opacity 120ms ease; }
+    .ln-more { opacity: 0; }
+    .ln-card:hover .ln-more, .ln-more.is-open, .ln-more:focus-visible { opacity: 1; }
+    .ln-more:hover, .ln-more.is-open { background: var(--bento-dv-indigo-1); color: var(--bento-dv-indigo-40); }
+    .ln-more:focus-visible { outline: 2px solid var(--bento-dv-indigo-40); outline-offset: 2px; }
+    .ln-more-menu { position: absolute; top: calc(100% + 6px); right: 0; z-index: 30; min-width: 168px; box-sizing: border-box; display: flex; flex-direction: column; gap: 2px; padding: 6px; background: var(--bento-bg-primary); border: 1px solid var(--bento-neutral-10); border-radius: var(--bento-radius-16); box-shadow: var(--bento-elevation-md); animation: ln-menu-pop 140ms ease-out both; }
+    .ln-more-menu.is-up { top: auto; bottom: calc(100% + 6px); animation-name: ln-menu-pop-up; }
+    @keyframes ln-menu-pop-up { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes ln-menu-pop { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    .ln-more-item { appearance: none; -webkit-appearance: none; width: 100%; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: none; border-radius: var(--bento-radius-12); background: transparent; color: var(--bento-content-primary); font: var(--bento-weight-medium) 14px/18px var(--bento-font-ui); text-align: left; text-decoration: none; cursor: pointer; white-space: nowrap; }
+    .ln-more-item:hover { background: var(--bento-dv-indigo-1); }
+    .ln-more-item:not(.ln-more-danger):hover, .ln-more-item:not(.ln-more-danger):hover .ln-more-ic, .ln-more-item:not(.ln-more-danger):hover .ln-more-ic.is-pinned { color: var(--bento-dv-indigo-40) !important; }
+    .ln-more-ic { display: inline-flex; width: 20px; justify-content: center; font-size: 20px; color: var(--bento-icon-secondary); }
+    .ln-more-ic.is-pinned { font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+    .ln-more-danger, .ln-more-danger .ln-more-ic { color: var(--bento-content-negative); }
+    .ln-more-danger:hover, .ln-more-danger:hover .ln-more-ic { background: var(--bento-negative-1); color: var(--bento-content-negative); }
+    .ln-more-danger:hover .ln-more-ic { background: transparent; }
+    .ln-more-sep { height: 1px; margin: 4px 6px; background: var(--bento-border-decorative); }
+    @media (prefers-reduced-motion: reduce) { .ln-more-menu { animation: none; } }
   </style>
 </helmet>
-<div data-theme="{{theme}}" style="width: 1280px; height: 800px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; font-family: var(--font-bento-font-ui); position: relative; z-index: 0; {{themeStyle}}">
+<div data-theme="{{theme}}" style="width: 1280px; height: 835px; box-sizing: border-box; border-radius: 24px; overflow: hidden; background: var(--bento-bg-secondary); display: flex; flex-direction: column; font-family: var(--font-bento-font-ui); position: relative; z-index: 0; {{themeStyle}}">
 
   <svg viewBox="0 0 1280 800" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
     <path d="M 1020,0 C 870,220 1140,480 1000,800 L 1284,804 L 1284,-4 Z" style="fill: var(--bento-dv-indigo-5);"></path>
@@ -225,9 +246,6 @@
         </sc-if>
       </div>
       <div style="flex: 1 1 auto;" aria-hidden="true"></div>
-      <div class="ln-edit-toggle">
-        <x-import component-from-global-scope="BentoDS27_65ebe9.Switch" checked="{{editMode}}" onChange="{{setEditMode}}" label="編輯模式" aria-label="編輯模式"></x-import>
-      </div>
       <div class="ln-view-group" role="group" aria-label="檢視模式">
         <button type="button" class="ln-view-btn {{compactBtnClass}}" aria-label="簡短" title="簡短" aria-pressed="{{isCompact}}" onClick="{{setCompact}}">
           <span class="material-symbol" aria-hidden="true">short_text</span>
@@ -245,20 +263,11 @@
         <sc-if value="{{pinExpanded}}" hint-placeholder-val="{{true}}">
         <div class="ln-list {{listClass}} {{viewClass}}">
           <sc-for list="{{pinnedLines}}" as="item" hint-placeholder-count="2">
-          <div class="ln-card {{item.activeClass}}" style="animation-delay: {{item.delay}};">
+          <div class="ln-card {{item.menuClass}} {{item.activeClass}}" style="animation-delay: {{item.delay}};">
             <span class="ln-check"><x-import component-from-global-scope="BentoDS27_65ebe9.Checkbox" checked="{{item.checked}}" onChange="{{item.toggleCheck}}" aria-label="勾選此句"></x-import></span>
-            <sc-if value="{{item.showPlay}}" hint-placeholder-val="{{true}}">
-              <button type="button" class="ln-play" aria-label="{{item.playLabel}}" onClick="{{item.togglePlay}}">
-                <span class="material-symbol ms-fill" aria-hidden="true" style="font-size: 26px;">{{item.playIcon}}</span>
-              </button>
-            </sc-if>
-            <sc-if value="{{item.showActions}}" hint-placeholder-val="{{false}}">
-              <div class="ln-actions">
-                <button type="button" class="ln-act ln-act-pin {{item.pinClass}}" aria-label="{{item.pinLabel}}" title="{{item.pinLabel}}" aria-pressed="{{item.pinned}}" onClick="{{item.togglePin}}"><span class="material-symbol" aria-hidden="true">keep</span></button>
-                <a class="ln-act ln-act-edit" href="EditLine.dc.html" aria-label="編輯" title="編輯"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="PencilWeightRegular" size="22"></x-import></a>
-                <a class="ln-act ln-act-del" href="DeleteLine.dc.html" aria-label="刪除" title="刪除"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Bin" size="24"></x-import></a>
-              </div>
-            </sc-if>
+            <button type="button" class="ln-play" aria-label="{{item.playLabel}}" onClick="{{item.togglePlay}}">
+              <span class="material-symbol ms-fill" aria-hidden="true" style="font-size: 26px;">{{item.playIcon}}</span>
+            </button>
             <div class="ln-card-body">
               <div class="ln-card-text" title="{{item.text}}" lang="ja">{{item.text}}</div>
               <div class="ln-card-trans" title="{{item.translation}}">{{item.translation}}</div>
@@ -266,6 +275,17 @@
                 <span class="ln-meta-item"><span class="material-symbol" aria-hidden="true" style="font-size: 16px;">schedule</span>{{item.durationLabel}}</span>
                 <span class="ln-meta-item"><span class="material-symbol" aria-hidden="true" style="font-size: 16px;">calendar_today</span>{{item.createdLabel}}</span>
               </div>
+            </div>
+            <div class="ln-more-wrap">
+              <button type="button" class="ln-more {{item.moreBtnClass}}" aria-label="更多動作" title="更多動作" aria-haspopup="menu" aria-expanded="{{item.menuOpen}}" onClick="{{item.toggleMenu}}"><span class="material-symbol" aria-hidden="true">more_vert</span></button>
+              <sc-if value="{{item.menuOpen}}" hint-placeholder-val="{{false}}">
+                <div class="ln-more-menu {{item.menuDirClass}}" role="menu">
+                  <button type="button" role="menuitem" class="ln-more-item" onClick="{{item.pinFromMenu}}"><span class="material-symbol ln-more-ic {{item.pinIconClass}}" aria-hidden="true">keep</span>{{item.pinLabel}}</button>
+                  <a role="menuitem" class="ln-more-item" href="EditLine.dc.html"><span class="ln-more-ic" aria-hidden="true"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="PencilWeightRegular" size="20"></x-import></span>編輯</a>
+                  <div class="ln-more-sep" role="separator"></div>
+                  <a role="menuitem" class="ln-more-item ln-more-danger" href="DeleteLine.dc.html"><span class="ln-more-ic" aria-hidden="true"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Bin" size="20"></x-import></span>刪除</a>
+                </div>
+              </sc-if>
             </div>
             <sc-if value="{{item.showProgress}}" hint-placeholder-val="{{false}}">
               <span class="ln-progress" aria-hidden="true" style="width: {{item.progressPct}};"></span>
@@ -280,20 +300,11 @@
 
     <div class="ln-list {{listClass}} {{viewClass}}">
       <sc-for list="{{lines}}" as="item" hint-placeholder-count="10">
-        <div class="ln-card {{item.activeClass}}" style="animation-delay: {{item.delay}};">
+        <div class="ln-card {{item.menuClass}} {{item.activeClass}}" style="animation-delay: {{item.delay}};">
           <span class="ln-check"><x-import component-from-global-scope="BentoDS27_65ebe9.Checkbox" checked="{{item.checked}}" onChange="{{item.toggleCheck}}" aria-label="勾選此句"></x-import></span>
-          <sc-if value="{{item.showPlay}}" hint-placeholder-val="{{true}}">
-            <button type="button" class="ln-play" aria-label="{{item.playLabel}}" onClick="{{item.togglePlay}}">
-              <span class="material-symbol ms-fill" aria-hidden="true" style="font-size: 26px;">{{item.playIcon}}</span>
-            </button>
-          </sc-if>
-          <sc-if value="{{item.showActions}}" hint-placeholder-val="{{false}}">
-            <div class="ln-actions">
-              <button type="button" class="ln-act ln-act-pin {{item.pinClass}}" aria-label="{{item.pinLabel}}" title="{{item.pinLabel}}" aria-pressed="{{item.pinned}}" onClick="{{item.togglePin}}"><span class="material-symbol" aria-hidden="true">keep</span></button>
-              <a class="ln-act ln-act-edit" href="EditLine.dc.html" aria-label="編輯" title="編輯"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="PencilWeightRegular" size="22"></x-import></a>
-              <a class="ln-act ln-act-del" href="DeleteLine.dc.html" aria-label="刪除" title="刪除"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Bin" size="24"></x-import></a>
-            </div>
-          </sc-if>
+          <button type="button" class="ln-play" aria-label="{{item.playLabel}}" onClick="{{item.togglePlay}}">
+            <span class="material-symbol ms-fill" aria-hidden="true" style="font-size: 26px;">{{item.playIcon}}</span>
+          </button>
           <div class="ln-card-body">
             <div class="ln-card-text" title="{{item.text}}" lang="ja">{{item.text}}</div>
               <div class="ln-card-trans" title="{{item.translation}}">{{item.translation}}</div>
@@ -301,6 +312,17 @@
               <span class="ln-meta-item"><span class="material-symbol" aria-hidden="true" style="font-size: 16px;">schedule</span>{{item.durationLabel}}</span>
               <span class="ln-meta-item"><span class="material-symbol" aria-hidden="true" style="font-size: 16px;">calendar_today</span>{{item.createdLabel}}</span>
             </div>
+          </div>
+          <div class="ln-more-wrap">
+            <button type="button" class="ln-more {{item.moreBtnClass}}" aria-label="更多動作" title="更多動作" aria-haspopup="menu" aria-expanded="{{item.menuOpen}}" onClick="{{item.toggleMenu}}"><span class="material-symbol" aria-hidden="true">more_vert</span></button>
+            <sc-if value="{{item.menuOpen}}" hint-placeholder-val="{{false}}">
+              <div class="ln-more-menu {{item.menuDirClass}}" role="menu">
+                <button type="button" role="menuitem" class="ln-more-item" onClick="{{item.pinFromMenu}}"><span class="material-symbol ln-more-ic {{item.pinIconClass}}" aria-hidden="true">keep</span>{{item.pinLabel}}</button>
+                <a role="menuitem" class="ln-more-item" href="EditLine.dc.html"><span class="ln-more-ic" aria-hidden="true"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="PencilWeightRegular" size="20"></x-import></span>編輯</a>
+                <div class="ln-more-sep" role="separator"></div>
+                <a role="menuitem" class="ln-more-item ln-more-danger" href="DeleteLine.dc.html"><span class="ln-more-ic" aria-hidden="true"><x-import component-from-global-scope="BentoDS27_65ebe9.Icon" name="Bin" size="20"></x-import></span>刪除</a>
+              </div>
+            </sc-if>
           </div>
           <sc-if value="{{item.showProgress}}" hint-placeholder-val="{{false}}">
             <span class="ln-progress" aria-hidden="true" style="width: {{item.progressPct}};"></span>
@@ -340,7 +362,7 @@
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","midnight"],"default":"light"},"showPosterPreview":{"editor":"boolean","default":false,"tsType":"boolean"},"$preview":{"width":1280,"height":800}}'>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","midnight"],"default":"light"},"showPosterPreview":{"editor":"boolean","default":false,"tsType":"boolean"},"$preview":{"width":1280,"height":835}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
@@ -358,7 +380,7 @@ class Component extends DCLogic {
       progress: 0,
       paused: false,
       mode: null,
-      editMode: false,
+      menuFor: null,
       pinned: [3, 11],
     };
     this.PAGE_SIZE = 10;
@@ -448,6 +470,21 @@ class Component extends DCLogic {
   };
 
   getOrdered = () => [...this.getPinned(), ...this.getVisible()];
+
+  // 下拉選單：下方空間不夠時改為往上展開
+  toggleMenu = (id, e) => {
+    if (this.state.menuFor === id) { this.setState({ menuFor: null }); return; }
+    let up = false;
+    const btn = e && e.currentTarget;
+    if (btn && btn.getBoundingClientRect) {
+      const box = (btn.closest && (btn.closest('.ln-scroll') || btn.closest('[data-theme]'))) || null;
+      const br = btn.getBoundingClientRect();
+      const limit = box ? box.getBoundingClientRect().bottom : window.innerHeight;
+      const scale = btn.offsetHeight ? br.height / btn.offsetHeight : 1;
+      up = (limit - br.bottom) / (scale || 1) < 160;
+    }
+    this.setState({ menuFor: id, menuUp: up });
+  };
 
   togglePin = (id) => {
     const cur = this.state.pinned || [];
@@ -609,8 +646,13 @@ class Component extends DCLogic {
         activeClass: isCur ? 'is-active' : '',
         showProgress: isCur,
         progressPct: Math.round((isCur ? this.state.progress : 0) * 1000) / 10 + '%',
-        showPlay: !editMode,
-        showActions: editMode,
+        menuOpen: this.state.menuFor === l.id,
+        menuClass: this.state.menuFor === l.id ? 'is-menu-open' : '',
+        moreBtnClass: this.state.menuFor === l.id ? 'is-open' : '',
+        toggleMenu: (e) => this.toggleMenu(l.id, e),
+        menuDirClass: this.state.menuUp ? 'is-up' : '',
+        pinIconClass: isPinned ? 'is-pinned' : '',
+        pinFromMenu: () => { this.togglePin(l.id); this.setState({ menuFor: null }); },
         pinned: isPinned,
         pinClass: isPinned ? 'is-pinned' : '',
         pinLabel: isPinned ? '取消釘選' : '釘選',
