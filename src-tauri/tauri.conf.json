@@ -57,6 +57,7 @@
       "nsis": {
         "installMode": "currentUser",
         "template": "windows/installer.nsi",
+        "installerHooks": "windows/hooks.nsh",
         "languages": ["English", "TradChinese", "SimpChinese", "Japanese"]
       }
     }

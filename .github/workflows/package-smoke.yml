@@ -143,6 +143,14 @@ jobs:
           if (-not (Test-Path (Join-Path $library "library.sqlite"))) { throw "first launch did not create the default library" }
           if (Test-Path (Join-Path $library "settings.json")) { throw "settings.json written into the library folder" }
           if (-not (Test-Path (Join-Path $env:APPDATA "DialogueCollector\settings.json"))) { throw "settings.json missing from Roaming AppData" }
+          # Update over a running app, as the updater does: the installer must wait for the app to
+          # let go of its exe (or end it) instead of stopping on "can't open file for writing".
+          $running = Start-Process $exe.FullName -PassThru
+          Start-Sleep -Seconds 3
+          if ($running.HasExited) { throw "the app quit before the update started" }
+          $update = Start-Process $setup.FullName -ArgumentList "/S", "/UPDATE" -Wait -PassThru
+          if ($update.ExitCode -ne 0) { throw "updating over the running app failed ($($update.ExitCode))" }
+          if (-not $running.HasExited) { throw "the app is still running after the update" }
 
       - uses: actions/upload-artifact@v7
         with:
