@@ -46,7 +46,7 @@ describe("SettingsPage", () => {
     const labels = within(toc)
       .getAllByRole("button")
       .map((b) => b.textContent);
-    expect(labels).toEqual(["介面", "角色簿", "台詞頁", "檔案管理", "目前版本"]);
+    expect(labels).toEqual(["介面", "台詞本", "台詞頁", "檔案管理", "目前版本"]);
   });
 
   it("picks a theme from the swatches and marks it checked", async () => {

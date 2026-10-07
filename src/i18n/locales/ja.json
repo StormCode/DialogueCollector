@@ -245,7 +245,7 @@
       "moving": "移動中…",
       "movingHint": "ライブラリを移動しています。アプリを閉じないでください",
       "backup": "エクスポートとインポート",
-      "backupHint": "すべてのキャラクター帳とセリフをバックアップまたは復元します",
+      "backupHint": "すべての台本とセリフをバックアップまたは復元します",
       "export": "エクスポート",
       "import": "インポート",
       "exporting": "エクスポート中…",
@@ -264,7 +264,7 @@
       "importConfirmTitle": "バックアップをインポートしますか？",
       "importConfirmBefore": "インポートすると、",
       "importConfirmStrong": "現在のコレクションと設定はすべて消去され",
-      "importConfirmAfter": "、キャラクター帳・セリフ・音声・設定がバックアップの内容に置き換わります。この操作は元に戻せません。",
+      "importConfirmAfter": "、台本（キャラクターとセリフ）・音声・設定がバックアップの内容に置き換わります。この操作は元に戻せません。",
       "importConfirmCounts": "現在のコレクション：キャラクター {{characters}} 人、セリフ {{clips}} 件、合計 {{size}}",
       "importConfirmTip": "データを失わないよう、先に現在のコレクションと設定を「エクスポート」することをおすすめします。",
       "cancel": "キャンセル",
@@ -301,7 +301,7 @@
       "en": "英語"
     },
     "book": {
-      "title": "キャラクター帳"
+      "title": "台本"
     },
     "lines": {
       "title": "セリフページ",

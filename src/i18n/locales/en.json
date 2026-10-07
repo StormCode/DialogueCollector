@@ -268,7 +268,7 @@
       "importConfirmTitle": "Import this backup?",
       "importConfirmBefore": "Importing will ",
       "importConfirmStrong": "erase your whole current collection and settings",
-      "importConfirmAfter": ", including characters, lines, audio and every setting, and replace them with the backup. This can't be undone.",
+      "importConfirmAfter": ", including your Script Book (characters and lines), audio and every setting, and replace them with the backup. This can't be undone.",
       "importConfirmCounts": "Current collection: {{characters}} characters, {{clips}} lines, {{size}} in total",
       "importConfirmTip": "Export your current collection and settings first so nothing is lost.",
       "cancel": "Cancel",
@@ -307,7 +307,7 @@
       "en": "English"
     },
     "book": {
-      "title": "Character book"
+      "title": "Script Book"
     },
     "lines": {
       "title": "Lines page",

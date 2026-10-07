@@ -245,7 +245,7 @@
       "moving": "搬移中…",
       "movingHint": "正在搬移收藏庫，請勿關閉應用程式",
       "backup": "匯出與匯入",
-      "backupHint": "備份或還原所有角色簿與台詞",
+      "backupHint": "備份或還原所有台詞本與台詞",
       "export": "匯出",
       "import": "匯入",
       "exporting": "匯出中…",
@@ -264,7 +264,7 @@
       "importConfirmTitle": "確定要匯入備份嗎？",
       "importConfirmBefore": "匯入後將",
       "importConfirmStrong": "清空目前所有的收藏與設定",
-      "importConfirmAfter": "，包含角色簿、台詞、音檔及所有設定，並還原成備份檔的內容。此動作無法復原。",
+      "importConfirmAfter": "，包含台詞本（角色與台詞）、音檔及所有設定，並還原成備份檔的內容。此動作無法復原。",
       "importConfirmCounts": "目前的收藏：{{characters}} 個角色、{{clips}} 句台詞，共 {{size}}",
       "importConfirmTip": "建議先「匯出」目前的收藏與設定，以免資料遺失。",
       "cancel": "取消",
@@ -301,7 +301,7 @@
       "en": "英文"
     },
     "book": {
-      "title": "角色簿"
+      "title": "台詞本"
     },
     "lines": {
       "title": "台詞頁",

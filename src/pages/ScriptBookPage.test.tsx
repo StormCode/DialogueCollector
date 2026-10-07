@@ -54,7 +54,7 @@ describe("ScriptBookPage", () => {
     expect(await screen.findByText("這裡什麼都沒有")).toBeInTheDocument();
   });
 
-  it("pages by the 角色簿 page size and searches names and CV", async () => {
+  it("pages by the 台詞本 page size and searches names and CV", async () => {
     vi.spyOn(ipc, "listCharacters").mockResolvedValue(CAST);
     renderPage();
     await screen.findByText("芙莉蓮");
