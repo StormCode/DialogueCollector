@@ -31,7 +31,7 @@ function updateErrorKey(kind: string): string {
   }
 }
 
-// 目前版本 (T22). 檢查更新 either reports 已是最新版本! or downloads, installs and restarts into
+// 目前版本. 檢查更新 either reports 已是最新版本! or downloads, installs and restarts into
 // the new version, showing 更新中... meanwhile. The 自動更新 preference drives the startup check
 // in src-tauri/src/updater.rs.
 export function VersionSection() {

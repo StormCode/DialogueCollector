@@ -1,9 +1,9 @@
-//! Portraits and banner posters live in `<library>/images/<name>.<ext>` (R1, T12), so export,
+//! Portraits and banner posters live in `<library>/images/<name>.<ext>`, so export,
 //! import and 驗證收藏庫 carry them with the library.
 //!
 //! A file is accepted by its header, never its extension: PNG, JPEG or GIF magic bytes, at most
 //! `MAX_BYTES`, and at most `MAX_PIXELS` as declared in the header — a small file can still
-//! decode to a huge image (S3), so the dimensions are checked without decoding anything.
+//! decode to a huge image, so the dimensions are checked without decoding anything.
 
 use std::fs;
 use std::io::Write;
@@ -18,7 +18,7 @@ pub const MAX_BYTES: u64 = 20 * 1024 * 1024;
 pub const MAX_PIXELS: u64 = 32_000_000;
 
 /// A portrait whose sides both pass this is scaled down, keeping its shape, until the shorter
-/// side is this long (user 2026-10-04): 480 × N or N × 480, so 編輯角色's 240 px preview stays
+/// side is this long: 480 × N or N × 480, so 編輯角色's 240 px preview stays
 /// sharp on a 2× screen (the 台詞本 card shows it at 72 px), cropped to fill.
 pub const PORTRAIT_SHORT_SIDE: u32 = 480;
 

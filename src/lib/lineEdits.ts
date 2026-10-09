@@ -33,7 +33,7 @@ const CJK = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}　-〿＀-￯
 const LETTER = /[\p{L}\p{N}]/u;
 
 /**
- * 「，」 when the lines are mostly Chinese or Japanese, else ", " (user 2026-10-02: 「，」 for
+ * 「，」 when the lines are mostly Chinese or Japanese, else ", " (「，」 for
  * CJK, 「,」 otherwise; a space follows the Latin comma as Latin text expects).
  */
 export function joinSeparator(texts: string[]): string {
@@ -51,7 +51,7 @@ const ENDS_IN_PUNCTUATION = /\p{P}$/u;
 
 /**
  * The lines joined in order. A line that already ends in punctuation needs no comma after it
- * (user 2026-10-04): CJK text then runs straight on, other text takes just the space.
+ *: CJK text then runs straight on, other text takes just the space.
  */
 function join(texts: string[]): string {
   const kept = texts.map((t) => t.trim()).filter((t) => t !== "");
@@ -65,8 +65,8 @@ function join(texts: string[]): string {
 
 /**
  * 合併: the chosen rows become one, at the first one's place. Any rows may be chosen; the ones
- * between them that were not chosen stay as they are and their audio is not taken (user
- * 2026-10-02), so the merged row is the chosen rows' segments, joined in time order.
+ * between them that were not chosen stay as they are and their audio is not taken, so the
+ * merged row is the chosen rows' segments, joined in time order.
  */
 export function mergeRows(rows: Row[], chosen: Set<number>, newIndex: number): Row[] {
   const parts = rows.filter((r) => chosen.has(r.index));
@@ -94,7 +94,7 @@ export function mergeRows(rows: Row[], chosen: Set<number>, newIndex: number): R
 
 /**
  * 拆分: each chosen merged row gives back the rows it was made from, each at its own place by
- * time (user 2026-10-02), so rows merged across unchosen ones go back around them.
+ * time, so rows merged across unchosen ones go back around them.
  */
 export function splitRows(rows: Row[], chosen: Set<number>): Row[] {
   const out: Row[] = [];
@@ -122,7 +122,7 @@ export function isBilingual(rows: Row[]): boolean {
 }
 
 /**
- * 調換: the whole subtitle's 原文 and 譯文 trade places (user 2026-10-02: every line, whatever
+ * 調換: the whole subtitle's 原文 and 譯文 trade places (every line, whatever
  * is checked). Lines without a translation stay as they are; merged rows swap their parts too,
  * so 拆分 later gives the swapped lines back.
  */

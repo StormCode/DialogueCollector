@@ -7,7 +7,7 @@ import type { JobOutcome } from "../../lib/types";
 import { ImportButton } from "./ImportParts";
 import { formatClock } from "./SelectScreen";
 
-// Board: VideoPartial.dc.html. Cancelled cues are listed apart from failed ones (ENG6): their
+// Board: VideoPartial.dc.html. Cancelled cues are listed apart from failed ones: their
 // reason reads 已取消 in the neutral colour instead of the error red.
 export function PartialScreen({
   outcome,

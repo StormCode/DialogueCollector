@@ -1,23 +1,23 @@
 //! SQLite access for `<library>/library.sqlite`.
 //!
 //! Rules that hold for every connection:
-//! - `PRAGMA foreign_keys = ON` (ET1: a test fails if it is off)
-//! - WAL journal mode (FC8); libraries on network / cloud-sync volumes are refused before
-//!   the database is opened (ENG5 → `library`)
+//! - `PRAGMA foreign_keys = ON` (a test fails if it is off)
+//! - WAL journal mode; libraries on network / cloud-sync volumes are refused before
+//!   the database is opened (see `library`)
 //!
-//! Schema evolution (Section 9): the version lives in a one-row `schema_version` table that is
+//! Schema evolution: the version lives in a one-row `schema_version` table that is
 //! read before anything else. Migrations are additive-only (add tables and columns, never
 //! rename or drop), each runs in its own transaction, and a library written by a newer app is
 //! refused by name instead of being opened.
 //!
-//! Imports write through `writer::Writer`, one thread with its own connection (FC8, T5).
+//! Imports write through `writer::Writer`, one thread with its own connection.
 
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use rusqlite::{Connection, OptionalExtension, TransactionBehavior};
 
-// Used only by `import` until its commands land (T7/T8).
+// Used only by `import` until its commands land.
 #[allow(dead_code)]
 pub mod writer;
 
@@ -91,7 +91,7 @@ fn configure(conn: &Connection) -> Result<(), StoreError> {
     conn.pragma_update(None, "journal_mode", "WAL")?;
     // With WAL, NORMAL keeps every commit durable across an app crash; a power loss can roll
     // back the latest commits, which leaves at worst an orphan file — never a dangling row,
-    // because files are fsynced and renamed before their row is inserted (ENG2).
+    // because files are fsynced and renamed before their row is inserted.
     conn.pragma_update(None, "synchronous", "NORMAL")?;
     conn.busy_timeout(std::time::Duration::from_secs(5))?;
     Ok(())

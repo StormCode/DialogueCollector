@@ -1,4 +1,4 @@
-# T22 (G1 → B): free-tier updater. Pushing a `v*` tag builds every target, signs the updater
+# Free-tier updater. Pushing a `v*` tag builds every target, signs the updater
 # bundles with the minisign key in the TAURI_SIGNING_PRIVATE_KEY secret, and uploads them with
 # latest.json to a draft release. The last job publishes the draft, so the updater endpoint
 # (releases/latest/download/latest.json) never serves a release missing a platform.

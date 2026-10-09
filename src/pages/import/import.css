@@ -685,7 +685,7 @@
   opacity: 0;
 }
 
-/* Checkboxes show on hover, once anything is checked, or with keyboard focus (T14). */
+/* Checkboxes show on hover, once anything is checked, or with keyboard focus. */
 .sel-box-wrap {
   display: inline-flex;
   opacity: 0;
@@ -1308,7 +1308,7 @@
   color: var(--bento-negative-50);
 }
 
-/* Cancelled by the user, not failed (ENG6). */
+/* Cancelled by the user, not failed. */
 .part-row__reason.is-cancelled {
   color: var(--bento-content-secondary);
 }
@@ -1596,7 +1596,7 @@
   padding: 14px 20px 14px 24px;
 }
 
-/* ---- 選擇台詞 (字幕匯入改版): tools, per-row play, the card growing in ---- */
+/* ---- 選擇台詞: tools, per-row play, the card growing in ---- */
 .sel-toolbar__sep {
   flex-shrink: 0;
   width: 1px;

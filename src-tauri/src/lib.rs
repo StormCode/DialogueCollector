@@ -1,6 +1,6 @@
 //! Rust core of 台詞收藏家.
 //!
-//! Five authored modules (PLAN.md eng review, D5 → B):
+//! Five authored modules:
 //! - `subs`    — subtitle parsing (ASS / SRT) into cues
 //! - `media`   — the bundled ffmpeg sidecar: one pass per cue, seek + audio-only + encode
 //! - `store`   — SQLite access, schema versioning, the single-writer task
@@ -47,7 +47,7 @@ pub struct AppState {
     pub library_busy: AtomicBool,
     /// Set by `cancel_export`; checked between files by the running export.
     pub export_cancel: std::sync::Arc<AtomicBool>,
-    /// Set by `cancel_import` (and on quit); kills the running import's encodes (ENG6).
+    /// Set by `cancel_import` (and on quit); kills the running import's encodes.
     pub import_cancel: std::sync::Arc<AtomicBool>,
     /// Set by `cancel_prepare`: stops 抽取音訊 or the extraction of a subtitle track.
     pub prepare_cancel: std::sync::Arc<AtomicBool>,
@@ -159,7 +159,7 @@ pub fn run() {
         .expect("error while building tauri application")
         .run(|app, event| match event {
             tauri::RunEvent::ExitRequested { api, code, .. } => {
-                // Quitting mid-import cancels it first (ENG6): its ffmpeg children would
+                // Quitting mid-import cancels it first: its ffmpeg children would
                 // otherwise outlive the app on macOS and Linux, and its .tmp files linger.
                 // A programmatic exit (`code` set) is the one issued below, once work is done.
                 if code.is_none() && stop_work_before_exit(app) {

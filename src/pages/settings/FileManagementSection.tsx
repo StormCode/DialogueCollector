@@ -93,10 +93,10 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
   const dismissToast = useCallback(() => setToast(null), []);
   const busy = relocating || exporting || importing;
   const stats = status?.stats;
-  // 匯出中 shows only once the export runs past BUSY_CARD_DELAY_MS (user 2026-10-02).
+  // 匯出中 shows only once the export runs past BUSY_CARD_DELAY_MS.
   const showExporting = useBusyReveal(exporting);
 
-  // 驗證收藏庫 (T20): re-run whenever the library or its contents change (move, import).
+  // 驗證收藏庫: re-run whenever the library or its contents change (move, import).
   useEffect(() => {
     if (!status?.ready) {
       setMissing([]);
@@ -339,7 +339,7 @@ export const FileManagementSection = forwardRef<HTMLHeadingElement>(function Fil
               <strong>{t("settings.files.importConfirmStrong")}</strong>
               {t("settings.files.importConfirmAfter")}
             </div>
-            {/* D10: name what will be lost before the irreversible replace. */}
+            {/* Name what will be lost before the irreversible replace. */}
             <div className="confirm__counts">
               {t("settings.files.importConfirmCounts", {
                 characters: formatCount(pendingImport.preview.currentCharacters, i18n.language),

@@ -1,4 +1,4 @@
-//! The single writer (FC8, T5): during an import every database write goes through one thread
+//! The single writer: during an import every database write goes through one thread
 //! that owns its own connection. Cues are encoded up to four at a time, but their rows queue
 //! here instead of racing for SQLite's single write lock, so `SQLITE_BUSY` never surfaces.
 //!

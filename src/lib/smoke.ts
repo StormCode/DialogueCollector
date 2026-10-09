@@ -1,4 +1,4 @@
-// T1 walking-skeleton check, renderer half: ask Rust to cut the hardcoded cue, then prove the
+// Walking-skeleton check, renderer half: ask Rust to cut the hardcoded cue, then prove the
 // clip is reachable through the asset protocol by loading its metadata in an <audio> element.
 
 import { convertFileSrc } from "@tauri-apps/api/core";

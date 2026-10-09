@@ -1,4 +1,4 @@
-//! Where a library folder physically lives (ENG5 → A).
+//! Where a library folder physically lives.
 //!
 //! WAL needs a shared-memory `-shm` file and does not work on network filesystems, and a
 //! sync client moving a live SQLite file corrupts it in any journal mode. So a library on a

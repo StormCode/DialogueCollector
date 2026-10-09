@@ -1,5 +1,5 @@
 //! Running the ffmpeg/ffprobe sidecars as plain child processes, so an import can kill them the
-//! moment the user cancels (ENG6) and a killed child is reported as `MediaError::Killed`.
+//! moment the user cancels and a killed child is reported as `MediaError::Killed`.
 //!
 //! Tauri places `bundle.externalBin` binaries next to the app executable (and `tauri dev`
 //! copies them next to the dev build), which is also where tauri-plugin-shell looks.
@@ -15,7 +15,7 @@ use super::MediaError;
 /// How often a running child is checked for exit and for cancellation.
 const POLL: Duration = Duration::from_millis(10);
 
-/// Bytes of stderr kept for error reports and logs (T19 wants the last line).
+/// Bytes of stderr kept for error reports and logs (the last line is what gets shown).
 pub const STDERR_TAIL: usize = 600;
 
 /// The bundled sidecar `name` (`ffmpeg`, `ffprobe`) beside the running executable.
@@ -149,7 +149,7 @@ mod tests {
         }
     }
 
-    /// ET2: a sidecar SIGKILLed from outside still surfaces as `MediaError::Killed`.
+    /// A sidecar SIGKILLed from outside still surfaces as `MediaError::Killed`.
     #[test]
     fn a_child_killed_by_sigkill_is_reported_as_killed() {
         let err = run(sh("kill -9 $$"), &AtomicBool::new(false)).unwrap_err();

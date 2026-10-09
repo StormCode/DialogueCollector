@@ -1,11 +1,11 @@
-//! One pass of the cue → clip pipeline (T7, D11 → B, FC8, ENG6).
+//! One pass of the cue → clip pipeline.
 //!
 //! - Cues are encoded up to `workers` at a time; each is committed (`commit_cue`) as soon as it
 //!   is encoded, so work done before a crash or a cancel is kept.
 //! - A cue that fails is skipped and reported with a reason; the others carry on (部分完成).
 //! - Cancel kills every in-flight ffmpeg at once. A cancelled cue leaves nothing behind in any
 //!   state it is caught in: its `.tmp` is removed; if it was already committed, its row is
-//!   deleted and its file queued in `pending_deletions` and unlinked (ENG6 + ENG3). Cues that
+//!   deleted and its file queued in `pending_deletions` and unlinked. Cues that
 //!   finished before the cancel are kept.
 
 use std::collections::VecDeque;
@@ -96,7 +96,7 @@ pub enum Event {
         cue_index: u32,
     },
     Progress(Progress),
-    /// Every cue is encoded (or settled without encoding); only writes remain: 建立索引 (R8).
+    /// Every cue is encoded (or settled without encoding); only writes remain: 建立索引.
     Indexing,
 }
 
@@ -126,7 +126,7 @@ enum Outcome {
     Cancelled,
 }
 
-/// `min(4, available cores)` (FC8).
+/// `min(4, available cores)`.
 pub fn default_workers() -> usize {
     std::thread::available_parallelism().map_or(1, |n| n.get().min(4))
 }
@@ -272,7 +272,7 @@ fn process(pass: &Pass<'_>, job: &PlannedCue, encoded: &dyn Fn()) -> Outcome {
 
     if pass.cancel.load(Ordering::Acquire) {
         // Caught after its commit: the row goes in a transaction, the file through
-        // pending_deletions, so nothing of a cancelled cue survives (ENG6).
+        // pending_deletions, so nothing of a cancelled cue survives.
         let root = pass.library.to_owned();
         let id = committed.line_id;
         let undone = pass.writer.write(move |conn| {

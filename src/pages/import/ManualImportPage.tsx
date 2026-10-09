@@ -29,7 +29,7 @@ interface Card {
 
 type Screen = "loading" | "input" | "importing" | "complete" | "failed";
 
-/** A card is ready when it has 原文 or 譯文 and a real character (未指派 blocks, user 2026-09-29). */
+/** A card is ready when it has 原文 or 譯文 and a real character (未指派 blocks). */
 export function cardReady(card: Pick<Card, "text" | "translation" | "owner">) {
   return (card.text.trim() !== "" || card.translation.trim() !== "") && typeof card.owner === "number";
 }
@@ -52,7 +52,7 @@ export function ManualImportPage() {
   const [outcome, setOutcome] = useState<ManualOutcome | null>(null);
 
   // 播放預覽 of a file the webview may not decode needs an m4a made first. They are made in the
-  // background, one at a time in card order, as soon as the form opens (user 2026-09-29), so
+  // background, one at a time in card order, as soon as the form opens, so
   // one is usually ready by the time 播放 is pressed; pressing it earlier joins the same work.
   const previews = useRef(new Map<string, Promise<string>>());
   const preview = useCallback((path: string) => {

@@ -102,7 +102,7 @@ const BOARD_ART = [
   // EditLine's preview button: its own play triangle and pause bars.
   { name: "previewPlay", board: "EditLine.dc.html", svg: /<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5\.14[\s\S]*?<\/svg>/ },
   { name: "previewPause", board: "EditLine.dc.html", svg: /<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect[\s\S]*?<\/svg>/ },
-  // The curve behind every page: the moving wave's start (Main, redrawn 2026-10-02).
+  // The curve behind every page: the moving wave's start (Main).
   { name: "backdrop", board: "Main.dc.html", svg: /<svg viewBox="0 0 1280 800"[\s\S]*?<\/svg>/ },
 ];
 

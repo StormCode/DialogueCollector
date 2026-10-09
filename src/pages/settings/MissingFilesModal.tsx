@@ -10,7 +10,7 @@ import { useRevealScrollbar } from "../../components/ui/useRevealScrollbar";
 import type { MissingFile } from "../../lib/types";
 import { BentoIcon, MaterialIcon } from "../../components/icons/Icon";
 
-// 遺失的檔案 (T20, board Settings.dc.html): which lines lost their clip, each with 查看 to that
+// 遺失的檔案 (board Settings.dc.html): which lines lost their clip, each with 查看 to that
 // character's 台詞頁, where the line can be re-imported or deleted.
 export function MissingFilesModal({
   files,

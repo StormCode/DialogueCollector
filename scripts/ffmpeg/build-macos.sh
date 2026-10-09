@@ -82,7 +82,7 @@ mkdir -p "$OUT"
 for bin in ffmpeg ffprobe; do
   install -m 755 "$bin" "$OUT/$bin-$TRIPLE"
   strip "$OUT/$bin-$TRIPLE"
-  # Apple Silicon refuses to run an unsigned executable; an ad-hoc signature is the minimum (FC2).
+  # Apple Silicon refuses to run an unsigned executable; an ad-hoc signature is the minimum.
   codesign --force --sign - "$OUT/$bin-$TRIPLE"
 done
 

@@ -1,4 +1,4 @@
-//! The macOS menu bar (user 2026-10-02): the app, 編輯 and 視窗 menus macOS expects (編輯 is what
+//! The macOS menu bar: the app, 編輯 and 視窗 menus macOS expects (編輯 is what
 //! makes ⌘C／⌘V work in text fields), plus 前往 with 主頁, 台詞本 and 設定. Labels follow the
 //! system's language, taken from the app's own translations (src/i18n/locales) so the menu and the
 //! side nav say the same thing. Windows has no menu bar: it would sit inside the window, which

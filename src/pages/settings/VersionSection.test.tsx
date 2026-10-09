@@ -23,7 +23,7 @@ function renderSection() {
   );
 }
 
-describe("VersionSection (T22)", () => {
+describe("VersionSection", () => {
   beforeEach(() => vi.restoreAllMocks());
 
   it("says 已是最新版本! when nothing needs installing", async () => {

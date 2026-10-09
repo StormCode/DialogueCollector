@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { runSmoke, type SmokeResult } from "../lib/smoke";
 
-// Not in the nav; reached from 設定 → 目前版本. Runs the same T1 check as `--smoke`.
+// Not in the nav; reached from 設定 → 目前版本. Runs the same walking-skeleton check as `--smoke`.
 export function DiagnosticsPage() {
   const { t } = useTranslation();
   const [running, setRunning] = useState(false);

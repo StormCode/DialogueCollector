@@ -1,4 +1,4 @@
-// T16: WCAG contrast of every product theme, read straight from the CSS so a colour change
+// WCAG contrast of every product theme, read straight from the CSS so a colour change
 // can't slip past. Themes below AA are recorded as known (DD4 defers the fix); the test fails
 // if one of them starts passing (update the list) or another starts failing.
 import { describe, expect, it } from "vitest";
@@ -60,7 +60,7 @@ function contrast(a: string, b: string): number {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-describe("theme contrast (T16)", () => {
+describe("theme contrast", () => {
   it.each(THEMES)("%s: text on the primary button", (theme) => {
     const ratio = contrast(buttonText(theme), buttonFill(theme));
     if (KNOWN_AA_FAILURES.has(theme)) {

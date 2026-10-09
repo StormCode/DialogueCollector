@@ -11,7 +11,7 @@ function prefersReducedMotion(): boolean {
 
 /**
  * The curve every board draws behind its page, its edge a moving sine: bulges sink into dips and
- * dips swell into bulges as it climbs (user 2026-10-02; not on the boards). Each frame sets the
+ * dips swell into bulges as it climbs (not on the boards). Each frame sets the
  * path straight on the element, so React doesn't re-render; the browser holds frames back while
  * the window is hidden. With reduced motion it is the boards' still curve.
  */

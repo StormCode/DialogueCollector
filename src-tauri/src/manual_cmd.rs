@@ -197,7 +197,7 @@ pub async fn start_manual_import(
     state: State<'_, AppState>,
     entries: Vec<ManualEntry>,
 ) -> CommandResult<ManualOutcome> {
-    // The same rule EditLine enforces: 原文 or 譯文, at least one (user 2026-09-29).
+    // The same rule EditLine enforces: 原文 or 譯文, at least one.
     for entry in &entries {
         let text = entry.text.trim();
         let translation = entry.translation.as_deref().unwrap_or("").trim();
@@ -309,7 +309,7 @@ fn fingerprint(path: &Path) -> u64 {
 }
 
 /// The extracted audio and subtitle tracks only serve the session that made them: dropped
-/// when the app exits (user 2026-10-02), and again at startup in case it didn't exit cleanly.
+/// when the app exits, and again at startup in case it didn't exit cleanly.
 pub fn clear_temp_files(app: &AppHandle) {
     for name in [PREVIEW_DIR, SUBTITLES_DIR] {
         if let Ok(dir) = cache_subdir(app, name) {

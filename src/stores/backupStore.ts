@@ -46,7 +46,7 @@ export const useBackupStore = create<BackupState>((set) => ({
     set({ importing: true });
     try {
       const outcome = await ipc.importBackup(path);
-      // The archive's settings.json replaced ours (ENG17); apply them to the running UI.
+      // The archive's settings.json replaced ours; apply them to the running UI.
       useSettingsStore.setState({ settings: outcome.settings });
       useLibraryStore.setState({ status: outcome.status });
       return outcome;

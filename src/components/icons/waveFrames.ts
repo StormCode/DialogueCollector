@@ -1,8 +1,7 @@
 /**
  * WaveBackdrop's geometry. The curve on the page is a stretch of an endless sine curve that keeps
  * moving, so the whole line writhes: wherever it bulges now it will dip later, and the other way
- * round (user 2026-10-02). The wave is short, so more than one shows and the climb reads clearly
- * (user's pick over a fainter second wave), and low, so the edge stays nearly straight. The
+ * round. The wave is short, so more than one shows and the climb reads clearly, and low, so the edge stays nearly straight. The
  * boards draw it at phase 0, so the still curve and the animation's start agree. One full turn
  * of `phase` brings it back exactly.
  */

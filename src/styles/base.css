@@ -70,8 +70,8 @@ body {
   color: var(--bento-content-secondary);
 }
 
-/* Every page title fades in (ScriptBook, Lines, LinesPoster boards: .pg-anim-title; the user
-   2026-09-29 extended it to all pages). Settings has the same fade as .st-anim-title. */
+/* Every page title fades in (ScriptBook, Lines, LinesPoster boards: .pg-anim-title; extended to all
+   pages). Settings has the same fade as .st-anim-title. */
 @keyframes pg-title-fade {
   from {
     opacity: 0;

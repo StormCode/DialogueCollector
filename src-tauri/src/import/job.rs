@@ -1,9 +1,9 @@
-//! Starting a subtitle import and retrying one (T7, ENG4 as revised 2026-10-02).
+//! Starting a subtitle import and retrying one.
 //!
 //! Retry rebuilds each failed line from what `import_failures` kept — its text, translation,
 //! time segments and character — because a line picked in 選擇台詞 may have been merged or
 //! swapped and no longer appears in the subtitle file. The video is probed again (nothing of
-//! the first pass is reused); a changed video only warns (ENG4), a missing one is
+//! the first pass is reused); a changed video only warns, a missing one is
 //! `SourceMissing`.
 
 use std::path::{Path, PathBuf};

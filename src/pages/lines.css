@@ -702,9 +702,9 @@
   color: var(--bento-neutral-60);
 }
 
-/* The 譯文 under the 原文 (user decision 2026-09-29, drawn on the Lines board as .ln-card-trans).
-   In both views the 原文 shows at most two lines and the 譯文 one, then an ellipsis (user
-   2026-09-29; the board clamps the compact 原文 to one line). */
+/* The 譯文 under the 原文 (drawn on the Lines board as .ln-card-trans).
+   In both views the 原文 shows at most two lines and the 譯文 one, then an ellipsis (the
+   board clamps the compact 原文 to one line). */
 .ln-card-trans {
   overflow: hidden;
   white-space: nowrap;
@@ -794,7 +794,7 @@
 }
 
 /* Pagination at the foot of the page, level with 台詞本's (56px up: the page's 48 + 8), and
-   below the last card once the lines run longer than the window (user 2026-09-29). */
+   below the last card once the lines run longer than the window. */
 .ln-page > .ui-pages {
   margin-top: auto;
   margin-bottom: 8px;

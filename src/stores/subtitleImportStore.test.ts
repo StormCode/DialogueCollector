@@ -17,7 +17,7 @@ const cue = (index: number, translation: string | null = null): Cue => ({
 const outcome = { runId: 1, imported: 3, failures: [], status: "complete", lost: [], changedSources: [] } as JobOutcome;
 const s = () => useSubtitleImportStore.getState();
 
-describe("選擇台詞 (T8, T28)", () => {
+describe("選擇台詞", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     s().reset();
@@ -124,7 +124,7 @@ describe("選擇台詞 (T8, T28)", () => {
   });
 });
 
-describe("opening the subtitle path (T27)", () => {
+describe("opening the subtitle path", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     s().reset();

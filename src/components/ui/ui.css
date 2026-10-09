@@ -252,7 +252,7 @@
   outline-offset: 2px;
 }
 
-/* ---- modal (DT4: scrim and elevation come from tokens, not hardcoded values) ---- */
+/* ---- modal (scrim and elevation come from tokens, not hardcoded values) ---- */
 .ui-modal-layer {
   position: fixed;
   inset: 0;

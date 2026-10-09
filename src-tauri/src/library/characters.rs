@@ -63,7 +63,7 @@ pub enum CharacterError {
     Invalid { field: &'static str },
     #[error("character {0} not found")]
     NotFound(i64),
-    /// The rows are gone but some files could not be unlinked; they stay queued (ET3).
+    /// The rows are gone but some files could not be unlinked; they stay queued.
     #[error("{} file(s) could not be removed", .0.len())]
     FileRemovalFailed(Vec<(String, String)>),
     #[error(transparent)]
@@ -131,7 +131,7 @@ fn relative_image(file: &str) -> String {
 }
 
 /// 編輯角色: validates, stores a replacement photo first, updates the row, and queues the old
-/// photo for deletion in the same transaction (ENG3), then unlinks it.
+/// photo for deletion in the same transaction, then unlinks it.
 pub fn update(
     conn: &mut Connection,
     root: &Path,
@@ -194,7 +194,7 @@ pub fn update(
     })
 }
 
-/// 刪除角色 (ET3): its lines, its import failures, its photo and poster and the character go in
+/// 刪除角色: its lines, its import failures, its photo and poster and the character go in
 /// one transaction, every file queued in `pending_deletions`; the files are unlinked after
 /// commit. Files that cannot be removed stay queued and are reported.
 pub fn delete(conn: &mut Connection, root: &Path, id: i64) -> Result<(), CharacterError> {
@@ -430,7 +430,7 @@ mod tests {
         assert_eq!(images_in(&root), 0);
     }
 
-    /// ET3: deleting a character with 500 lines removes every row and file, its photo, and the
+    /// Deleting a character with 500 lines removes every row and file, its photo, and the
     /// disk figure drops to zero.
     #[test]
     fn deleting_a_character_removes_its_lines_files_and_photo() {

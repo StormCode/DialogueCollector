@@ -44,7 +44,7 @@ describe("subtitle import flow", () => {
     vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => {});
   });
 
-  it("lists the cues with their translations and assigns checked rows in bulk (T8)", async () => {
+  it("lists the cues with their translations and assigns checked rows in bulk", async () => {
     vi.spyOn(ipc, "parseSubtitle").mockResolvedValue(CUES);
     renderFlow();
 

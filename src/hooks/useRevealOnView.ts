@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 
 /**
- * Items rise in one after another, at least this far apart (user 2026-10-04: together looked
+ * Items rise in one after another, at least this far apart (together looked
  * unnatural), in page order. Scrolling brings cards into view a few ms apart, so each waits for
  * the one before it; one coming into view after a pause rises at once.
  */
@@ -11,9 +11,9 @@ export const STAGGER_MS = 250;
 export type Reveal = undefined | "instant" | number;
 
 /**
- * Reveals items once each is wholly inside `root`'s visible area (user 2026-10-04: the 台詞頁
+ * Reveals items once each is wholly inside `root`'s visible area (the 台詞頁
  * toolbar and cards). `refFor(key)` goes on each item; `revealOf(key)` says how it shows. Items
- * already in view when the page opens just show, with no animation (user 2026-10-04); items that
+ * already in view when the page opens just show, with no animation; items that
  * come into view later, by scrolling or as new ones mount, rise in, queued as above. Seen stays
  * seen, so an item reveals once. Without IntersectionObserver (tests, very old engines) every
  * item just shows.

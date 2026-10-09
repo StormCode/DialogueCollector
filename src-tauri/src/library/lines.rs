@@ -139,7 +139,7 @@ pub fn update(conn: &Connection, root: &Path, id: i64, edit: LineEdit) -> Result
     get(conn, root, id)
 }
 
-/// 刪除台詞: the row and its clip go through `pending_deletions` (ENG3).
+/// 刪除台詞: the row and its clip go through `pending_deletions`.
 pub fn delete(conn: &mut Connection, root: &Path, id: i64) -> Result<(), LineError> {
     let tx = conn.transaction()?;
     if deletion::delete_lines(&tx, &[id])? == 0 {

@@ -10,8 +10,8 @@ import { useRevealScrollbar } from "../components/ui/useRevealScrollbar";
 import { errorKind, ipc } from "../lib/ipc";
 import type { Character, Line } from "../lib/types";
 
-// Board: EditLine.dc.html, shown as a modal over the 台詞 page (user 2026-09-29: the board draws
-// it full-size, but it floats). 儲存 closes it (user 2026-10-02) and tells the page to reload.
+// Board: EditLine.dc.html, shown as a modal over the 台詞 page (the board draws
+// it full-size, but it floats). 儲存 closes it and tells the page to reload.
 // Moving a line to another character is a change of
 // 角色 here.
 export function EditLineModal({ line: initial, onClose }: { line: Line; onClose: (saved: boolean) => void }) {

@@ -3,11 +3,11 @@
 // 1. The per-user default install directory is %LOCALAPPDATA%\Programs\<product> instead of
 //    %LOCALAPPDATA%\<product>, which is the default library folder. Tauri's installer hooks all
 //    run after the directory page, so a custom template is the only way to change that default.
-// 2. Shortcuts and the Apps & Features entry carry the app's name in the installer's language
-//    (user 2026-10-02): 台詞收藏家, 台词收藏家, 台詞コレクター or Dialogue Collector. The desktop
-//    shortcut is made on the finish page, after every hook, so this too needs the template. The
-//    name is recorded in the registry, so uninstall finds the shortcuts and an update renames the
-//    ones an earlier install made.
+// 2. Shortcuts and the Apps & Features entry carry the app's name in the installer's language:
+//    台詞收藏家, 台词收藏家, 台詞コレクター or Dialogue Collector. The desktop shortcut is made on
+//    the finish page, after every hook, so this too needs the template. The name is recorded in
+//    the registry, so uninstall finds the shortcuts and an update renames the ones an earlier
+//    install made.
 //
 // This check fails when the vendored template is no longer upstream + these changes, which is
 // what happens after the Tauri CLI is upgraded. Re-sync with:
@@ -29,7 +29,7 @@ const PATCHES = [
     "Var WixMode\nVar OldMainBinaryName\n",
     `Var WixMode
 Var OldMainBinaryName
-; The name shortcuts and Apps & Features show, in the installer's language (user 2026-10-02),
+; The name shortcuts and Apps & Features show, in the installer's language,
 ; and the one an earlier install gave them.
 Var AppName
 Var OldAppName

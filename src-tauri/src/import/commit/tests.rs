@@ -198,7 +198,7 @@ fn a_crash_between_insert_and_commit_leaves_no_row_and_an_orphan() {
     fs::remove_dir_all(root.parent().unwrap()).unwrap();
 }
 
-/// ET2: SIGKILL the committing process (not ffmpeg) 50 times at random moments. Afterwards no
+/// SIGKILL the committing process (not ffmpeg) 50 times at random moments. Afterwards no
 /// row points at a missing file, files >= rows, and the next open leaves no `.tmp`.
 #[test]
 fn fifty_sigkills_never_leave_a_row_without_its_file() {

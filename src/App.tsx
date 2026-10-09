@@ -18,7 +18,7 @@ import { useSettingsStore } from "./stores/settingsStore";
 
 /**
  * Applies portable settings that live on the document root: theme, locale, 台詞 font. The window
- * title is the app's name in the chosen language (user 2026-10-02), as the OS shows it.
+ * title is the app's name in the chosen language, as the OS shows it.
  */
 function useApplySettings() {
   const load = useSettingsStore((s) => s.load);

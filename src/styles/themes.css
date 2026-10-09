@@ -14,10 +14,9 @@
    reference becomes one of these variables. `--bento-dv-*` is left to data visualisation.
    夜光黑 is the dark theme: it also remaps Bento's neutral and semantic tokens (see below).
 
-   gstack-shortcut: completeness 7/10, accepted in the design review (D7 → B). Upgrade
-   trigger: the first new board drawn in the canvas after that decision — it will copy
+   Revisit at the first new board drawn in the canvas after that decision — it will copy
    `dv-indigo` from the boards beside it and widen the gap. Contrast per theme is checked by
-   src/styles/themes.test.ts (T16). */
+   src/styles/themes.test.ts. */
 
 :root,
 [data-theme="indigo"] {
@@ -158,7 +157,7 @@
   --bento-action-transparent-primary-fg-hover: #ffffff;
   --bento-action-transparent-primary-bg-hover: rgba(255, 255, 255, 0.08);
   /* Solid buttons: a mid slate with white text rather than the board's light fill with dark
-     text, which glared on the dark page (user 2026-09-29). 7.5:1, 6.2:1 on hover. */
+     text, which glared on the dark page. 7.5:1, 6.2:1 on hover. */
   --bento-action-solid-primary-bg: #4a5568;
   --bento-action-solid-primary-bg-hover: #566273;
   --bento-action-solid-primary-fg: #ffffff;
@@ -208,14 +207,14 @@
    so the inverted white ground drops out (the dark boards' `[data-theme="midnight"] img[…]`).
    oops.png is left as it is: it is a full-colour drawing whose outlines sit on white fills and
    reads fine on the dark ground, while the same filter turns it into a negative (checked
-   2026-09-29 against renders of both). */
+   against renders of both). */
 :root[data-theme="midnight"] .dc-illus {
   filter: invert(1) hue-rotate(180deg) brightness(0.85);
   mix-blend-mode: screen;
 }
 
 /* 夜光黑: a hover shadow barely shows on the dark ground, so a hovered card lights up 5%
-   instead — 台詞本's character cards and the 台詞 page's line cards (user 2026-09-29). */
+   instead — 台詞本's character cards and the 台詞 page's line cards. */
 :root[data-theme="midnight"] .sb-card-wrap:hover,
 :root[data-theme="midnight"] .ln-card:hover {
   box-shadow: none;

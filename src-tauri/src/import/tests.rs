@@ -1,5 +1,5 @@
-//! Engine tests with a stand-in encoder and prober: T7 (skip-and-report, 部分完成), ENG4/ET4
-//! (retry from source by cue text), ENG6/ET6 (cancel leaves nothing of the cancelled cues).
+//! Engine tests with a stand-in encoder and prober: skip-and-report (部分完成), retry from
+//! source by cue text, and cancel leaving nothing of the cancelled cues.
 
 use std::collections::{HashMap, HashSet};
 use std::fs;
@@ -260,7 +260,7 @@ fn a_clean_run_imports_every_cue() {
     assert!(settled_before < 5);
 }
 
-/// T7: two artificial failures → 部分完成 with both reasons; rows equal files.
+/// Two artificial failures → 部分完成 with both reasons; rows equal files.
 #[test]
 fn two_failures_are_skipped_and_reported_with_their_reasons() {
     let f = fixture();
@@ -342,7 +342,7 @@ fn a_video_without_audio_is_refused_by_name() {
     assert_eq!(encoder.calls.load(Ordering::SeqCst), 0);
 }
 
-/// ET6: cancel kills the in-flight encodes; cancelled cues leave no .tmp, file or row and are
+/// Cancel kills the in-flight encodes; cancelled cues leave no .tmp, file or row and are
 /// listed as cancelled (not failed); cues finished before the cancel are kept.
 #[test]
 fn cancel_kills_in_flight_cues_and_keeps_finished_ones() {
@@ -394,7 +394,7 @@ fn cancel_kills_in_flight_cues_and_keeps_finished_ones() {
         .all(|(_, status, _)| status == "cancelled"));
 }
 
-/// ET6: a cue caught after its commit loses its row and its file too.
+/// A cue caught after its commit loses its row and its file too.
 #[test]
 fn a_cue_cancelled_after_its_commit_is_removed_again() {
     let f = fixture();
@@ -415,7 +415,7 @@ fn a_cue_cancelled_after_its_commit_is_removed_again() {
     assert!(assert_rows_equal_files(&f.root).is_empty());
 }
 
-/// ENG4 as revised 2026-10-02: retry rebuilds the failed lines from their records — text,
+/// Retry rebuilds the failed lines from their records — text,
 /// translation, segments, character — so it works even when the subtitle file has changed or is
 /// gone (an extracted track lives in a cache; a merged line was never in the file).
 #[test]

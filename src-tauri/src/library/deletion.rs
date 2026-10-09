@@ -1,4 +1,4 @@
-//! Durable deletion (ENG3, ET3): the user asked that deleted audio really be deleted.
+//! Durable deletion: the user asked that deleted audio really be deleted.
 //!
 //! Deleting rows queues their files in `pending_deletions` **in the same transaction**; the
 //! unlink happens after commit, and anything still queued is retried on every library open.

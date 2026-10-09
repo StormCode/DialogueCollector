@@ -1,15 +1,15 @@
-//! The self-contained library folder (D8 → B) and everything that must stay consistent
-//! with it: the folder pointer, the two settings files (ENG17), re-pointing and moving
-//! (T9), the volume check (ENG5), deletion with `pending_deletions` (ENG3), and
-//! export/import (D10, D14).
+//! The self-contained library folder and everything that must stay consistent
+//! with it: the folder pointer, the two settings files, re-pointing and moving
+//!, the volume check, deletion with `pending_deletions`, and
+//! export/import.
 //!
 //! Layout of a library folder:
 //! ```text
 //! <library>/
 //!   library.sqlite      audio paths inside are relative to this directory
 //!   <12 A-Z0-9>.<ext>   one file per line
-//!   images/             portraits and posters (R1)
-//!   .tmp/               same-volume scratch space, swept on open (R4)
+//!   images/             portraits and posters
+//!   .tmp/               same-volume scratch space, swept on open
 //! ```
 //!
 //! The app never stores an absolute path to anything inside the library. The only absolute
@@ -145,7 +145,7 @@ pub enum LibraryState {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(tag = "code", rename_all = "camelCase")]
 pub enum UnavailableReason {
-    /// `machine.json` has no pointer (e.g. only `settings.json` was restored, ENG17).
+    /// `machine.json` has no pointer (e.g. only `settings.json` was restored).
     NoPointer,
     NotFound,
     NotALibrary,

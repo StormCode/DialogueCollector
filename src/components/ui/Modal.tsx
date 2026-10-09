@@ -25,14 +25,14 @@ interface ModalProps {
 const openModals: symbol[] = [];
 
 // Bento Modal as drawn on the boards: scrim, drop-in card, title bar. Focus moves into the
-// dialog on open; the first element marked data-autofocus wins (DT2: 取消 on destructive
+// dialog on open; the first element marked data-autofocus wins (取消 on destructive
 // dialogs), otherwise the dialog itself.
 export function Modal({ title, children, onClose, size = "medium", actions, className = "" }: ModalProps) {
   const { t } = useTranslation();
   const dialog = useRef<HTMLDivElement>(null);
 
   // A layout effect, so focus is in the dialog before it first paints — never on the page
-  // behind it, however slow the machine (DT2).
+  // behind it, however slow the machine.
   useLayoutEffect(() => {
     const el = dialog.current;
     const target = el?.querySelector<HTMLElement>("[data-autofocus]") ?? el;

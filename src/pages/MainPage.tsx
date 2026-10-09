@@ -11,7 +11,7 @@ import type { SubtitleImportState } from "./import/SubtitleImportPage";
 import "./main.css";
 
 const SUBTITLE_EXTENSIONS = ["ass", "srt"];
-/** Videos the subtitle path cuts from (字幕匯入改版 2026-10-02: MKV、MP4、WEBM). */
+/** Videos the subtitle path cuts from (MKV、MP4、WEBM). */
 export const VIDEO_EXTENSIONS = ["mkv", "mp4", "webm"];
 
 /**
@@ -24,12 +24,12 @@ export function sortSubtitleDrop(paths: string[]) {
   const videos = paths.filter((p) => VIDEO_EXTENSIONS.includes(ext(p)));
   return { subtitles, videos, skipped: paths.length - subtitles.length - videos.length };
 }
-/** 直接匯入: videos have their audio encoded; WAV, M4A and MP3 are kept as they are (user 2026-09-29). */
+/** 直接匯入: videos have their audio encoded; WAV, M4A and MP3 are kept as they are. */
 export const MANUAL_EXTENSIONS = ["mkv", "mp4", "webm", "wav", "m4a", "mp3"];
 
 /**
  * Splits dropped files into the supported ones and a message for the rest: 尚未支援此格式 for a
- * single file, 尚未支援此格式，略過了 n 個檔案 when several were dropped (user 2026-09-29).
+ * single file, 尚未支援此格式，略過了 n 個檔案 when several were dropped.
  */
 export function sortDropped(
   paths: string[],
@@ -69,7 +69,7 @@ export function MainPage() {
     let video = videos[0];
     if (!video) {
       if (subtitles.length === 0) return;
-      // A subtitle alone: ask for its video (user 2026-10-02).
+      // A subtitle alone: ask for its video.
       const picked = await open({
         multiple: false,
         title: t("main.pickVideo"),

@@ -50,7 +50,7 @@ pub fn save_settings(state: State<'_, AppState>, settings: Settings) -> CommandR
     Ok(settings)
 }
 
-// ---------- library (T9) ----------
+// ---------- library ----------
 
 /// Event carrying `{ done, total }` bytes while a cross-volume move copies files.
 pub const MOVE_PROGRESS_EVENT: &str = "library-move-progress";
@@ -157,7 +157,7 @@ async fn relocate_to(
     Ok(library.status())
 }
 
-// ---------------------------------------------------------------- backup (T10)
+// ---------------------------------------------------------------- backup
 
 /// Event carrying `ExportProgress` while an export runs.
 pub const EXPORT_PROGRESS_EVENT: &str = "library-export-progress";
@@ -228,7 +228,7 @@ pub fn cancel_export(state: State<'_, AppState>) {
     state.export_cancel.store(true, Ordering::SeqCst);
 }
 
-/// What the 匯入 confirmation shows: the archive, and what the current library holds (D10).
+/// What the 匯入 confirmation shows: the archive, and what the current library holds.
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct BackupPreview {
@@ -268,8 +268,8 @@ pub struct ImportOutcome {
     pub settings: Settings,
 }
 
-/// 匯入 (REPLACE, D10 → A). Unpacks and verifies before touching the current library (D14),
-/// then swaps it in and overwrites settings.json — never machine.json (ENG17).
+/// 匯入 (REPLACE). Unpacks and verifies before touching the current library,
+/// then swaps it in and overwrites settings.json — never machine.json.
 #[tauri::command]
 pub async fn import_backup(
     app: AppHandle,
@@ -326,7 +326,7 @@ pub async fn import_backup(
     })
 }
 
-/// 驗證收藏庫 (T20): every line whose clip is gone from the library folder.
+/// 驗證收藏庫: every line whose clip is gone from the library folder.
 #[tauri::command]
 pub fn verify_library(state: State<'_, AppState>) -> CommandResult<VerifyReport> {
     let guard = state.library.lock().unwrap();
@@ -357,7 +357,7 @@ pub fn delete_missing_lines(state: State<'_, AppState>) -> CommandResult<usize> 
     Ok(lib.delete_missing_lines()?)
 }
 
-/// 驗證收藏庫: rows whose clip is gone (T20), and clips no row points at (ENG2 crash leftovers).
+/// 驗證收藏庫: rows whose clip is gone, and clips no row points at (crash leftovers).
 #[derive(Debug, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct VerifyReport {
@@ -365,7 +365,7 @@ pub struct VerifyReport {
     pub orphans: Vec<String>,
 }
 
-/// 檢查更新 (T22). Resolves only when already up to date; otherwise the app restarts into the
+/// 檢查更新. Resolves only when already up to date; otherwise the app restarts into the
 /// new version, reporting download progress on `update-progress` first.
 #[tauri::command]
 pub async fn check_for_update(app: AppHandle) -> CommandResult<crate::updater::CheckOutcome> {

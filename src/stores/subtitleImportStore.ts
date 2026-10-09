@@ -22,7 +22,7 @@ const IMPORT_PROGRESS_EVENT = "import-progress";
 const MERGED_INDEX_BASE = 1_000_000;
 
 /**
- * Screens of the subtitle path (字幕匯入改版 2026-10-02), one per board:
+ * Screens of the subtitle path, one per board:
  * reading SubtitleImporting · readFailed SubtitleFailed (字幕讀取失敗) · extracting
  * AudioExtracting · tracks TrackSelect · select SubtitleSelect (+ empty toast, embedded variant)
  * · cutting VideoCutting · indexing VideoImportingIndex · complete VideoComplete · partial
@@ -331,7 +331,7 @@ export const useSubtitleImportStore = create<SubtitleImportState>((set, get) => 
 
     // 合併: the merged row takes the character of the earliest chosen row that has one. The checks
     // clear afterwards (unlike the board), so the next rows checked merge on their own instead of
-    // joining the row just made (user 2026-10-02).
+    // joining the row just made.
     merge: () => {
       const { rows, selected, assigned, nextIndex } = get();
       if (selected.size < 2) return;

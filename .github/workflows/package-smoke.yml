@@ -1,7 +1,6 @@
-# T1: build the packaged app on every target and run the walking-skeleton check against the
+# Build the packaged app on every target and run the walking-skeleton check against the
 # packaged artifact (not a dev build): sidecar spawns, one cue is cut, one row is written,
-# the renderer loads the clip through the asset protocol. T21 grows this into the full matrix
-# (downloaded-artifact launch for quarantine, ET11).
+# the renderer loads the clip through the asset protocol.
 name: package-smoke
 
 on:
@@ -137,7 +136,7 @@ jobs:
           $p = Start-Process $exe.FullName -ArgumentList "--smoke", "--smoke-report", $report -Wait -PassThru
           Get-Content $report
           if ($p.ExitCode -ne 0) { exit $p.ExitCode }
-          # First launch creates the default library; settings live apart from it (ENG17).
+          # First launch creates the default library; settings live apart from it.
           $library = Join-Path $env:LOCALAPPDATA "DialogueCollector"
           Get-ChildItem $library -Force | Format-Table Name, Length
           if (-not (Test-Path (Join-Path $library "library.sqlite"))) { throw "first launch did not create the default library" }

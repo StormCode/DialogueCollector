@@ -1,4 +1,4 @@
-//! The two settings files (ENG17 → A).
+//! The two settings files.
 //!
 //! | file            | contents                                              | in export zip |
 //! |-----------------|-------------------------------------------------------|---------------|
@@ -60,7 +60,7 @@ pub enum LineFont {
 pub const PER_PAGE_RANGE: std::ops::RangeInclusive<u32> = 1..=100;
 pub const PLAY_GAP_RANGE: std::ops::RangeInclusive<f64> = 0.0..=30.0;
 
-/// Portable settings: travel inside the export zip and are overwritten by import (D10).
+/// Portable settings: travel inside the export zip and are overwritten by import.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
 pub struct Settings {
@@ -129,7 +129,7 @@ pub struct WindowGeometry {
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
 pub struct MachineSettings {
-    /// `None` means there is no pointer: the renderer enters the re-point flow (D8).
+    /// `None` means there is no pointer: the renderer enters the re-point flow.
     pub library_path: Option<PathBuf>,
     pub window: Option<WindowGeometry>,
     pub last_picker_dir: Option<PathBuf>,
@@ -204,7 +204,7 @@ impl SettingsFiles {
         self.dir.join(MACHINE_FILE)
     }
 
-    /// Startup handling, each file independently (ENG17 consequence 6):
+    /// Startup handling, each file independently:
     /// - both missing: first run, create both with defaults
     /// - `settings.json` missing: recreate defaults, keep the library pointer
     /// - `machine.json` missing: no pointer, so `library_path` is `None` → re-point flow

@@ -23,7 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
-# ffmpeg sidecar binaries are fetched per target and pinned by SHA256 (T3), not committed
+# ffmpeg sidecar binaries are fetched per target and pinned by SHA256, not committed
 src-tauri/binaries/ffmpeg-*
 src-tauri/binaries/ffprobe-*
 coverage

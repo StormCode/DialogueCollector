@@ -93,7 +93,7 @@ export function LinesPage() {
   const scroller = useRef<HTMLDivElement>(null);
   useRevealScrollbar(scroller);
   // The toolbar and each card show once wholly in view: at once if so as the page opens, else
-  // rising in, one after another, as they are scrolled to (user 2026-10-04).
+  // rising in, one after another, as they are scrolled to.
   // Measured before paint, so a menu near the bottom never shows below first.
   useLayoutEffect(() => {
     const menu = menuRef.current;

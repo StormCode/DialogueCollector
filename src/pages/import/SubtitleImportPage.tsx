@@ -21,7 +21,7 @@ export interface SubtitleImportState {
 /** Screens that only show work in progress: held back for `BUSY_CARD_DELAY_MS`. */
 const BUSY_SCREENS = new Set<Screen>(["reading", "extracting", "cutting", "indexing"]);
 
-// The subtitle path (canvas page 3, 字幕匯入改版 2026-10-02). With a subtitle file:
+// The subtitle path (canvas page 3). With a subtitle file:
 // SubtitleImporting → AudioExtracting → SubtitleSelect (Step 2). A video alone: AudioExtracting
 // → TrackSelect (Step 2) → SubtitleImporting → SubtitleSelect (Step 3). Then VideoCutting →
 // VideoImportingIndex → VideoComplete | VideoPartial | VideoFailed; SubtitleFailed
@@ -126,7 +126,7 @@ export function SubtitleImportPage() {
         <div className="imp-page">
           <StatusCard
             medallion={<OopsMedallion />}
-            // A video with no subtitles of its own says so (user 2026-10-02); retrying won't help.
+            // A video with no subtitles of its own says so; retrying won't help.
             title={t(noTracks ? "import.readFailed.noTracks" : "import.readFailed.title")}
             hint={t(noTracks ? "import.readFailed.noTracksHint" : "import.oops")}
             entrance="shake"

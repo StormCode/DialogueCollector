@@ -1,16 +1,16 @@
 //! The cue → clip pipeline. Both intake paths (subtitle and manual) are one pipeline with a
-//! pluggable cue source (0G C1).
+//! pluggable cue source.
 //!
-//! Contracts this module owns, all specified in PLAN.md:
-//! - `commit_cue` write order (ENG2 → A): `.tmp` → fsync → rename → insert → commit. This is
+//! Contracts this module owns:
+//! - `commit_cue` write order: `.tmp` → fsync → rename → insert → commit. This is
 //!   the only place that order may exist.
-//! - partial failure is skip-and-report with 部分完成 (D11 → B)
-//! - retry re-reads both sources and matches by cue text, nearest start time on ties (ENG4);
+//! - partial failure is skip-and-report with 部分完成
+//! - retry re-reads both sources and matches by cue text, nearest start time on ties;
 //!   the full re-parse and re-probe are required and must not be cached
-//! - cancel kills every in-flight ffmpeg child and leaves no `.tmp`, file or row (ENG6)
+//! - cancel kills every in-flight ffmpeg child and leaves no `.tmp`, file or row
 //! - a single-job guard: a second import cannot start while one is running
 //!
-//! 索引中 (R8, decided 2026-09-29) is the `commit_cue` phase: giving each clip its 12-character
+//! 索引中 is the `commit_cue` phase: giving each clip its 12-character
 //! name and writing its row. It is real work, normally quick, and builds no search index.
 
 pub mod commit;

@@ -1,4 +1,4 @@
-//! `import_runs` / `import_failures` records (R5, D11, ENG4). A run keeps its source PATHS —
+//! `import_runs` / `import_failures` records. A run keeps its source PATHS —
 //! never contents — so 部分完成 survives closing the window and can be retried from source.
 
 use std::path::{Path, PathBuf};
@@ -30,7 +30,7 @@ pub enum Reason {
     Other,
     /// 直接匯入: the file has no audio stream.
     NoAudio,
-    /// The user cancelled with this cue in flight or queued (ENG6); shown apart from failures.
+    /// The user cancelled with this cue in flight or queued; shown apart from failures.
     Cancelled,
 }
 
@@ -92,7 +92,7 @@ impl RunStatus {
     }
 }
 
-/// A source file as the run saw it; retry compares size and mtime only to warn (ENG4).
+/// A source file as the run saw it; retry compares size and mtime only to warn.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SourceStamp {
     pub path: PathBuf,
@@ -262,7 +262,7 @@ pub fn load_for_retry(
 }
 
 /// Before a retry pass: the retried failures leave the list (they are re-recorded if they fail
-/// again) and the ones whose text is gone from the subtitle file become `lost` (ENG4).
+/// again) and the ones whose text is gone from the subtitle file become `lost`.
 pub fn begin_retry(
     writer: &Writer,
     run_id: i64,

@@ -1,4 +1,4 @@
-//! Glue between the settings page and tauri-plugin-updater (T22, G1 → B).
+//! Glue between the settings page and tauri-plugin-updater.
 //!
 //! The feed, public key and signature rules are configuration (`tauri.conf.json`); this file
 //! only decides when to check and when to install:

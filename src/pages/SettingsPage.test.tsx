@@ -89,7 +89,7 @@ describe("SettingsPage", () => {
     expect(screen.getByText(/この声、ずっと覚えてる/).style.fontFamily).toContain("Yomogi");
   });
 
-  it("confirms an import with what will be lost before replacing anything (D10)", async () => {
+  it("confirms an import with what will be lost before replacing anything", async () => {
     dialog.open.mockResolvedValue("/tmp/backup.zip");
     const importFrom = vi.fn().mockResolvedValue({});
     useBackupStore.setState({
@@ -107,7 +107,7 @@ describe("SettingsPage", () => {
     const confirm = await screen.findByRole("dialog", { name: "確認" });
     expect(confirm).toHaveTextContent("確定要匯入備份嗎？");
     expect(confirm).toHaveTextContent("12 個角色、1,284 句台詞，共 2.36 GB");
-    // DT2: a destructive dialog opens with focus on 取消.
+    // A destructive dialog opens with focus on 取消.
     expect(within(confirm).getByRole("button", { name: "取消" })).toHaveFocus();
     expect(importFrom).not.toHaveBeenCalled();
 
@@ -134,7 +134,7 @@ describe("SettingsPage", () => {
     expect(screen.queryByRole("button", { name: /遺失的檔案數/ })).not.toBeInTheDocument();
   });
 
-  it("lists missing clips and links each to its character's 台詞頁 (T20)", async () => {
+  it("lists missing clips and links each to its character's 台詞頁", async () => {
     vi.spyOn(ipc, "verifyLibrary").mockResolvedValue({
       missing: [
         { lineId: 3, characterId: 7, characterName: "岡部倫太郎", portraitPath: null, text: "這一切都是命運石之門的選擇。" },

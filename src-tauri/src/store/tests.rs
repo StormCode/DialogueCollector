@@ -50,7 +50,7 @@ fn every_connection_enforces_foreign_keys_and_wal() {
     assert_eq!(mode, "wal");
 }
 
-// ---------- versioning and migrations (T4) ----------
+// ---------- versioning and migrations ----------
 
 #[test]
 fn migrations_are_consecutive_and_end_at_schema_version() {
@@ -188,7 +188,7 @@ fn failed_migration_rolls_back_entirely() {
     assert_eq!(note_columns, 0);
 }
 
-// ---------- foreign keys (ENG3) ----------
+// ---------- foreign keys ----------
 
 #[test]
 fn line_must_reference_an_existing_character() {
@@ -239,7 +239,7 @@ fn deleting_a_character_with_pending_retries_is_restricted() {
     assert_eq!(left, 0);
 }
 
-// ---------- CHECK constraints (S3) ----------
+// ---------- CHECK constraints ----------
 
 #[test]
 fn audio_filename_is_unique() {
@@ -394,7 +394,7 @@ fn enumerations_are_closed() {
     )));
 }
 
-// ---------- indexes and search (T5) ----------
+// ---------- indexes and search ----------
 
 #[test]
 fn required_indexes_exist() {
@@ -425,7 +425,7 @@ fn required_indexes_exist() {
     assert!(index_on("characters", "source"));
 }
 
-/// FC1: `LIKE '%…%'` over 30,000 lines is the chosen search; FTS5 was withdrawn. Budget: one
+/// `LIKE '%…%'` over 30,000 lines is the chosen search; FTS5 was withdrawn. Budget: one
 /// page query (count + 10 rows) under 50 ms in a debug build, well inside a 150 ms debounce.
 #[test]
 fn like_search_over_30k_lines_is_within_budget() {

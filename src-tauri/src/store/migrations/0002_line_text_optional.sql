@@ -1,6 +1,6 @@
--- 原文 or 譯文: either one may be left empty, but not both (user decision 2026-09-29). While the
+-- 原文 or 譯文: either one may be left empty, but not both. While the
 -- table is rebuilt anyway, clips may also be .mp3 or .ogg: 直接匯入 copies audio files without
--- converting them (user decision 2026-09-28). SQLite can't change a CHECK in place, so `lines`
+-- converting them. SQLite can't change a CHECK in place, so `lines`
 -- is rebuilt. Nothing references `lines`, so dropping
 -- the old table is safe with foreign keys on.
 CREATE TABLE lines_v2 (

@@ -51,7 +51,7 @@ export interface CommandError {
   message: string;
 }
 
-/** Result of the T1 walking-skeleton check (`smoke.rs`). */
+/** Result of the walking-skeleton check (`smoke.rs`). */
 export interface SmokeReport {
   clipPath: string;
   clipBytes: number;
@@ -59,7 +59,7 @@ export interface SmokeReport {
   cutMs: number;
 }
 
-// ---------- library (T9), mirrors src-tauri/src/library ----------
+// ---------- library, mirrors src-tauri/src/library ----------
 
 export type VolumeKind =
   | { kind: "local" }
@@ -96,7 +96,7 @@ export interface MoveProgress {
   total: number;
 }
 
-// ---------- backup (T10), mirrors src-tauri/src/library/backup.rs ----------
+// ---------- backup, mirrors src-tauri/src/library/backup.rs ----------
 
 export interface BackupManifest {
   format: string;
@@ -140,13 +140,13 @@ export interface UpdateCheck {
   version: string;
 }
 
-/** `verify_library`: rows whose clip is gone (T20) and clips no row points at (ENG2). */
+/** `verify_library`: rows whose clip is gone and clips no row points at. */
 export interface VerifyReport {
   missing: MissingFile[];
   orphans: string[];
 }
 
-/** A line whose clip is gone from the library folder (T20, `verify_library`). */
+/** A line whose clip is gone from the library folder (`verify_library`). */
 export interface MissingFile {
   lineId: number;
   characterId: number;
@@ -155,7 +155,7 @@ export interface MissingFile {
   text: string;
 }
 
-// ---------------------------------------------------------------- subtitle import (S8, T7/T8)
+// ---------------------------------------------------------------- subtitle import
 
 /** One subtitle cue (`subs::Cue`). */
 export interface Cue {

@@ -1,10 +1,10 @@
-//! T1 walking-skeleton check: spawn the bundled sidecar, cut one hardcoded cue to `.m4a`,
+//! Walking-skeleton check: spawn the bundled sidecar, cut one hardcoded cue to `.m4a`,
 //! write one row, and hand the clip to the renderer to load through the asset protocol.
 //!
 //! Everything happens in a scratch folder under the OS temp dir with its own throwaway
-//! database, so this never touches — or adds a table to — a real library (schema v1 is T4's).
+//! database, so this never touches — or adds a table to — a real library.
 //!
-//! Headless use (CI, T21): launch the packaged binary with `--smoke`. The renderer runs the
+//! Headless use (CI): launch the packaged binary with `--smoke`. The renderer runs the
 //! check, loads the clip, and calls `smoke_finish`; the process prints one `SMOKE OK|FAIL`
 //! line, optionally writes it to `--smoke-report <path>`, and exits 0 or 1. A watchdog exits
 //! with 2 if the renderer never reports.
@@ -120,7 +120,7 @@ pub async fn run_smoke(app: AppHandle) -> CommandResult<SmokeReport> {
     let now = store::now_ms();
     conn.execute(
         "INSERT INTO characters (name, category, source, created_at, updated_at)
-         VALUES ('Smoke', 'anime', 'T1', ?1, ?1)",
+         VALUES ('Smoke', 'anime', 'Smoke', ?1, ?1)",
         [now],
     )
     .map_err(store::StoreError::from)?;

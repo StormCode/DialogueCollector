@@ -1,22 +1,22 @@
-//! 匯出／匯入: the single-zip backup (0G.3, D10 → A, D14 → A, ENG17).
+//! 匯出／匯入: the single-zip backup.
 //!
 //! Archive layout, format version 1:
 //! ```text
-//! settings.json       the portable settings file (ENG17); machine.json never enters an archive
+//! settings.json       the portable settings file; machine.json never enters an archive
 //! library/…           the whole library folder: clips, images/, library.sqlite (a consistent
 //!                     snapshot taken with VACUUM INTO); never .tmp/, never -wal / -shm
 //! manifest.json       written LAST, so a truncated archive is recognisably incomplete
 //! ```
 //!
-//! Import is REPLACE (D10 → A) and follows the user's own ordering requirement (D14): the
+//! Import is REPLACE and follows the user's own ordering requirement: the
 //! archive is fully unpacked to a hidden sibling of the library on the same volume and verified
 //! before the existing library is touched. The swap is two renames on one volume:
 //! `<lib>` → `.<lib>.previous`, then `.<lib>.importing` → `<lib>`, then the previous copy is
 //! deleted. `recover_interrupted_import` runs before every library open and restores the
 //! previous copy if a crash landed between the two renames, so an interrupted import always
-//! leaves the existing library intact (T10's "2am test").
+//! leaves the existing library intact.
 //!
-//! Unlike R3's wording (rewrite the pointer to the unpacked folder), the library keeps its path
+//! Rather than re-pointing to the unpacked folder, the library keeps its path
 //! and the pointer never changes; the startup recovery gives the same crash guarantee without
 //! the library folder being renamed by every import.
 
@@ -399,7 +399,7 @@ pub fn unpack(archive: &Path, target: &Path) -> Result<(PathBuf, Settings), Back
         for i in 0..zip.len() {
             let mut entry = zip.by_index(i)?;
             let raw_name = entry.name().to_owned();
-            // S1: reject anything that could land outside the staging folder. Absolute names are
+            // Reject anything that could land outside the staging folder. Absolute names are
             // refused outright rather than reinterpreted as relative.
             if raw_name.starts_with('/')
                 || raw_name.starts_with('\\')

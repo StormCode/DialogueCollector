@@ -1,6 +1,6 @@
 //! 設定頁 → 檔案管理 → 瀏覽: pointing the app at a different library location.
 //!
-//! Decided by the user on 2026-09-28:
+//! The rules:
 //! 1. The chosen location already holds a library → switch to it.
 //! 2. It is empty (or missing) → move the current library there. With no current library,
 //!    create a new one there instead.

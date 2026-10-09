@@ -52,7 +52,7 @@ export function trackLabel(track: SubtitleTrack, uiLanguage: string, unknown: st
   return name ?? track.title ?? unknown;
 }
 
-/** Where the track card sat, for 選擇台詞's card to grow from (user 2026-10-02). */
+/** Where the track card sat, for 選擇台詞's card to grow from. */
 export interface CardRect {
   left: number;
   top: number;

@@ -28,7 +28,7 @@ pub const IMPORT_PROGRESS_EVENT: &str = "import-progress";
 pub enum Phase {
     /// 切割影片中: cues are being cut and encoded.
     Cutting,
-    /// 建立索引: only the last writes remain (R8).
+    /// 建立索引: only the last writes remain.
     Indexing,
 }
 
@@ -61,7 +61,7 @@ pub fn list_characters(state: State<'_, AppState>) -> CommandResult<Vec<Characte
 
 /// Runs `work` on a blocking thread, off the main one: a synchronous command runs on the main
 /// thread, and while it works the window cannot repaint, so a loading button never shows its
-/// spinner (user 2026-10-04: shrinking a portrait takes a second or two).
+/// spinner (shrinking a portrait takes a second or two).
 async fn off_main<T: Send + 'static>(
     app: AppHandle,
     work: impl FnOnce(&AppState) -> CommandResult<T> + Send + 'static,
@@ -101,7 +101,7 @@ pub async fn update_character(
     .await
 }
 
-/// 刪除角色 (ET3). Holds the library-busy guard: never beside an import of its lines.
+/// 刪除角色. Holds the library-busy guard: never beside an import of its lines.
 #[tauri::command]
 pub fn delete_character(state: State<'_, AppState>, id: i64) -> CommandResult<()> {
     let _busy = BusyGuard::acquire(&state.library_busy)?;
@@ -170,7 +170,7 @@ pub async fn retry_import(
     run_job(app, &state, move |engine| job::retry(engine, run_id)).await
 }
 
-/// 取消: kills the in-flight encodes at once (ENG6).
+/// 取消: kills the in-flight encodes at once.
 #[tauri::command]
 pub fn cancel_import(state: State<'_, AppState>) {
     state.import_cancel.store(true, Ordering::SeqCst);

@@ -1,6 +1,6 @@
 //! Fixed OS locations.
 //!
-//! - Settings directory (ENG17, not user-relocatable):
+//! - Settings directory (not user-relocatable):
 //!   macOS `~/Library/Preferences/DialogueCollector/`, Windows `%APPDATA%\DialogueCollector\`.
 //!   Files there must never be named `*.plist` — `cfprefsd` owns that namespace on macOS.
 //! - Default library folder (draft 檔案管理, user-relocatable):

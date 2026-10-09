@@ -1,5 +1,5 @@
 {
-  "$comment": "T3 / FC3 / FC4: the ffmpeg sidecar is an LGPL build pinned by version and SHA256 per target. Change a pin only together with its hash.",
+  "$comment": "The ffmpeg sidecar is an LGPL build pinned by version and SHA256 per target. Change a pin only together with its hash.",
   "version": "8.1.3",
   "source": {
     "url": "https://ffmpeg.org/releases/ffmpeg-8.1.3.tar.xz",

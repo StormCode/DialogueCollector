@@ -1,5 +1,5 @@
--- 直接匯入 keeps WAV, M4A and MP3 as they are; OGG is no longer accepted (user decision
--- 2026-09-29). The CHECK on the clip name moves from (m4a, mp3, ogg) to (m4a, mp3, wav); '.ogg'
+-- 直接匯入 keeps WAV, M4A and MP3 as they are; OGG is no longer accepted.
+-- The CHECK on the clip name moves from (m4a, mp3, ogg) to (m4a, mp3, wav); '.ogg'
 -- stays allowed only so that a row written by v2 cannot fail this rebuild. Same rebuild as v2.
 CREATE TABLE lines_v3 (
     id              INTEGER PRIMARY KEY,

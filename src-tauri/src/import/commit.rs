@@ -1,14 +1,14 @@
-//! `commit_cue`: the only place the ENG2 write order exists (ENG2 → A, T6, ET2).
+//! `commit_cue`: the only place the clip write order exists.
 //!
 //!   staged clip at `<library>/.tmp/<name>.tmp`
 //!     → fsync the file
 //!     → rename to `<library>/<name>.<m4a|mp3|ogg>`
 //!     → fsync the library folder
-//!     → insert the row → commit            (on the single writer, FC8)
+//!     → insert the row → commit            (on the single writer)
 //!
 //! A crash at any point leaves at worst a `.m4a` with no row — an orphan that 驗證收藏庫
 //! reports — and never a row pointing at a missing file. A `.tmp` never has a row, so the sweep
-//! on library open may delete every one of them (R4).
+//! on library open may delete every one of them.
 
 use std::fs::{self, File};
 use std::path::{Path, PathBuf};
@@ -55,7 +55,7 @@ pub type Probe = Arc<dyn Fn(Step) + Send + Sync>;
 /// Name attempts before giving up; 36^12 names make a second attempt already unlikely.
 const NAME_ATTEMPTS: usize = 8;
 
-/// Moves an encoded clip into the library and records its row, in the ENG2 order.
+/// Moves an encoded clip into the library and records its row, in the write order above.
 pub fn commit_cue(
     library: &Path,
     writer: &Writer,

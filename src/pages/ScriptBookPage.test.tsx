@@ -92,7 +92,7 @@ describe("ScriptBookPage", () => {
     fireEvent.click(within(edit).getByRole("button", { name: "刪除角色" }));
 
     const confirm = screen.getByRole("dialog", { name: "確認" });
-    // DT3: how many lines go with it.
+    // How many lines go with it.
     expect(confirm).toHaveTextContent("刪除「周公旦」後，此角色的 12 句台詞將一併移除，且無法復原。");
     expect(within(confirm).getByRole("button", { name: "取消" })).toHaveFocus();
     fireEvent.click(within(confirm).getByRole("button", { name: "刪除" }));

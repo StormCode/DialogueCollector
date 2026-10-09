@@ -11,7 +11,7 @@ function keys(obj: unknown, prefix = ""): string[] {
 // bare key is the fallback every language carries.
 const PLURAL = /_(zero|one|two|few|many|other)$/;
 
-// T15: a key missing from any locale fails the build.
+// A key missing from any locale fails the build.
 describe("locales", () => {
   const reference = keys(resources["zh-Hant"].translation).sort();
 

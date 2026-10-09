@@ -237,7 +237,7 @@ export function ScriptBookPage() {
         // DeleteConfirm.dc.html
         <ConfirmDialog
           title={t("scriptBook.deleteTitle")}
-          // DT3: the number of lines that go with the character (user 2026-09-29: the count only).
+          // the number of lines that go with the character (the count only).
           body={
             deleting.lineCount > 0
               ? t("scriptBook.deleteBody", { name: deleting.name, count: deleting.lineCount })

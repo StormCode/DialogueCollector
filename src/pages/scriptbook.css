@@ -29,8 +29,7 @@
 }
 
 /* The filter button sits right after the search field. The board pulls it back over the
-   field only because its SearchBar component carries empty space on the right (user
-   2026-09-29), so there is no offset here. */
+   field only because its SearchBar component carries empty space on the right, so there is no offset here. */
 .sb-search {
   width: 400px;
 }
@@ -85,7 +84,7 @@
   max-height: 50vh;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  /* 12px inside the panel (user 2026-09-29; the board has none). */
+  /* 12px inside the panel (the board has none). */
   padding: 12px;
   overflow: hidden;
   border: 1px solid var(--bento-neutral-10);
@@ -247,7 +246,7 @@
   width: 100%;
   display: flex;
   align-items: center;
-  /* 20px between photo and text, 4px over the board (user 2026-09-29). */
+  /* 20px between photo and text, 4px over the board. */
   gap: 20px;
   padding: 16px 20px;
   border: 1px solid var(--bento-neutral-10);
@@ -260,8 +259,7 @@
     box-shadow 120ms ease;
 }
 
-/* Like a line card on the 台詞 page: a shadow on hover, the background stays (user 2026-09-29;
-   the board also tints it bg-secondary). It goes on the wrapper, whose overflow would clip a
+/* Like a line card on the 台詞 page: a shadow on hover, the background stays (the board also tints it bg-secondary). It goes on the wrapper, whose overflow would clip a
    shadow on the card inside it. */
 .sb-card-wrap:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
@@ -281,7 +279,7 @@
 }
 
 /* The backdrop is for the person glyph only: a transparent photo shows the card through it
-   (user 2026-09-29; the board fills every avatar). */
+   (the board fills every avatar). */
 .sb-card__avatar.has-photo {
   background: transparent;
 }
@@ -297,7 +295,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  /* 10px, 2px under the board (user 2026-09-29). */
+  /* 10px, 2px under the board. */
   gap: 10px;
 }
 
@@ -320,7 +318,7 @@
 .sb-card__name {
   flex: 0 1 auto;
   min-width: 0;
-  /* 20px, 2px over the board (user 2026-09-29). */
+  /* 20px, 2px over the board. */
   font: var(--bento-weight-semibold) 20px/26px var(--dc-ui-font);
   color: var(--bento-content-primary);
 }
@@ -344,7 +342,7 @@
 /* Hovering the card reveals the corner arc and the edit button after 1s (and hides them at
    once on leave). */
 /* After the board's 1s hover delay the corner spreads out from the top-right corner and the
-   pencil pops in just behind it (user 2026-09-29; the board only switches them on). Leaving
+   pencil pops in just behind it (the board only switches them on). Leaving
    draws both back in quickly. */
 .sb-card__corner {
   position: absolute;

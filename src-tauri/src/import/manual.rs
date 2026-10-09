@@ -1,8 +1,8 @@
-//! 直接匯入現有影音 (R6 as corrected 2026-09-28): every file becomes one line.
+//! 直接匯入現有影音: every file becomes one line.
 //!
 //! - A video's whole first audio stream is encoded to m4a; an audio file (wav, m4a, mp3) is
 //!   copied in as it was, keeping its extension.
-//! - Both go through `commit_cue`, so the ENG2 write order is the same as the subtitle path's.
+//! - Both go through `commit_cue`, so the clip write order is the same as the subtitle path's.
 //! - A file that fails is skipped and reported; the others carry on.
 //! - 取消 takes back every line this run wrote, so the form can simply be submitted again.
 
@@ -219,7 +219,7 @@ fn import_one(run: &ManualRun<'_>, item: &ManualItem) -> Outcome {
     }
 }
 
-/// 取消: the rows go in one transaction, their files through `pending_deletions` (ENG3).
+/// 取消: the rows go in one transaction, their files through `pending_deletions`.
 fn undo(run: &ManualRun<'_>, ids: Vec<i64>) {
     if ids.is_empty() {
         return;

@@ -1,4 +1,4 @@
-//! Subtitle parsing: ASS and SRT → `Cue`s, in Rust (F2, decided 2026-09-29).
+//! Subtitle parsing: ASS and SRT → `Cue`s, in Rust.
 //!
 //! - Encoding: a BOM wins, then strict UTF-8, then chardetng's guess — older Traditional
 //!   Chinese subtitles are often Big5.
@@ -9,11 +9,11 @@
 //!   often repeats one line on several layers: events with the same start, end and text are
 //!   kept once.
 //! - SRT: `<i>`-style tags and `{\an8}`-style overrides are stripped.
-//! - 原文／譯文 follow the subtitle's own lines (decided 2026-09-29): the first line is the
+//! - 原文／譯文 follow the subtitle's own lines: the first line is the
 //!   text, any further lines the translation.
 //! - Bilingual ASS that puts each language in its own event (`Text - JP` and `Text - CN` with
-//!   the same timing) is paired into one cue (user 2026-09-29): see `pair_bilingual`.
-//! - ASS 原文／譯文 by size (user 2026-10-04, reversing 2026-10-02): the translation is usually
+//!   the same timing) is paired into one cue: see `pair_bilingual`.
+//! - ASS 原文／譯文 by size: the translation is usually
 //!   set larger, for the viewers who can't read the original. When a bilingual line's two parts
 //!   are drawn at different sizes (the style's Fontsize × ScaleY, or `\fs`/`\fscy` overrides),
 //!   the larger is the 譯文 and the other the 原文.
@@ -28,7 +28,7 @@ use serde::{Deserialize, Serialize};
 
 pub const SUBTITLE_EXTENSIONS: &[&str] = &["ass", "srt"];
 
-/// Subtitle files beside `video` that go with it (user 2026-10-02): named like the video, with
+/// Subtitle files beside `video` that go with it: named like the video, with
 /// any tags after its name (`Ep 03.ass`, `Ep 03.tc.ass`, `Ep 03.chs&jp.srt`), in name order. A
 /// video dropped alone offers them beside its own subtitle tracks.
 pub fn sibling_subtitles(video: &Path) -> Vec<PathBuf> {
@@ -257,8 +257,8 @@ fn script_of(text: &str) -> Option<Script> {
     .map(|(_, s)| s)
 }
 
-/// Whether a file's lines of more than one row carry a translation under the text (user
-/// 2026-09-29: first row 原文, the rest 譯文) or just wrap one long line (user 2026-10-04: a
+/// Whether a file's lines of more than one row carry a translation under the text (first
+/// row 原文, the rest 譯文) or just wrap one long line (a
 /// Netflix 繁中 track split 「總之，我們就盡力」 from 「讓婆婆對我們敞開心扉吧」). Decided for the whole
 /// file, by whether at least half of them change writing after the first row: a lone line all
 /// in kanji then can't pass for Chinese in a Japanese–Chinese file.
@@ -583,7 +583,7 @@ fn has_kana(text: &str) -> bool {
 /// 譯文. Two one-line events in different, untagged styles pair too when exactly one has kana:
 /// that one is the 原文. Anything else sharing a timing (two lines in one style, a title card's
 /// two lines, an event of neither language among them) is left as it is. Whichever side is
-/// drawn larger is the 譯文, overriding the language when every size is known (user 2026-10-04):
+/// drawn larger is the 譯文, overriding the language when every size is known:
 /// sizes alone don't decide *whether* to pair, as two speakers at once often differ in size too.
 fn pair_bilingual(events: Vec<Event>) -> Vec<Cue> {
     use std::collections::{HashMap, HashSet};
@@ -834,7 +834,7 @@ fn sort(mut cues: Vec<Cue>) -> Vec<Cue> {
 
 /// Typesetting often cuts one line into back-to-back events with the same words, to change its
 /// look partway (an outline, a blur). A cue that starts no later than the one before it ends and
-/// says the same thing is that line going on, so it is folded in (user 2026-10-02, 芙莉蓮 E28).
+/// says the same thing is that line going on, so it is folded in.
 /// A line said again after any gap stays a line of its own.
 fn join_continued(cues: Vec<Cue>) -> Vec<Cue> {
     let mut out: Vec<Cue> = Vec::with_capacity(cues.len());

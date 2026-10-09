@@ -7,7 +7,7 @@ import { Modal } from "./Modal";
 
 // The destructive confirmation the boards share (DeleteConfirm, DeleteLine, DeletePoster,
 // SettingsMissingDeleteAll): small Bento Modal 「確認」, the Bin in a soft red circle, a title,
-// a line of consequences, then 取消 and the danger action. Opens on 取消 (DT2).
+// a line of consequences, then 取消 and the danger action. Opens on 取消.
 export function ConfirmDialog({
   title,
   body,

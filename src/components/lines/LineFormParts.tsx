@@ -12,7 +12,7 @@ import "./lineform.css";
 
 // The parts EditLine and InputLine share: 播放預覽 and the 角色 dropdown.
 
-/** 未指派: offered by InputLine, never importable (user 2026-09-29). */
+/** 未指派: offered by InputLine, never importable. */
 export const UNASSIGNED = "none" as const;
 export type Owner = number | typeof UNASSIGNED | null;
 

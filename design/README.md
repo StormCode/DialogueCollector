@@ -2,7 +2,7 @@
 
 本目錄的內容從 Claude Design canvas `https://claude.ai/artifact/T3aaPvyGx8V8aZj5sUonSD`
 （Bento DS 2.7）vendoring 而來。要更新時請從 canvas 重新拉取，不要手動修改，這樣 canvas 上的每一次
-變更都會成為可審查的 diff（T23）。
+變更都會成為可審查的 diff。
 
 - `bento/tokens.css`、`bento/tokens.json`：設計 token。App 會 import `tokens.css`。
 - `bento/components/bundle.css`、`bundle.js`：canvas 的元件 bundle，僅供參考。`bundle.js` 是給
@@ -32,7 +32,7 @@
 
 兩張圖都是裝飾用途，`alt=""` 並加上 `aria-hidden="true"`，狀態的意義由旁邊的文字傳達。
 
-## 沿用自 PLAN.md 設計審查的規則
+## 沿用自設計審查的規則
 
 - 畫板中的 `--bento-dv-indigo-*`，在轉成元件時一律改用 `--dc-accent*`（DD6，見
   `src/styles/themes.css`）。

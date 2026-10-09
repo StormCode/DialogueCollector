@@ -14,7 +14,7 @@ use crate::store;
 /// OS clutter that does not make a folder "non-empty" for our purposes.
 const IGNORABLE: &[&str] = &[".DS_Store", "Thumbs.db", "desktop.ini", ".localized"];
 
-/// A line whose clip is gone from disk (T20), with what 遺失的檔案 shows for it.
+/// A line whose clip is gone from disk, with what 遺失的檔案 shows for it.
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct MissingFile {
@@ -64,9 +64,9 @@ pub struct LibraryStats {
     /// 台詞音檔總數.
     pub clip_count: i64,
     /// 佔用的硬碟空間 of the clips: clips plus files queued for deletion that are still on disk
-    /// (ENG3).
+    ///.
     pub bytes: i64,
-    /// 圖片數: the portraits and posters characters use (user 2026-10-04: counted beside clips).
+    /// 圖片數: the portraits and posters characters use (counted beside clips).
     pub image_count: i64,
     /// Their size on disk; 佔用的硬碟空間 is `bytes` plus this.
     pub image_bytes: i64,
@@ -111,7 +111,7 @@ impl Library {
         }
         sweep_tmp(&root.join(TMP_DIR));
         let conn = store::open(&root.join(DB_FILE))?;
-        // Finish deletions a crash interrupted (ENG3). TODO(ET10): bound this so a long queue
+        // Finish deletions a crash interrupted. TODO: bound this so a long queue
         // cannot delay the first paint.
         let drained = super::deletion::drain(&conn, root)?;
         if drained.removed > 0 || !drained.failed.is_empty() {
@@ -179,7 +179,7 @@ impl Library {
         })
     }
 
-    /// 驗證收藏庫 (ENG2): clips in the folder that no row points at — what a crash between
+    /// 驗證收藏庫: clips in the folder that no row points at — what a crash between
     /// the rename and the commit in `import::commit_cue` leaves behind. Sorted by name.
     pub fn orphan_files(&self) -> Result<Vec<String>, LibraryError> {
         let mut known = std::collections::HashSet::new();
@@ -204,7 +204,7 @@ impl Library {
         Ok(orphans)
     }
 
-    /// 驗證收藏庫 (T20): lines whose audio file is no longer in the folder, grouped by
+    /// 驗證收藏庫: lines whose audio file is no longer in the folder, grouped by
     /// character, newest first within each. One `stat` per clip, run on demand from 檔案管理.
     pub fn missing_files(&self) -> Result<Vec<MissingFile>, LibraryError> {
         let mut stmt = self
@@ -284,8 +284,8 @@ pub fn check_volume(root: &Path) -> Result<(), LibraryError> {
     }
 }
 
-/// R4: `.tmp/` holds only in-flight writes, so anything left there is crash residue. The sweep
-/// is purely file-based and never consults the database (ENG2).
+/// `.tmp/` holds only in-flight writes, so anything left there is crash residue. The sweep
+/// is purely file-based and never consults the database.
 fn sweep_tmp(tmp: &Path) {
     let Ok(entries) = fs::read_dir(tmp) else {
         return;

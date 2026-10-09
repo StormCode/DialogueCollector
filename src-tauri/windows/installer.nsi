@@ -75,7 +75,7 @@ Var UpdateMode
 Var NoShortcutMode
 Var WixMode
 Var OldMainBinaryName
-; The name shortcuts and Apps & Features show, in the installer's language (user 2026-10-02),
+; The name shortcuts and Apps & Features show, in the installer's language,
 ; and the one an earlier install gave them.
 Var AppName
 Var OldAppName

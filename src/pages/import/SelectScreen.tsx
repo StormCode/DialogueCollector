@@ -64,7 +64,7 @@ function matches(c: Character, query: string) {
 }
 
 /**
- * The select card grows out of the track card it follows (user 2026-10-02; not on the board):
+ * The select card grows out of the track card it follows (not on the board):
  * it starts at the small card's place and size and eases to its own, its content fading in
  * once it has. Skipped with reduced motion. Returns whether it is still growing: the content
  * is hidden from the first render, since hiding it only after a render would fade the list
@@ -114,7 +114,7 @@ function useGrowFrom(card: React.RefObject<HTMLDivElement | null>, from: CardRec
 }
 
 // Board: SubtitleSelect.dc.html (Step 2, or Step 3 after 選擇字幕軌 as SubtitleSelectEmbedded)
-// and SubtitleSelectEmpty.dc.html (its toast). Checked rows are assigned in bulk (D13-REV) and
+// and SubtitleSelectEmpty.dc.html (its toast). Checked rows are assigned in bulk and
 // are what 拆分／合併 act on; 調換 swaps the whole subtitle. Only assigned lines are imported.
 export function SelectScreen({
   onBack,
