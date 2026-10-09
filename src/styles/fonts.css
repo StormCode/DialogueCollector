@@ -1,4 +1,4 @@
-/* 台詞 content fonts (DD5 → B): these three faces apply to the 台詞 area only.
+/* 台詞 content fonts: these three faces apply to the 台詞 area only.
    The interface stays on system-ui, with a per-locale fallback list so the chosen face is
    deterministic on macOS and Windows. All three faces are OFL-licensed; licences sit next
    to the files in src/assets/fonts/. */

@@ -70,7 +70,7 @@ function backupFileName(now = new Date()): string {
 
 // Board: Settings.dc.html → 檔案管理, plus SettingsExporting, SettingsImportConfirm and the
 // export/import/library toasts. The heading is focusable so the 找不到收藏庫 toast on the main
-// page can land the user here (DD3).
+// page can land the user here.
 export const FileManagementSection = forwardRef<HTMLHeadingElement>(function FileManagementSection(
   _props,
   headingRef,

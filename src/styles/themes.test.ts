@@ -1,5 +1,5 @@
 // WCAG contrast of every product theme, read straight from the CSS so a colour change
-// can't slip past. Themes below AA are recorded as known (DD4 defers the fix); the test fails
+// can't slip past. Themes below AA are recorded as known (the fix is deferred); the test fails
 // if one of them starts passing (update the list) or another starts failing.
 import { describe, expect, it } from "vitest";
 
@@ -7,7 +7,7 @@ import tokens from "../../design/bento/tokens.css?raw";
 import { THEMES } from "../lib/types";
 import themes from "./themes.css?raw";
 
-// Known below 4.5:1 for white text on the primary button (DD4, deferred).
+// Known below 4.5:1 for white text on the primary button (deferred).
 const KNOWN_AA_FAILURES = new Set(["lightBlue", "emerald", "sunset"]);
 // Known below 3:1 for --dc-accent-60 text on --dc-accent-5 (emerald measures 2.98).
 const KNOWN_SOFT_FAILURES = new Set(["emerald"]);

@@ -34,8 +34,8 @@
 
 ## 沿用自設計審查的規則
 
-- 畫板中的 `--bento-dv-indigo-*`，在轉成元件時一律改用 `--dc-accent*`（DD6，見
+- 畫板中的 `--bento-dv-indigo-*`，在轉成元件時一律改用 `--dc-accent*`（見
   `src/styles/themes.css`）。
-- CJK 字型只套用在台詞區；介面文字使用依語系指定的系統字型（DD5）。
+- CJK 字型只套用在台詞區；介面文字使用依語系指定的系統字型。
 - `tokens.css` 參照了 canvas 沒有匯出的 Clash Grotesk / Brandon Text woff2 檔，Vite 建置時會出現
   警告。這兩套字型本來就不含中日文字。

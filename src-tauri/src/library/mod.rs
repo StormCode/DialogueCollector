@@ -136,7 +136,7 @@ pub enum LibraryState {
     Ready(Library),
     Unavailable {
         /// The last known location, shown so the user can tell 「隨身碟沒插」 from
-        /// 「資料真的不見了」 (DD3).
+        /// 「資料真的不見了」.
         path: Option<PathBuf>,
         reason: UnavailableReason,
     },

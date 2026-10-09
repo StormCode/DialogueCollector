@@ -68,7 +68,7 @@ pub(crate) fn lock<'a, T>(
         .map_err(|e| CommandError::new("Internal.Poisoned", e))
 }
 
-/// Let the asset protocol serve clips and images from the library, wherever it lives (B11).
+/// Let the asset protocol serve clips and images from the library, wherever it lives.
 pub fn grant_asset_scope(app: &AppHandle, root: &Path) {
     if let Err(e) = app.asset_protocol_scope().allow_directory(root, true) {
         log::error!("cannot grant asset scope for {}: {e}", root.display());

@@ -139,7 +139,7 @@ pub async fn run_smoke(app: AppHandle) -> CommandResult<SmokeReport> {
     .map_err(store::StoreError::from)?;
     let row_id = conn.last_insert_rowid();
 
-    // 4. Grant the asset protocol this folder at runtime, as library-open will (B11).
+    // 4. Grant the asset protocol this folder at runtime, as library-open will.
     app.asset_protocol_scope()
         .allow_directory(&dir, false)
         .map_err(|e| CommandError::new("Smoke.AssetScope", e))?;

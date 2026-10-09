@@ -29,7 +29,7 @@ void i18n.use(initReactI18next).init({
   interpolation: { escapeValue: false },
 });
 
-// DD5: the interface font is system-ui, so the document language must follow the locale or
+// The interface font is system-ui, so the document language must follow the locale or
 // shared Han characters render with the wrong regional glyph forms (e.g. Japanese on Windows).
 i18n.on("languageChanged", (lng) => {
   document.documentElement.lang = lng;

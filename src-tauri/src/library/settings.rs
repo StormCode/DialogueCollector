@@ -49,7 +49,7 @@ pub enum Locale {
     En,
 }
 
-/// Font for the 台詞 content area only (DD5 → B); the interface stays on the system font.
+/// Font for the 台詞 content area only; the interface stays on the system font.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum LineFont {
     ChironGoRoundTC,

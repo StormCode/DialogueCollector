@@ -62,7 +62,7 @@ export function SettingsPage() {
     setActive(current);
   }, []);
 
-  // Arriving from the 找不到收藏庫 toast: bring 檔案管理 into view and focus it (DD3).
+  // Arriving from the 找不到收藏庫 toast: bring 檔案管理 into view and focus it.
   useEffect(() => {
     if ((location.state as { focus?: string } | null)?.focus === "files") goTo("files", true);
   }, [location.state, goTo]);

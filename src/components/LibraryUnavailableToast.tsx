@@ -7,7 +7,7 @@ import { useLibraryStore } from "../stores/libraryStore";
 import { Toast } from "./feedback/Toast";
 import { BentoIcon } from "./icons/Icon";
 
-/** Navigation state that makes 設定頁 scroll 檔案管理 into view and focus it (DD3). */
+/** Navigation state that makes 設定頁 scroll 檔案管理 into view and focus it. */
 export const FOCUS_FILES_STATE = { focus: "files" } as const;
 
 export function unavailableMessageKey(reason: UnavailableReason): string {
