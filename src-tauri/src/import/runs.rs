@@ -27,6 +27,8 @@ pub enum Reason {
     SidecarUnusable,
     /// ffmpeg was killed by something other than our cancel.
     Killed,
+    /// ffmpeg stopped responding and was killed by the stall watchdog.
+    Hung,
     Other,
     /// 直接匯入: the file has no audio stream.
     NoAudio,
@@ -44,6 +46,7 @@ impl Reason {
             Self::WriteFailed => "writeFailed",
             Self::SidecarUnusable => "sidecarUnusable",
             Self::Killed => "killed",
+            Self::Hung => "hung",
             Self::Other => "other",
             Self::NoAudio => "noAudio",
             Self::Cancelled => "cancelled",

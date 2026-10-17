@@ -201,6 +201,7 @@
       "writeFailed": "音声の書き込みに失敗しました",
       "sidecarUnusable": "内蔵の ffmpeg を実行できません",
       "killed": "分割処理が中断されました",
+      "hung": "ffmpeg が応答を停止しました",
       "other": "分割に失敗しました",
       "cancelled": "キャンセルしました"
     },

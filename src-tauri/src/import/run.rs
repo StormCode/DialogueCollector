@@ -303,6 +303,7 @@ pub fn classify_media(err: &MediaError) -> (Reason, Option<String>) {
     match err {
         MediaError::SidecarUnusable(detail) => (Reason::SidecarUnusable, Some(detail.clone())),
         MediaError::Killed => (Reason::Killed, None),
+        MediaError::Hung => (Reason::Hung, None),
         MediaError::Exit { stderr_tail, .. } => {
             let lower = stderr_tail.to_ascii_lowercase();
             let reason = if lower.contains("no space left") || lower.contains("disk full") {

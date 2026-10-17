@@ -31,6 +31,9 @@ pub(crate) fn cut_cue_args(source: &Path, start_ms: u64, end_ms: u64, out: &Path
     [
         "-hide_banner",
         "-nostdin",
+        // A liveness heartbeat for the stall watchdog in `process::run`.
+        "-progress",
+        "pipe:1",
         "-v",
         "error",
         "-ss",
@@ -74,10 +77,18 @@ pub(crate) fn cut_segments_args(
     out: &Path,
 ) -> Vec<String> {
     let secs = |ms: u64| format!("{}.{:03}", ms / 1000, ms % 1000);
-    let mut args: Vec<String> = ["-hide_banner", "-nostdin", "-v", "error"]
-        .into_iter()
-        .map(str::to_owned)
-        .collect();
+    let mut args: Vec<String> = [
+        "-hide_banner",
+        "-nostdin",
+        // A liveness heartbeat for the stall watchdog in `process::run`.
+        "-progress",
+        "pipe:1",
+        "-v",
+        "error",
+    ]
+    .into_iter()
+    .map(str::to_owned)
+    .collect();
     for &(start, end) in segments {
         args.extend([
             "-ss".into(),
@@ -141,7 +152,7 @@ pub fn encode_segments(
         return encode_cue(ffmpeg, source, *start, *end, out, cancel);
     }
     let args = cut_segments_args(source, segments, gap_ms, out);
-    Ok(process::run(process::command(ffmpeg, &args), cancel)?.elapsed)
+    Ok(process::run(process::command(ffmpeg, &args), cancel, true)?.elapsed)
 }
 
 /// Imports: encode one cue with the sidecar at `ffmpeg`, killed at once if `cancel` is set.
@@ -154,7 +165,7 @@ pub fn encode_cue(
     cancel: &AtomicBool,
 ) -> Result<Duration, MediaError> {
     let args = cut_cue_args(source, start_ms, end_ms, out);
-    Ok(process::run(process::command(ffmpeg, &args), cancel)?.elapsed)
+    Ok(process::run(process::command(ffmpeg, &args), cancel, true)?.elapsed)
 }
 
 /// 直接匯入 of a video: its whole first audio stream, encoded as `cut_cue_args` does.
@@ -162,6 +173,9 @@ pub(crate) fn extract_audio_args(source: &Path, out: &Path) -> Vec<String> {
     [
         "-hide_banner",
         "-nostdin",
+        // A liveness heartbeat for the stall watchdog in `process::run`.
+        "-progress",
+        "pipe:1",
         "-v",
         "error",
         "-i",
@@ -199,7 +213,7 @@ pub fn extract_audio(
     cancel: &AtomicBool,
 ) -> Result<Duration, MediaError> {
     let args = extract_audio_args(source, out);
-    Ok(process::run(process::command(ffmpeg, &args), cancel)?.elapsed)
+    Ok(process::run(process::command(ffmpeg, &args), cancel, true)?.elapsed)
 }
 
 /// A subtitle stream inside a video, as 選擇字幕軌 lists it.
@@ -241,7 +255,7 @@ pub fn probe_subtitle_tracks(
     .map(str::to_owned)
     .chain([source.to_string_lossy().into_owned()])
     .collect();
-    let out = process::run(process::command(ffprobe, &args), cancel)?;
+    let out = process::run(process::command(ffprobe, &args), cancel, false)?;
     parse_subtitle_tracks(&out.stdout)
 }
 
@@ -314,6 +328,9 @@ pub(crate) fn extract_subtitle_args(
     [
         "-hide_banner",
         "-nostdin",
+        // A liveness heartbeat for the stall watchdog in `process::run`.
+        "-progress",
+        "pipe:1",
         "-v",
         "error",
         "-i",
@@ -342,7 +359,7 @@ pub fn extract_subtitle(
     cancel: &AtomicBool,
 ) -> Result<(), MediaError> {
     let args = extract_subtitle_args(source, index, codec, out);
-    process::run(process::command(ffmpeg, &args), cancel).map(|_| ())
+    process::run(process::command(ffmpeg, &args), cancel, true).map(|_| ())
 }
 
 /// What an import needs to know about a video before cutting it.
@@ -367,7 +384,7 @@ pub fn probe(ffprobe: &Path, source: &Path, cancel: &AtomicBool) -> Result<Probe
     .map(str::to_owned)
     .chain([source.to_string_lossy().into_owned()])
     .collect();
-    let out = process::run(process::command(ffprobe, &args), cancel)?;
+    let out = process::run(process::command(ffprobe, &args), cancel, false)?;
     parse_probe(&out.stdout)
 }
 

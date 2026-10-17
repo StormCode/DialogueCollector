@@ -36,6 +36,7 @@ impl From<crate::media::MediaError> for CommandError {
             MediaError::SidecarUnusable(_) => "Media.SidecarUnusable",
             MediaError::Exit { .. } => "Media.Exit",
             MediaError::Killed => "Media.Killed",
+            MediaError::Hung => "Media.Hung",
         };
         Self::new(kind, e)
     }

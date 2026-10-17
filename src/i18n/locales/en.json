@@ -205,6 +205,7 @@
       "writeFailed": "Couldn’t save the clip",
       "sidecarUnusable": "The bundled ffmpeg can’t run",
       "killed": "The cut was interrupted",
+      "hung": "ffmpeg stopped responding",
       "other": "The cut failed",
       "cancelled": "Cancelled"
     },

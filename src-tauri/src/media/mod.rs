@@ -38,6 +38,10 @@ pub enum MediaError {
 
     #[error("ffmpeg was killed")]
     Killed,
+
+    /// ffmpeg stopped sending its `-progress` heartbeat and was killed as hung.
+    #[error("ffmpeg stopped responding (no progress heartbeat)")]
+    Hung,
 }
 
 /// A new clip filename: 12 random uppercase alphanumerics plus `.m4a`.

@@ -231,6 +231,7 @@ export type FailureReason =
   | "writeFailed"
   | "sidecarUnusable"
   | "killed"
+  | "hung"
   | "other"
   | "noAudio"
   | "cancelled";

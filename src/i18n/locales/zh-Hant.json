@@ -201,6 +201,7 @@
       "writeFailed": "寫入音檔失敗",
       "sidecarUnusable": "內建的 ffmpeg 無法執行",
       "killed": "切割程序被中斷",
+      "hung": "ffmpeg 停止回應，已中止",
       "other": "切割失敗",
       "cancelled": "已取消"
     },

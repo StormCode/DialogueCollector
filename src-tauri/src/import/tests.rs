@@ -9,7 +9,7 @@ use std::sync::Mutex;
 use std::time::Duration;
 
 use super::job::{import_subtitle, retry, Engine, Prober};
-use super::run::{Encoder, Event, PlannedCue};
+use super::run::{classify_media, Encoder, Event, PlannedCue};
 use super::runs::{Reason, RunStatus};
 use super::ImportError;
 use crate::library::folder::Library;
@@ -628,4 +628,9 @@ fn real_ffmpeg_cuts_a_generated_video() {
         let bytes = fs::metadata(f.root.join(name)).unwrap().len();
         assert!(bytes > 1000, "{name} is only {bytes} bytes");
     }
+}
+
+#[test]
+fn classify_media_maps_a_hung_sidecar_to_its_reason() {
+    assert_eq!(classify_media(&MediaError::Hung), (Reason::Hung, None));
 }
