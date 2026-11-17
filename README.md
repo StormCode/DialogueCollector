@@ -6,17 +6,19 @@
 
 **完全離線 · macOS（Apple 晶片／Intel）· Windows x64**
 
-最新穩定版：**v0.1.5** · 支援：**macOS 11 以上**、**Windows 10/11 x64**
+最新穩定版：**v0.1.9** · 支援：**macOS 11 以上**、**Windows 10/11 x64**
 
 ### [下載最新穩定版](https://github.com/StormCode/DialogueCollector/releases/latest)
 
 | 平台 | 檔案 |
 | --- | --- |
-| macOS（Apple 晶片） | [DialogueCollector_0.1.5_aarch64.dmg](https://github.com/StormCode/DialogueCollector/releases/latest) |
-| macOS（Intel） | [DialogueCollector_0.1.5_x64.dmg](https://github.com/StormCode/DialogueCollector/releases/latest) |
-| Windows x64 | [DialogueCollector_0.1.5_x64-setup.exe](https://github.com/StormCode/DialogueCollector/releases/latest) |
+| macOS（Apple 晶片） | [DialogueCollector_0.1.9_aarch64.dmg](https://github.com/StormCode/DialogueCollector/releases/download/v0.1.9/DialogueCollector_0.1.9_aarch64.dmg) |
+| macOS（Intel） | [DialogueCollector_0.1.9_x64.dmg](https://github.com/StormCode/DialogueCollector/releases/download/v0.1.9/DialogueCollector_0.1.9_x64.dmg) |
+| Windows x64 | [DialogueCollector_0.1.9_x64-setup.exe](https://github.com/StormCode/DialogueCollector/releases/download/v0.1.9/DialogueCollector_0.1.9_x64-setup.exe) |
 
 所有版本：https://github.com/StormCode/DialogueCollector/releases
+
+已安裝的版本會自動更新至最新版。
 
 本程式沒有程式碼簽章：macOS 與 Windows 第一次開啟時會跳出警告，略過一次即可（macOS：按右邊的打開；Windows：其他資訊 → 仍要執行）。
 
@@ -32,6 +34,28 @@
 - **匯入現有的檔案。** 現有的音訊（m4a、mp3、wav）或影片可以直接匯入，支援匹次匯入，可自己輸入台詞。
 - **收藏庫屬於你。** 音檔就是你指定資料夾裡的一般檔案，資料夾可以搬移；全部資料能備份成一個 zip，在另一台電腦還原。
 - **用起來順手。** 支援繁體中文、簡體中文、日文與英文；七種主題配色（含深色主題）。
+
+## 更新紀錄
+
+### v0.1.9（2026-10-05）
+- 自動更新時，先等程式釋放檔案再覆寫，避免更新失敗。
+
+### v0.1.8（2026-10-05）
+- 台詞頁移除編輯模式，改為每張卡片上的 ┆ 選單。
+- macOS 更新後改由 LaunchServices 重新啟動程式。
+
+### v0.1.7（2026-10-04）
+- 角色儲存改在背景執行，儲存時按鈕顯示讀取中；頭像縮小至 480 px。
+- 雙語字幕取較長的一側作為翻譯；單一語言字幕的換行會合併成一句。
+- 合併台詞時，標點後不再多加逗號。
+- 「選擇台詞」的列選單不再超出視窗。
+
+### v0.1.6（2026-10-03）
+- 單獨拖入影片時，會建議同資料夾內的字幕檔。
+- 程式介面名稱依使用者語系顯示；macOS 新增「前往」功能表。
+- 台詞頁卡片與工具列加入進場動畫；開啟時直接顯示畫面內的內容。
+- 預設視窗大小改為 1280 × 835。
+- 收藏庫容量統計納入圖片。
 
 ## 技術架構
 
